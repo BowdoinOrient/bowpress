@@ -1,0 +1,94 @@
+RewriteEngine on
+
+# Map Date, Section, Id to new URL Pattern  %1=date  %2=section  %3=id
+# NOTE: ? at end of string is to remove querystring from orig URI
+# http://orient.bowdoin.edu/orient/article.php?date=2012-05-04&section=1&id=1
+#
+RewriteCond %{HTTP_HOST} ^orient\.bowdoin\.edu$ [OR]
+RewriteCond %{HTTP_HOST} ^orient [OR]
+RewriteCond %{HTTP_HOST} ^bowdoinorient.org
+RewriteCond %{REQUEST_URI} ^/orient/article\.php
+RewriteCond %{QUERY_STRING} ^date=([0-9]*-[0-9]*-[0-9]*)&section=([0-9]*)&id=([0-9]*)$
+RewriteRule ^(.*)$ http://bowdoinorient.com/article/triplet/%1/%2/%3?  [R=301,L]
+
+# Map Issue Browse
+# http://orient.bowdoin.edu/orient/index.php?date=2012-05-04
+RewriteCond %{HTTP_HOST} ^orient\.bowdoin\.edu$ [OR]
+RewriteCond %{HTTP_HOST} ^orient [OR]
+RewriteCond %{HTTP_HOST} ^bowdoinorient.org
+RewriteCond %{REQUEST_URI} ^/orient/index\.php
+RewriteCond %{QUERY_STRING} ^date=([0-9]*-[0-9]*-[0-9]*)$
+RewriteRule ^(.*)$ http://bowdoinorient.com/browse/%1?  [R=301,L]
+
+# Map Series Page
+# http://orient.bowdoin.edu/orient/seriespage.php?seriespage.php?seriesid=114
+RewriteCond %{HTTP_HOST} ^orient\.bowdoin\.edu$ [OR]
+RewriteCond %{HTTP_HOST} ^orient [OR]
+RewriteCond %{HTTP_HOST} ^bowdoinorient.org
+RewriteCond %{REQUEST_URI} ^/orient/seriespage\.php
+RewriteCond %{QUERY_STRING} ^seriesid=([0-9]*)$
+RewriteRule ^(.*)$ http://bowdoinorient.com/series/%1?  [R=301,L]
+
+# Map authorpage.php %1=authorid
+# http://orient.bowdoin.edu/orient/authorpage.php?authorid=654
+RewriteCond %{HTTP_HOST} ^orient\.bowdoin\.edu$ [OR]
+RewriteCond %{HTTP_HOST} ^orient [OR]
+RewriteCond %{HTTP_HOST} ^bowdoinorient.org
+RewriteCond %{REQUEST_URI} ^/orient/authorpage\.php
+RewriteCond %{QUERY_STRING} ^authorid=([0-9]*)$
+RewriteRule ^(.*)$ http://bowdoinorient.com/author/%1?  [R=301,L]
+
+# Map Archives
+# http://orient.bowdoin.edu/orient/archives/*
+RewriteCond %{HTTP_HOST} ^orient\.bowdoin\.edu$ [OR]
+RewriteCond %{HTTP_HOST} ^orient [OR]
+RewriteCond %{HTTP_HOST} ^bowdoinorient.org
+RewriteCond %{REQUEST_URI} ^/orient/archives(.*)$
+RewriteRule ^(.*)$ http://bowdoinorient.com/legacy%1?  [R=301,L]
+
+##############################
+# FOR iPHONE APP #
+
+# article_iphone: date, section, id
+# e.g. http://orient.bowdoin.edu/orient/article_iphone.php?date=2012-12-07&section=1&id=1
+RewriteCond %{HTTP_HOST} ^orient\.bowdoin\.edu$ [OR]
+RewriteCond %{HTTP_HOST} ^orient [OR]
+RewriteCond %{HTTP_HOST} ^bowdoinorient.org
+RewriteCond %{REQUEST_URI} ^/orient/article_iphone\.php
+RewriteCond %{QUERY_STRING} ^date=([0-9]*-[0-9]*-[0-9]*)&section=([0-9]*)&id=([0-9]*)$
+RewriteRule ^(.*)$ http://bowdoinorient.com/api/article_iphone/%1/%2/%3?  [R=301,L]
+
+# xml_articlelist: date, section
+RewriteCond %{HTTP_HOST} ^orient\.bowdoin\.edu$ [OR]
+RewriteCond %{HTTP_HOST} ^orient [OR]
+RewriteCond %{HTTP_HOST} ^bowdoinorient.org
+RewriteCond %{REQUEST_URI} ^/orient/xml_articlelist\.php
+RewriteCond %{QUERY_STRING} ^date=([0-9]*-[0-9]*-[0-9]*)&section=([0-9]*)$
+RewriteRule ^(.*)$ http://bowdoinorient.com/api/xml_articlelist/%1/%2?  [R=301,L]
+
+# xml_issuelist: volume
+RewriteCond %{HTTP_HOST} ^orient\.bowdoin\.edu$ [OR]
+RewriteCond %{HTTP_HOST} ^orient [OR]
+RewriteCond %{HTTP_HOST} ^bowdoinorient.org
+RewriteCond %{REQUEST_URI} ^/orient/xml_issuelist\.php
+RewriteCond %{QUERY_STRING} ^volume=([a-zA-Z0-9]*)$
+RewriteRule ^(.*)$ http://bowdoinorient.com/api/xml_issuelist/%1?  [R=301,L]
+
+# xml_volumelist: [no params]
+RewriteCond %{HTTP_HOST} ^orient\.bowdoin\.edu$ [OR]
+RewriteCond %{HTTP_HOST} ^orient [OR]
+RewriteCond %{HTTP_HOST} ^bowdoinorient.org
+RewriteCond %{REQUEST_URI} ^/orient/xml_volumelist\.php
+RewriteRule ^(.*)$ http://bowdoinorient.com/api/xml_volumelist/?  [R=301,L]
+
+##############################
+
+# Redirect old host names to new site root
+RewriteCond %{HTTP_HOST} ^orient\.bowdoin\.edu$ [OR]
+RewriteCond %{HTTP_HOST} ^orient [OR]
+RewriteCond %{HTTP_HOST} ^bowdoinorient.org
+RewriteRule ^(.*)$ http://bowdoinorient.com [R=301,L]
+
+# For MVC
+RewriteCond $1 !^(index\.php|js|css|images|img|ads|files|legacy|robots\.txt|phpinfo\.php)
+RewriteRule ^(.*)$ /index.php/$1 [L]

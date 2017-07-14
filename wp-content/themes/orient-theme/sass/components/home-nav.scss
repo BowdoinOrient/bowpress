@@ -1,0 +1,261 @@
+$nav-more-menu-media-query-width: 1150px;
+
+.home-nav {
+	font-family: $alt-font-family;
+	font-weight: 900;
+	width: 100%;
+	margin-top: 1em;
+	padding: 0 0;
+	border-top: 3px solid $black;
+	border-bottom: 1px solid $black;
+	text-align: left;
+	position: relative;
+	@include cf();
+
+	.no-js & {
+		display: none;
+	}
+}
+
+.home-nav__links {
+	text-transform: uppercase;
+	display: inline-block;
+	
+	a {
+		display: inline-block; /* (a) */
+		text-decoration: none;
+		color: $black;
+		border-bottom: 2px solid transparent;
+		padding: 0 0.3em;
+		vertical-align: middle;
+		height: 2.4em;
+		line-height: 2.5;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	img {
+		max-width: 1.3em;
+		vertical-align: -5px;
+	}
+}
+
+.home-nav__section-links {
+	float: left;
+}
+
+.home-nav__more-links {
+	float: right;
+	font-size: 0.8em;
+	line-height: 2.5*1.2;
+}
+
+.home-nav__more-links__link.home-nav__more-links__link { /* 1 */
+	@include mq-less-than($nav-more-menu-media-query-width) {
+		display: none;
+	}
+}
+
+// General submenu styling
+
+.home-nav-menu {
+	z-index: 10;
+	position: absolute;
+	top: 115%;
+	background-color: $white;
+	opacity: 1;
+	border: 1px solid $black;
+	border-bottom-width: 3px;
+	box-shadow: 0 0 4px $black;
+	transition: all 0.3s ease;
+
+	// Caret
+	&:before {
+		content: "";
+		display: block;
+
+		width: 15px;
+		height: 15px;
+		background-color: $white;
+		border: 1px solid lighten($black, 0);
+		border-right: none;
+		border-bottom: none;
+		margin: 0 auto;
+
+		position: absolute;
+		top: -8px;
+		left: 0;
+		right: 0;
+		transform: rotateZ(45deg);
+		box-shadow: -3px -3px 4px -3px $dark-gray;
+
+		transition: transform 0.2s ease;
+	}
+
+	&.js-hidden {
+		opacity: 0;
+		// transform: translateY(-10px) perspective(600px) rotateX(30deg);
+		display: block;
+		pointer-events: none;
+	}
+
+	&.menu-show {
+		opacity: 1;
+		// transform: translateY(0) perspective(600px) rotateX(0deg);
+	}
+}
+
+// "More" menu
+
+.more-menu {
+	right: 4px;
+	padding: 0.5em 1em;
+
+	&:before {
+		left: 40%;
+	}
+
+	.hover-area {
+		position: absolute;
+		width: 110%;
+		height: calc(100% + 50px + 2%);
+		top: -50px;
+		left: -5%;
+		background: transparentize(red, 0.5);
+		
+		&:active {
+			pointer-events: none;
+		}
+	}
+}
+
+.more-menu-toggle {
+	min-width: 70px;
+}
+
+a.more-menu-toggle.more-menu-toggle:hover { /* 1 */
+	text-decoration: none;
+}
+
+.more-menu__link {
+	display: block;
+	text-decoration: none;
+	font-weight: 600;
+	color: $black;
+	min-width: 4em;
+	text-align: right;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+.more-menu__link--hidden {
+	display: none;
+
+	@include mq-less-than($nav-more-menu-media-query-width) {
+		display: block;
+	}
+}
+
+// Section menu
+
+.section-menu {
+	width: 40em;
+	left: 4px;
+
+	.hover-area {
+		position: absolute;
+		width: 110%;
+		height: calc(100% + 50px + 2%);
+		top: -50px;
+		left: -5%;
+		background: transparentize(red, 0.5);
+		pointer-events: none;
+	}
+
+	&.js-hidden:before {
+		transition: none;
+	}
+
+	&[data-active-section='news']:before {
+		transform: translateX(-295px) rotateZ(45deg);
+	}
+
+	&[data-active-section='features']:before {
+		transform: translateX(-220px) rotateZ(45deg);
+	}
+
+	&[data-active-section='arts-entertainment']:before {
+		transform: translateX(-70px) rotateZ(45deg);
+	}
+
+	&[data-active-section='sports']:before {
+		transform: translateX(75px) rotateZ(45deg);
+	}
+
+	&[data-active-section='opinion']:before {
+		transform: translateX(157px) rotateZ(45deg);
+	}
+}
+
+.section-menu__content {
+	// height: 400px;
+}
+
+.section-menu__tax-list {
+	width: 35%;
+	float: left;
+	height: 100%;
+
+	a {
+		display: block;
+		width: 100%;
+		padding: 10px;
+		border-bottom: 1px solid $light-gray;
+		line-height: 1.1;
+		color: $black;
+		text-decoration: none;
+		font-weight: bold;
+
+		&:hover {
+			color: $accent;
+			// background: $light-gray;
+			z-index: 12;
+		}
+	}
+}
+
+.section-menu__article-list {
+	width: 65%;
+	float: right;
+	border-left: 1px solid $dark-gray;
+}
+
+.section-menu__article {
+	padding: 10px;
+	border-bottom: 1px solid $light-gray;
+	display: flex;
+
+	.article-title {
+		margin: 0;
+		font-weight: normal;
+		font-size: 1.6em;
+	}
+
+	.media-body {
+		width: calc(100% - 110px);
+	}
+}
+
+.section-menu__article__thumbnail {
+	width: 100px;
+	margin-right: 10px;
+}
+
+/**
+ * 1: Double selectors are used to increase specificity so that the 
+ *    display: inline-block in the line marked (a) is overridden.
+ */

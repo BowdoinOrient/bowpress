@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" width="100px" height="100px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
+<g id="Captions">
+</g>
+<g>
+    <path fill="#000000" d="M14.5,68.5v18h18v-9v-9h-9c0-4.971,4.029-9,9-9v-9C22.559,50.5,14.5,58.559,14.5,68.5z"/>
+    <path fill="#000000" d="M41.5,68.5v18h18v-9v-9h-9c0-4.971,4.029-9,9-9v-9C49.559,50.5,41.5,58.559,41.5,68.5z"/>
+    <path fill="#000000" d="M68.5,14.5v9v9h9c0,4.971-4.029,9-9,9v9c9.941,0,18-8.059,18-18v-18H68.5z"/>
+    <path fill="#000000" d="M41.5,23.5v9h9c0,4.971-4.029,9-9,9v9c9.941,0,18-8.059,18-18v-18h-18V23.5z"/>
+</g>
+</svg>

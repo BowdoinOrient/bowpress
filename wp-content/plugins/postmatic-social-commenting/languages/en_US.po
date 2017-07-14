@@ -1,0 +1,136 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Social Comments\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-09 21:56+0100\n"
+"PO-Revision-Date: 2014-11-09 21:56+0100\n"
+"Last-Translator: Ixtendo <info@ixtendo.com>\n"
+"Language-Team: Ixtendo <info@ixtendo.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;esc_attr__\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.7\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../functions/Ixwp_Facebook_Authenticator.php:19
+#: ../functions/Ixwp_Gplus_Authenticator.php:23
+#: ../functions/Ixwp_Pinterest_Authenticator.php:20
+#: ../functions/Ixwp_Twitter_Authenticator.php:210
+#: ../functions/Ixwp_Wordpress_Authenticator.php:113
+msgid "Status"
+msgstr ""
+
+#: ../functions/Ixwp_Facebook_Authenticator.php:23
+#: ../functions/Ixwp_Pinterest_Authenticator.php:24
+msgid "Enabled"
+msgstr ""
+
+#: ../functions/Ixwp_Facebook_Authenticator.php:24
+#: ../functions/Ixwp_Pinterest_Authenticator.php:25
+msgid "Disabled"
+msgstr ""
+
+#: ../functions/Ixwp_Facebook_Authenticator.php:28
+#: ../functions/Ixwp_Gplus_Authenticator.php:28
+#: ../functions/Ixwp_Pinterest_Authenticator.php:29
+#: ../functions/Ixwp_Twitter_Authenticator.php:215
+#: ../functions/Ixwp_Wordpress_Authenticator.php:118
+msgid "API URL"
+msgstr ""
+
+#: ../functions/Ixwp_Generic_Settings_Tab.php:19
+msgid "Plugin Settings"
+msgstr ""
+
+#: ../functions/Ixwp_Generic_Settings_Tab.php:22
+msgid "Working Mode"
+msgstr ""
+
+#: ../functions/Ixwp_Generic_Settings_Tab.php:26
+msgid "Disable comments authentication"
+msgstr ""
+
+#: ../functions/Ixwp_Generic_Settings_Tab.php:27
+msgid "Enable comments authentication for all posts"
+msgstr ""
+
+#: ../functions/Ixwp_Generic_Settings_Tab.php:28
+msgid "Enable comments authentication for the posts selected below"
+msgstr ""
+
+#: ../functions/Ixwp_Generic_Settings_Tab.php:32
+msgid "Selected Pages"
+msgstr ""
+
+#: ../functions/Ixwp_Gplus_Authenticator.php:33
+#: ../functions/Ixwp_Wordpress_Authenticator.php:123
+msgid "Client ID"
+msgstr ""
+
+#: ../functions/Ixwp_Gplus_Authenticator.php:49
+#: ../functions/Ixwp_Twitter_Authenticator.php:241
+#: ../functions/Ixwp_Wordpress_Authenticator.php:144
+msgid "Documentation"
+msgstr ""
+
+#: ../functions/Ixwp_Gplus_Authenticator.php:112
+#: ../functions/Ixwp_Twitter_Authenticator.php:199
+#: ../functions/Ixwp_Wordpress_Authenticator.php:101
+msgid "Could not get the user details"
+msgstr ""
+
+#: ../functions/Ixwp_Social_Comments_Plugin.php:34
+msgid "Social Login"
+msgstr ""
+
+#: ../functions/Ixwp_Social_Comments_Plugin.php:73
+msgid "Comments Social Login Settings"
+msgstr ""
+
+#: ../functions/Ixwp_Social_Comments_Plugin.php:96
+msgid "Save Settings"
+msgstr ""
+
+#: ../functions/Ixwp_Social_Comments_Plugin.php:187
+msgid "Logout"
+msgstr ""
+
+#: ../functions/Ixwp_Social_Comments_Plugin.php:198
+msgid "To leave a comment, you need to authenticate."
+msgstr ""
+
+#: ../functions/Ixwp_Social_Comments_Plugin.php:207
+msgid "Please wait while you are being authenticated..."
+msgstr ""
+
+#: ../functions/Ixwp_Twitter_Authenticator.php:77
+msgid "Missing the oauth_token parameter"
+msgstr ""
+
+#: ../functions/Ixwp_Twitter_Authenticator.php:140
+msgid "Missing the oauth_token or oauth_verifier parameters"
+msgstr ""
+
+#: ../functions/Ixwp_Twitter_Authenticator.php:220
+msgid "Consumer Key (API Key)"
+msgstr ""
+
+#: ../functions/Ixwp_Twitter_Authenticator.php:225
+msgid "Consumer Secret (API Secret)"
+msgstr ""
+
+#: ../functions/Ixwp_Wordpress_Authenticator.php:70
+msgid "Missing the access_token parameter"
+msgstr ""
+
+#: ../functions/Ixwp_Wordpress_Authenticator.php:128
+msgid "Client Secret"
+msgstr ""
+
+#: ../functions/Ixwp_Wordpress_Authenticator.php:150
+msgid "Redirection URL"
+msgstr ""

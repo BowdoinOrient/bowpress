@@ -1,0 +1,25 @@
+button, .button {
+	display: inline-block;
+	margin: 0;
+	padding: 0 15px;
+	color: $white;
+	background: $accent;
+	border: 1px solid $accent;
+	margin-bottom: 0;
+	font-family: $alt-font-family;
+	text-decoration: none;
+	font-weight: bold;
+
+	&:hover {
+		background: lighten($accent, 10);
+		cursor: pointer;
+	}
+
+	&:active {
+		background: darken($accent, 5);
+	}
+}
+
+input {
+	border-radius: 0;
+}

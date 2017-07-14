@@ -1,0 +1,137 @@
+/* Matteo Spinelli */
+/* http://cubiq.org/swipeview */
+/* barely adapted */
+/* for homepage carousel */
+#carousel #swipeview_wrapper {
+  width: 100%;
+  height: 100%;
+  background: 'transparent'; }
+
+/* for article slideshows */
+.articlemedia #swipeview_wrapper {
+  width: 500px;
+  height: 600px;
+  background: #fff;
+  float: right;
+  /* -webkit-user-select:none; */ }
+
+/* BIGPHOTO */
+.articlemedia.bigphoto #swipeview_wrapper {
+  width: 100%;
+  height: 700px;
+  float: none; }
+
+.articlemedia.bigphoto #swipeview_wrapper .swipeview-image {
+  height: 650px; }
+
+#swipeview_wrapper.author-swipeview {
+  height: 420px; }
+
+#swipeview_wrapper.author-swipeview .swipeview-image {
+  height: 360px; }
+
+#swipeview_wrapper .swipeview-image {
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  width: 100%;
+  height: 500px; }
+
+#carousel #swipeview_nav {
+  margin: 10px 0; }
+
+#swipeview_nav {
+  z-index: 100;
+  width: 100%;
+  height: 20px;
+  padding: 0; }
+
+#swipeview_nav li {
+  display: block;
+  float: left;
+  width: 10px;
+  height: 10px;
+  line-height: 10px;
+  background: lightgray;
+  overflow: hidden;
+  padding: 0;
+  margin: 3px 3px 0 0;
+  text-align: center; }
+
+#swipeview_nav li:hover {
+  cursor: pointer;
+  margin-top: 2px; }
+
+#swipeview_nav li.selected {
+  background: darkgray; }
+
+/* relative nav < > */
+#carousel #swipeview_relative_nav {
+  float: right;
+  margin: 0 0;
+  font-size: 24px;
+  color: lightgray; }
+
+#carousel #swipeview_relative_nav span:hover {
+  color: black;
+  cursor: pointer; }
+
+.articlemedia #swipeview_relative_nav {
+  z-index: 100;
+  position: absolute;
+  margin-top: 100px;
+  color: white;
+  font-size: 5em;
+  text-shadow: 0px 0px 20px #000; }
+
+/* BIGPHOTO */
+.articlemedia.bigphoto #swipeview_relative_nav {
+  margin-top: -450px; }
+
+.articlemedia.bigphoto #swipeview_relative_nav span#next {
+  margin-left: 850px; }
+
+.articlemedia #swipeview_relative_nav span {
+  opacity: 0; }
+
+.articlemedia #swipeview_relative_nav span:hover {
+  opacity: 1;
+  cursor: pointer; }
+
+.articlemedia #swipeview_relative_nav span#prev {
+  position: absolute;
+  /* margin-left:-40px; */ }
+
+.articlemedia #swipeview_relative_nav span#next {
+  position: absolute;
+  /* margin-left:503px; */
+  margin-left: 460px; }
+
+/* end relative nav */
+#swipeview-slider > div {
+  position: relative;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-pack: center;
+  -webkit-box-align: center;
+  overflow: hidden; }
+
+#swipeview-slider span {
+  -webkit-box-sizing: border-box;
+  display: block;
+  /*text-align:center;*/
+  font-size: 1.4em;
+  padding: 0;
+  width: 100%; }
+
+/* FOR SMARTPHONES (read: iPhones) */
+@media all and (max-width: 480px) {
+  #swipeview_nav, #swipeview_relative_nav > #next, #swipeview_relative_nav > #prev {
+    display: none; }
+
+  .articlemedia #swipeview_wrapper {
+    width: 100% !important;
+    height: 400px !important; }
+
+  #swipeview_wrapper .swipeview-image {
+    height: 300px !important; } }

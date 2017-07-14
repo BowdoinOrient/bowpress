@@ -1,0 +1,32 @@
+.logged-in {
+	.snap-drawers, .snap-content {
+		top: 32px;
+
+		@include mq-less-than(782px) {
+			top: 46px;
+		}
+	}
+}
+
+.page-wrap {
+    width: 90%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+
+    .page & {
+        max-width: 1120px;
+    }
+
+    // Meant to match home page and home page children. Will break any other
+    // child pages if we ever create those.
+    .home &, .page-child & {
+        max-width: 1280px;
+    }
+
+    @include mq-equals(small) {
+        width: 95%;
+        margin-top: 4rem;
+    }
+}

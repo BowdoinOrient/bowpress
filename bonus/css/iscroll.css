@@ -1,0 +1,85 @@
+/* Matteo Spinelli http://cubiq.org/iscroll-4 */
+/* with slight modifications */
+#iscroll_wrapper {
+  -webkit-user-select: none;
+  -webkit-text-size-adjust: none;
+  width: 500px;
+  height: 100%;
+  float: left;
+  position: relative;
+  /* On older OS versions "position" and "z-index" must be defined, */
+  z-index: 1;
+  /* it seems that recent webkit is less picky and works anyway. */
+  overflow: hidden;
+  background: #aaa;
+  background: #e3e3e3; }
+
+#iscroll_scroller {
+  width: 2100px;
+  height: 100%;
+  float: left;
+  padding: 0; }
+
+#iscroll_scroller ul {
+  list-style: none;
+  display: block;
+  float: left;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  text-align: left; }
+
+#iscroll_scroller li {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box;
+  display: block;
+  float: left;
+  width: 300px;
+  height: 160px;
+  text-align: center;
+  font-family: georgia;
+  font-size: 18px;
+  line-height: 140%; }
+
+#iscroll_nav {
+  width: 300px;
+  float: left; }
+
+#iscroll_prev, #iscroll_next {
+  float: left;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 5px 0;
+  width: 80px; }
+
+#iscroll_next {
+  float: right;
+  text-align: right; }
+
+#iscroll_indicator, #iscroll_indicator > li {
+  display: block;
+  float: left;
+  list-style: none;
+  padding: 0;
+  margin: 0; }
+
+#iscroll_indicator {
+  width: 110px;
+  padding: 12px 0 0 30px; }
+
+#iscroll_indicator > li {
+  text-indent: -9999em;
+  width: 8px;
+  height: 8px;
+  background: #ddd;
+  overflow: hidden;
+  margin-right: 4px; }
+
+#iscroll_indicator > li.active {
+  background: #888; }
+
+#iscroll_indicator > li:last-child {
+  margin: 0; }

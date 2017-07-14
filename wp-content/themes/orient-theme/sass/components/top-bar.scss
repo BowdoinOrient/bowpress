@@ -1,0 +1,53 @@
+.top-bar {
+    max-width: 1400px;
+    min-height: 1rem;
+    width: 95%;
+    margin: 1em auto 1.5em;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-weight: bold;
+    padding-bottom: 0.1em;
+    position: relative;
+    border-bottom: 1px solid $black;
+
+    @include mq-equals(small) {
+    	display: none;
+    }
+
+    svg {
+    	width: 1.2em;
+    }
+
+    a {
+    	text-decoration: none;
+    	margin-right: 0.5em;
+    }
+}
+
+.top-bar__component {
+	width: 33%;
+}
+
+.top-bar__search-link {
+	text-align: right;
+}
+
+.top-bar__nameplate {
+	position: relative;
+	top: -0.2em;
+	text-align: center;
+
+	img {
+		max-height: 1.5em
+	}
+}
+
+.facebook-icon:hover path {fill: #3b5998}
+.twitter-icon:hover path {fill: #55acee;}
+.vimeo-icon:hover path {fill: #1ab7ea;}
+.instagram-icon:hover path {fill: #e1306c;}
+.search-icon:hover path {fill: $dark-gray;}
+
+.wordpress-login-icon path {fill: $white;}
+.wordpress-login-icon:hover path {fill: $light-gray;}

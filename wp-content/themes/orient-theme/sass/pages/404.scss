@@ -1,0 +1,34 @@
+.error404 .page-wrap {
+	width: 95%;
+	max-width: 1400px;
+}
+
+.error-content {
+	font-family: $alt-font-family;
+	font-size: 3em;
+	font-size: 2.5vw;
+
+	@include mq-less-than(large) {
+		font-size: 2em;
+	}
+
+	@include mq-equals(small) {
+		font-size: 1.5em;
+	}
+
+	h1 {
+		font-size: 12em;
+		font-size: 20vw;
+		margin: 0;
+		font-family: $alt-font-family, "Apple Color Emoji";
+		font-weight: 900;
+
+		@include mq-less-than(large) {
+			font-size: 4em;
+		}
+
+		span {
+			font-size: 0.6em;
+		}
+	}
+}

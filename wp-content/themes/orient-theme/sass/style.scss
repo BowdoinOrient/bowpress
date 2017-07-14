@@ -1,0 +1,57 @@
+/*!
+ * Theme Name: Bowdoin Orient - 2017 Theme
+ * Theme URI: http://bowdoinorient.com/wordpress
+ * Description: The 2017 Wordpress Theme for the Bowdoin Orient. Uses various plugins to create an article management system that mirrors the taxonomies used at the Bowdoin Orient to organize articles. Fully responsive and optimized for mobile. See bowdoinorient.com/wordpress for more details.
+ * Author: James Little
+ * Author URI: http://jameslittle.me
+ * Version: 1.0.0
+ */
+
+@import "settings/colors";
+@import "settings/variables";
+
+@import "tools/mixins";
+@import "tools/fonts";
+
+@import "generic/normalize";
+@import "generic/scaff";
+@import "generic/util-classes";
+
+@import "layout/media";
+@import "layout/grid";
+
+@import "base/type";
+@import "base/headings";
+@import "base/blockquotes";
+@import "base/buttons";
+@import "base/tables";
+
+@import "components/desktop-search-bar";
+@import "components/mini-nav";
+@import "components/mobile-drawer";
+@import "components/mobile-top-bar";
+@import "components/top-bar";
+@import "components/home-header";
+@import "components/home-nav";
+@import "components/page-foot";
+@import "components/alert";
+@import "components/comments";
+
+@import "components/modules/common";
+@import "components/modules/module1";
+@import "components/modules/module2";
+@import "components/modules/module3";
+@import "components/modules/module4";
+@import "components/modules/module5";
+@import "components/modules/module6";
+@import "components/modules/module10";
+@import "components/modules/module11";
+@import "components/modules/newsletter-signup-module";
+@import "components/modules/print-edition-module";
+
+@import "pages/single";
+@import "pages/archive";
+@import "pages/page";
+@import "pages/404";
+
+@import "generic/print";

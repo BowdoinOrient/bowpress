@@ -1,0 +1,92 @@
+# Copyright (C) 2012 
+# This file is distributed under the same license as the  package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Just WordPress Variables\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/just-wp-variables\n"
+"POT-Creation-Date: 2012-06-27 15:34:15+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2012-06-27 18:51+0200\n"
+"Last-Translator: Alex Prokopenko <contact@justcoded.com>\n"
+"Language-Team: JustCoded <contact@justcoded.com>\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: UKRAINE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: just-variables.admin.php:7
+#: templates/settings_page.tpl.php:3
+msgid "Just Variables"
+msgstr "Просто Переменные"
+
+#: just-variables.admin.php:31
+msgid "Are you sure you want to delete selected field?"
+msgstr "Вы уверены, что хотите удалить выбранную строку?"
+
+#: just-variables.theme.php:15
+#: just-variables.theme.php:16
+msgid "Theme Variables"
+msgstr "Переменные в теме"
+
+#: just-variables.theme.php:44
+msgid "%s Theme Variables"
+msgstr "Переменные для темы %s "
+
+#: just-variables.theme.php:55
+msgid "You can use the text variables below in your template files or post content with shortcode."
+msgstr "Вы можете использовать текстовые переменные, указанные ниже, в Ваших файлах шаблонов или же в тексте записей или страниц."
+
+#: just-variables.theme.php:56
+msgid "Template files usage example: <code>&lt;?php just_variable( \"code for variable\" ); ?&gt;</code><br/>Shortcode example: <code>[justvar code=\"code for variable\"]</code>"
+msgstr "Пример использования переменных внутри шаблонов: <code>&lt;?php just_variable( \"код-переменной\" ); ?&gt;</code><br/>Пример использования shortcode: <code>[justvar code=\"код-переменной\"]</code>"
+
+#: just-variables.theme.php:64
+msgid "code:"
+msgstr "код:"
+
+#: templates/settings_page.tpl.php:4
+msgid "Create at least one variable to unblock \"Theme Variables\" page."
+msgstr "Создайте хотя бы одну переменную, чтобы активировать новое меню \"Переменные внутри темы\"."
+
+#: templates/settings_page.tpl.php:12
+msgid "Type"
+msgstr "Тип"
+
+#: templates/settings_page.tpl.php:13
+msgid "Variable"
+msgstr "Переменная"
+
+#: templates/settings_page.tpl.php:14
+msgid "Title"
+msgstr "Название"
+
+#: templates/settings_page.tpl.php:15
+#: templates/settings_page.tpl.php:30
+#: templates/settings_page.tpl.php:44
+msgid "Default Value"
+msgstr "Значение по умолчанию"
+
+#: templates/settings_page.tpl.php:24
+#: templates/settings_page.tpl.php:38
+msgid "Text Input"
+msgstr "Строка"
+
+#: templates/settings_page.tpl.php:25
+#: templates/settings_page.tpl.php:39
+msgid "Textarea"
+msgstr "Текстовое поле (мульти)"
+
+#: templates/settings_page.tpl.php:31
+#: templates/settings_page.tpl.php:45
+msgid "Delete"
+msgstr "Удалить"
+
+#: templates/settings_page.tpl.php:51
+msgid "Add one more"
+msgstr "Добавить еще"
+
+#: templates/settings_page.tpl.php:57
+msgid "Save Changes"
+msgstr "Сохранить изменения"
+

@@ -1,0 +1,33 @@
+.home-header {
+    text-align: center;
+    margin: 0 auto;
+    margin-bottom: 1.5em;
+
+    @include mq-equals(small) {
+    	display: none
+    }
+}
+
+.home-header__nameplate {
+	width: 35rem;
+    margin: 1.2em auto 0.3em;
+}
+
+.home-header__date-info {
+    margin: 0;
+    font-family: $alt-font-family;
+    line-height: 1;
+    font-weight: bold;
+
+    .date {
+        margin-right: 2em;
+    }
+}
+
+.small-screen-alert {
+    display: none !important;
+
+    @include mq-less-than(320px) {
+        display: block !important;
+    }
+}

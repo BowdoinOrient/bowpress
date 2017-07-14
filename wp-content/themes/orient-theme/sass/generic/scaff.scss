@@ -1,0 +1,29 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    // position: relative;
+}
+
+html {
+    font-size: $base-font-size;
+    overflow-x: hidden;
+}
+
+body {
+    background: $body-background;
+    color: $text-color;
+    font-family: $base-font-family;
+    line-height: $base-line-height;
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+}
+
+figure {
+    margin: 0;
+}

@@ -1,0 +1,45 @@
+
+#jv_settings{
+	width: 80% !important;
+}
+.wp-list-table input.regular-text{
+	width:90% !important;
+}
+.wp-list-table select{
+	width:90% !important;
+}
+.wp-list-table td.minwidth,
+.wp-list-table th.minwidth{
+	width:30px !important;
+}
+.wp-list-table td.td_type,
+.wp-list-table th.td_type{
+	width:150px !important;
+}
+.wp-list-table tr.new_row{
+	display:none;
+}
+.wp-list-table .drag-handle{
+	cursor: move;
+	margin-right:5px;
+	background:url(icon-move.png) no-repeat 0 0;
+	display:block;
+	width:16px;
+	height:16px;
+	overflow:hidden;
+	text-indent:-9999px;
+	margin:6px 0 0 7px;
+}
+.wp-list-table .new_variable{
+	background-color: #FFFFFF;
+	border: 1px solid #BBBBBB;
+	border-radius:4px;
+	padding:4px;
+}
+.wp-list-table a.delete_variable img{
+	padding:4px 0 0;
+	display:block;
+	width:16px;
+	height:16px;
+	overflow:hidden;
+}

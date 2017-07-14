@@ -1,0 +1,64 @@
+.module-1 {
+    margin-bottom: $vertical-rhythm;
+
+    header {
+        font-size: 1.1em;
+    }
+
+    .article-title {
+        margin: 0;
+        margin-bottom: 0.4em;
+    }
+
+    .article-subtitle {
+        line-height: 1.2;
+        margin-bottom: 0.3em;
+    }
+
+    .byline {
+        margin-bottom: 1em;
+    }
+
+    .excerpt {
+        clear: both;
+    }
+
+    figure {
+        margin-bottom: 1em;
+    }
+}
+
+@element '.module-1' and (min-width: 600px) {
+    .module-1 {
+        header {
+            font-size: 1.3em
+        }
+
+        figure {
+            float: right;
+            width: 70%;
+            margin-left: 1em;
+        }
+
+        .article-meta {
+            width: 25%;
+        }
+
+        .article-subtitle {
+            margin-bottom: 0.5em;
+        }
+    }
+}
+
+@element '.module-1' and (min-width: 700px) {
+    .module-1 {
+
+        .article-subtitle {
+            font-size: 1.8em;
+        }
+
+        header {
+            font-size: 1.5em;
+        }
+    }
+}

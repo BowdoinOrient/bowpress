@@ -1,0 +1,85 @@
+.article-comments {
+	max-width: 650px;
+}
+
+.article-comments h3 {
+	font-family: $alt-font-family;
+	font-style: normal;
+}
+
+ol.commentlist { list-style:none; margin:0 0 3em; padding:0; text-indent:0; }
+ol.commentlist li { }
+ol.commentlist li.alt { }
+ol.commentlist li.bypostauthor {}
+ol.commentlist li.byuser {}
+ol.commentlist li.comment-author-admin {}
+ol.commentlist li.comment { border: 1px solid $light-gray; padding:1em; }
+.comment + .comment {border-top: none;}
+ol.commentlist li.comment div.comment-author {}
+ol.commentlist li.comment div.vcard { font:normal 16px $alt-font-family; }
+ol.commentlist li.comment div.vcard cite.fn { font-style:normal; }
+ol.commentlist li.comment div.vcard cite.fn a.url {}
+ol.commentlist li.comment div.vcard img.avatar { border:5px solid #ccc; float:right; margin:0 0 1em 1em; }
+ol.commentlist li.comment div.vcard img.avatar-32 {}
+ol.commentlist li.comment div.vcard img.photo {}
+ol.commentlist li.comment div.vcard span.says {}
+ol.commentlist li.comment div.commentmetadata {}
+ol.commentlist li.comment div.comment-meta { font-size:0.9em; font-family: $alt-font-family }
+ol.commentlist li.comment div.comment-meta a { color:#ccc; }
+ol.commentlist li.comment p { font-size:1em; margin:0 0 1em; }
+ol.commentlist li.comment ul { font-size:1em; list-style:square; margin:0 0 1em 2em; }
+ol.commentlist li.comment div.reply { font-size:1em;}
+ol.commentlist li.comment div.reply a { font-weight:bold; }
+ol.commentlist li.comment ul.children { list-style:none; margin:1em 0 0; text-indent:0; }
+ol.commentlist li.comment ul.children li {}
+ol.commentlist li.comment ul.children li.alt {}
+ol.commentlist li.comment ul.children li.bypostauthor {}
+ol.commentlist li.comment ul.children li.byuser {}
+ol.commentlist li.comment ul.children li.comment {}
+ol.commentlist li.comment ul.children li.comment-author-admin {}
+ol.commentlist li.comment ul.children li.depth-2 { border-left:5px solid #555; margin:0 0 .25em .25em; }
+ol.commentlist li.comment ul.children li.depth-3 { border-left:5px solid #999; margin:0 0 .25em .25em; }
+ol.commentlist li.comment ul.children li.depth-4 { border-left:5px solid #bbb; margin:0 0 .25em .25em; }
+ol.commentlist li.comment ul.children li.depth-5 {}
+ol.commentlist li.comment ul.children li.odd {}
+ol.commentlist li.even { background:#fff; }
+ol.commentlist li.odd { background:#f6f6f6; }
+ol.commentlist li.parent { border-left:5px solid #111; }
+ol.commentlist li.thread-alt { }
+ol.commentlist li.thread-even {}
+ol.commentlist li.thread-odd {}
+
+.comment-respond .comment-notes.comment-notes {
+	font-style: italic;
+	margin-bottom: 1.2em;
+}
+
+.required {
+	color: $red;
+}
+
+#postmatic-social-comment-wrapper {
+	display: block;
+	float: none !important;
+
+	&:before {
+		content: "New: You can log in with Facebook or Twitter to post a comment.";
+	}
+}
+
+.comment-respond p {
+	margin-bottom: 0.3em;
+}
+
+.comment-respond input[type="submit"] {
+	@extend .button;
+}
+
+.comment-respond label {
+	display: inline-block;
+	width: 6em;
+}
+
+.comment-form-comment label {
+	display: block;
+}

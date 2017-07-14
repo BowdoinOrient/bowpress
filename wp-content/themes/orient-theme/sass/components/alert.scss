@@ -1,0 +1,38 @@
+.alert {
+    display: block;
+    margin-bottom: $vertical-rhythm;
+    font-family: $alt-font-family;
+    background: lighten($light-gray, 10);
+    padding: 1em;
+    font-size: 1.05em;
+    border-radius: 8px;
+    border: 1px solid $dark-gray;
+    color: rgba(0, 0, 0, 0.8);
+    line-height: 1;
+
+    h1 {
+        font-family: $alt-font-family;
+        margin: 0;
+        font-size: 1em;
+        margin-bottom: 0.5em;
+    }
+
+    p {
+        margin: 0;
+    }
+}
+
+.alert-red {
+    background: $red;
+    border-color: darken($red, 10);
+}
+
+.alert-green {
+    background: $green;
+    border-color: darken($green, 10);
+}
+
+.alert-yellow {
+    background: $yellow;
+    border-color: darken($yellow, 10);
+}

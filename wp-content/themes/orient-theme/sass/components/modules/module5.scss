@@ -1,0 +1,36 @@
+.module-5 {
+    margin-bottom: $vertical-rhythm / 2;
+    border-bottom: 1px solid $light-gray;
+    padding-bottom: $vertical-rhythm / 2;
+
+    @include cf;
+
+    &:last-of-type {
+        border-bottom: none;
+    }
+
+    .media-figure {
+        width: 140px;
+        float: left;
+        margin-right: 1em;
+        max-width: 30%
+    }
+
+    .media-body {
+        float: right;
+        width: calc(100% - 30% - 1em);
+        min-width: calc(100% - 140px - 1em)
+    }
+
+    .article-title {
+        margin: 0;
+        margin-bottom: 0.2em;
+        line-height: 1;
+        font-size: 1.6rem;
+        font-weight: 600;
+    }
+
+    .byline {
+        color: $dark-gray;
+    }
+}

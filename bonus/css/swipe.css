@@ -1,0 +1,16 @@
+.swipe {
+  overflow: hidden;
+  visibility: hidden;
+  position: relative;
+  height: 100%; }
+
+.swipe-wrap {
+  overflow: hidden;
+  position: relative;
+  height: 100%; }
+
+.swipe-wrap > div {
+  float: left;
+  width: 100%;
+  height: 100%;
+  position: relative; }

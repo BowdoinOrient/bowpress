@@ -1,0 +1,25 @@
+.module-3 {
+	margin-bottom: $vertical-rhythm / 2;
+	padding-bottom: $vertical-rhythm / 2;
+	border-bottom: 1px solid $light-gray;
+
+	&:last-of-type {
+		border-bottom: none;
+	}
+
+	@include mq-equals(small) {
+		border-bottom: none;
+	}
+
+	.article-title {
+		margin: 0.3em 0 0.1em;
+	    font-weight: 500;
+	    font-size: 1.8em;
+	}
+}
+
+@element '.module-3' and (max-width: 350px) {
+	#{"$this"} .article-title {
+		font-size: 1.6em;
+	}
+}

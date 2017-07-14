@@ -1,0 +1,3 @@
+[submodule "legacy"]
+    path = legacy
+    url = git@github.com:BowdoinOrient/legacy.git

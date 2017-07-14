@@ -1,0 +1,30 @@
+.page:not(.home) {
+	article {
+		font-size: 1.2em;
+
+		p {
+			margin-bottom: 1.5em;
+			line-height: 1.6;
+		}
+
+		h1, h2, h3, h4, h5, h6 {
+			font-family: $alt-font-family;
+		}
+
+		h1 {
+			border-bottom: 1px solid $light-gray;
+		}
+
+		h3 {
+			font-style: italic;
+		}
+	}
+}
+
+.subscription-table {
+	text-align: center;
+
+	p {
+		margin: 0;
+	}
+}
