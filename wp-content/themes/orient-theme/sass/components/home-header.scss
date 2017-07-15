@@ -27,7 +27,7 @@
 .small-screen-alert {
     display: none !important;
 
-    @include mq-less-than(320px) {
+    @include mq-less-than(300px) {
         display: block !important;
     }
 }
