@@ -134,16 +134,15 @@
 }
 
 .archive-template {
-	@extend .module-4;
-
-	border: none;
-	background: none;
-	border-bottom: 1px solid $light-gray;
-	border-radius: 0;
-	padding-bottom: 1.5em;
+	display: flex;
+    justify-content: space-between;
+    margin-bottom: $vertical-rhythm;
+    padding: $vertical-rhythm 10px;
+    border-bottom: 1px solid $light-gray;
 
 	.article-title {
-		font-style: normal;
+		font-weight: 600;
+		font-size: 2em;
 	}
 
 	.media-body {
@@ -175,6 +174,10 @@
 	.read-more-block {
 		display: block;
 		margin-top: 0.75em;
+	}
+
+	&:last-of-type {
+		border-bottom: none;
 	}
 }
 

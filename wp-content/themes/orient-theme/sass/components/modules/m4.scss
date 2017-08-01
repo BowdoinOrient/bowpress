@@ -1,0 +1,11 @@
+.m4 {
+	display: flex;
+
+	.media-figure {
+		width: 140px;
+		float: left;
+		margin-right: 1em;
+		max-width: 30%;
+		flex: 0 0 auto;
+	}
+}

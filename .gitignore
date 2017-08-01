@@ -1,5 +1,6 @@
 # Specific to Medved setup
 server.txt
+.htaccess
 gitignored/
 
 # Created by https://www.gitignore.io/api/sublimetext,osx,sass,wordpress,node,vim

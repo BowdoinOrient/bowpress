@@ -34,8 +34,8 @@ add_filter('xmlrpc_enabled', '__return_false');
  * first. These two lines show code errors and warnings. If they're commented
  * out, uncomment them (not in production!!) to see what's gone wrong.
  */
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
+ // error_reporting(E_ALL);
+ // ini_set('display_errors', 1);
 
 
 
