@@ -1,9 +1,20 @@
 .module {
     overflow: hidden;
+	padding-bottom: $vertical-rhythm / 2;
+	border-bottom: 1px solid $dark-gray;
+	margin-bottom: $vertical-rhythm / 2;
+
+    &.no-border {
+        border-bottom: none;
+    }
+
+    img {
+        margin-bottom: 0.3em;
+    }
 }
 
-.module img {
-    // border: 1px solid $dark-gray;
+.module:last-child {
+	border-bottom: none;
 }
 
 .read-more {
@@ -17,7 +28,7 @@
     a {
         color: $dark-gray;
 
-        &:hover {
+		&.hover {
             color: $black;
         }
     }
@@ -25,11 +36,37 @@
 
 .article-title {
     margin: 0.1em 0;
+	font-weight: 400;
+	font-size: 1.6em;
 
     a:hover {
         color: $link-color;
         text-decoration: none;
     }
+}
+
+.article-title--b {
+	font-weight: 600;
+}
+
+.article-title--thicc {
+	font-weight: 700;
+}
+
+.article-title--THICC {
+	font-weight: 900;
+}
+
+.article-title--i {
+	font-style: italic;
+}
+
+.article-title--tiny {
+	font-size: 1.3em;
+}
+
+.article-title--huge {
+	font-size: 2.5em;
 }
 
 .module-excerpt {
@@ -94,6 +131,19 @@
     }
 }
 
+.kicker--large {
+	display: inline-block;
+	background-color: $accent;
+	width: auto;
+	padding: 0.7em 0.5em 0.4em;
+	color: $white;
+}
+
+.horizontal-divider {
+	margin: $vertical-rhythm 0;
+	border-top: 1px solid $dark-gray
+}
+
 .border-right {
 	border-right: 1px solid $dark-gray;
 }
@@ -108,8 +158,4 @@
 
 .border-bottom {
 	border-bottom: 1px solid $dark-gray;
-}
-
-#twitter-widget-0 {
-    border: 1px solid $dark-gray !important;
 }

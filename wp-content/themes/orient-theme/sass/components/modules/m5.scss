@@ -1,0 +1,52 @@
+.m5 {
+	display: flex;
+    justify-content: space-between;
+    margin-bottom: $vertical-rhythm;
+    padding: $vertical-rhythm 10px;
+    border-radius: 4px;
+    border: 1px solid $light-gray;
+    border-bottom: 1px solid $light-gray !important; /* 1 */
+    background: #FFF;
+
+    /**
+     * 1: Overrides the property on .module:last-of-type that says
+     * that the last module in a list doesn't have a bottom border.
+     */
+
+	.article-title {
+		font-weight: 400;
+		font-style: italic;
+		font-size: 3.2em;
+	}
+
+	.media-body {
+		width: calc(98% - 250px);
+
+		@include mq-less-than(600px) {
+			width: 100%;
+		}
+	}
+
+	figure {
+		width: 250px;
+
+		@include mq-less-than(600px) {
+			display: none;
+		}
+
+		img {
+			max-width: 100%;
+			height: auto;
+			max-height: 100%;
+		}
+	}
+
+	.byline {
+		margin-bottom: 0.5em;
+	}
+
+	.read-more-block {
+		display: block;
+		margin-top: 0.75em;
+	}
+}

@@ -27,7 +27,7 @@ get_header(); ?>
 			'prev_text'          => '&larr;',
 			'next_text'          => '&rarr;',
 			'before_page_number' => '',
-			'mid_size'			 => 2,
+			'mid_size'			 => 6,
 			''
 		) );
 
