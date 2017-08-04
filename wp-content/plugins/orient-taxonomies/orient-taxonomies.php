@@ -17,9 +17,9 @@ defined( 'ABSPATH' ) or die;
 
 /* Alert post type */
 
-add_action( 'init', 'create_post_type' );
+add_action( 'init', 'create_alert_post_type' );
 
-function create_post_type() {
+function create_alert_post_type() {
 	register_post_type( 'alert',
 		array(
 			'labels' => array(
@@ -29,6 +29,23 @@ function create_post_type() {
 			'public' => true,
 			'has_archive' => false,
 			'menu_icon'   => 'dashicons-warning',
+		)
+	);
+}
+
+
+add_action( 'init', 'create_ad_post_type' );
+
+function create_ad_post_type() {
+	register_post_type( 'Ad',
+		array(
+			'labels' => array(
+				'name' => 'Ads',
+				'singular_name' => 'Ad'
+			),
+			'public' => true,
+			'has_archive' => false,
+			'menu_icon'   => 'dashicons-layout',
 		)
 	);
 }
@@ -85,8 +102,8 @@ function create_series_taxonomy() {
  * If the article is part of a series, this is the kicker. If it's part of
  * a tag, the first tag will be the kicker. Otherwise it will default to
  * category.
- * 
- * @param  boolean $shouldExcludeCategory 
+ *
+ * @param  boolean $shouldExcludeCategory
  *         If true, the kicker will not fall back to a category, and will be
  *         blank if the article does not have a series or tag associated.
  * @return void
@@ -236,7 +253,7 @@ function authorList($echo = true) {
 function add_theme_caps() {
     // gets the author role
     $role = get_role( 'editor' );
-    $role->add_cap( 'list_users' ); 
+    $role->add_cap( 'list_users' );
 }
 add_action( 'admin_init', 'add_theme_caps');
 
@@ -254,7 +271,7 @@ function check_for_coauthors_plus() {
     if ( is_admin() && current_user_can( 'activate_plugins' ) &&  !is_plugin_active( 'co-authors-plus/co-authors-plus.php' ) ) {
         add_action( 'admin_notices', 'child_plugin_notice' );
 
-        deactivate_plugins( plugin_basename( __FILE__ ) ); 
+        deactivate_plugins( plugin_basename( __FILE__ ) );
 
         if ( isset( $_GET['activate'] ) ) {
             unset( $_GET['activate'] );
