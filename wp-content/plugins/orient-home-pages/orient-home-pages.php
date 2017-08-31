@@ -38,7 +38,6 @@ function home_page_init() {
 	$filename = get_option('orient_homepage_filename');
 	$articlelist = explode(',', get_option('orient_homepage_articles'));
 
-
 	echo "<h2>Pick a Template</h2>";
 	echo "<form id=\"page\" name=\"page\" method=\"POST\">";
 	echo_home_page_list($filename);
@@ -54,8 +53,7 @@ function home_page_init() {
 }
 
 function echo_home_page_list($filename) {
-	$upload = wp_upload_dir();
-	$homepages_dir = $upload['basedir'] . '/homepages/';
+	$homepages_dir = get_stylesheet_directory() . '/homepages/';
 	$files = scandir($homepages_dir);
 
 	foreach($files as $file) {
@@ -85,6 +83,8 @@ function echo_article_select_input($articlelist) {
 	$args = array( 'numberposts' => 100);
 	$posts = get_posts($args);
 
+	echo "<option value=\"\">No article (module should disappear)</option>";
+
 	foreach($posts as $post) {
 		setup_postdata($post);
 		echo "<option value=\"" . $post->ID . "\">" . substr($post->post_title, 0, 100) . "</option>";
@@ -96,9 +96,7 @@ function echo_article_select_input($articlelist) {
 register_activation_hook(__FILE__, home_page_activate);
 
 function home_page_activate() {
-	$upload = wp_upload_dir();
-    $upload_dir = $upload['basedir'];
-    $upload_dir = $upload_dir . 'homepages';
+    $upload_dir = get_stylesheet_directory() . 'homepages';
     if (! is_dir($upload_dir)) {
        mkdir( $upload_dir, 0700 );
     }
@@ -112,8 +110,7 @@ function home_page_activate() {
 add_shortcode('orient_homepage', 'do_orient_homepage_shortcode');
 
 function do_orient_homepage_shortcode() {
-	$upload = wp_upload_dir();
-	$homepages_dir = $upload['basedir'] . '/homepages/';
+    $homepages_dir = get_stylesheet_directory() . '/homepages/';
 	$file = $homepages_dir . get_option('orient_homepage_filename');
 	ob_start();
 	include($file);
@@ -123,12 +120,13 @@ function do_orient_homepage_shortcode() {
 }
 
 function home_render($module_name, $article_index = NULL) {
-	$upload = wp_upload_dir();
-	$homemodules_dir = $upload['basedir'] . '/homemodules/';
+	$homemodules_dir = get_stylesheet_directory() . '/homemodules/';
 	$ids = explode(',', get_option('orient_homepage_articles'));
-	// echo $homemodules_dir . $module_name . ".php";
-	if (isset($ids[$article_index])) {
-		$article_index--;
+	$article_index = $article_index - 1;
+
+	if (isset($ids[$article_index]) && $ids[$article_index] === "") {
+		return "<!-- No module here today. -->";
+	} else if (isset($ids[$article_index])) {
 		$id = $ids[$article_index];
 		$query = new WP_Query(array('p' => $id));
 		while($query->have_posts()) {

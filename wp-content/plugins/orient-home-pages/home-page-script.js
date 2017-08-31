@@ -12,9 +12,13 @@ function generateSelects() {
 	jQuery("#article-selects").html("");
 	for (var i=0; i<count; i++) {
 		var selected = articleIds[i];
+
 		inputTemplate.find("option").removeAttr("selected");
-		inputTemplate.find("[value=" + selected  + "]").attr("selected", "selected");
-		//inputTemplate.querySelector("[value=" + selected + "]").setAttribute('selected');
+
+		if(selected !== "") {
+			inputTemplate.find("[value=" + selected  + "]").attr("selected", "selected");
+		}
+
 		jQuery("#article-selects").append(i+1 + ": " + inputTemplate.html() + "<br>");
 	}
 }

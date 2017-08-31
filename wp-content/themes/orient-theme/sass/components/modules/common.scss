@@ -159,3 +159,14 @@
 .border-bottom {
 	border-bottom: 1px solid $dark-gray;
 }
+
+.nqireg img {
+	border: 1px solid $dark-gray;
+}
+
+.nqireg__caption {
+	font-size: 0.8em;
+	text-transform: uppercase;
+	text-align: center;
+	font-family: $alt-font-family;
+}
