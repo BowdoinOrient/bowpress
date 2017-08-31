@@ -1,6 +1,18 @@
 <?php
 
 /**
+ * PHP can actually show debug information -- you just have to turn it on
+ * first. These two lines show code errors and warnings. If they're commented
+ * out, uncomment them (not in production!!) to see what's gone wrong.
+ */
+ //error_reporting(E_ALL);
+ //ini_set('display_errors', 1);
+
+
+
+
+
+/**
  * Set up an alert in the admin sectionif the plugins required for this theme
  * are not activated.
  */
@@ -29,13 +41,6 @@ function plugin_notice() {
 
 add_filter('xmlrpc_enabled', '__return_false');
 
-/**
- * PHP can actually show debug information -- you just have to turn it on
- * first. These two lines show code errors and warnings. If they're commented
- * out, uncomment them (not in production!!) to see what's gone wrong.
- */
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
 
 
 
