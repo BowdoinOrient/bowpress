@@ -1,4 +1,4 @@
-<div class="nqireg nquireg-square">
+<div class="nqireg nqireg-square">
 
 <?php
 

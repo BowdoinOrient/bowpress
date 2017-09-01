@@ -1,0 +1,90 @@
+/* Newsletter Signup Module */
+@element '.newsletter-signup-module' and (min-width: 950px) {
+	$this form {
+		width: 50%;
+	}
+}
+
+@element '.newsletter-signup-module' and (max-width: 900px) {
+	$this {
+		font-size: 1.5rem;
+	}
+}
+
+@element '.newsletter-signup-module' and (max-width: 800px) {
+	$this {
+		display: block;
+	}
+
+	$this h1 {
+		display: block;
+		width: 100%;
+		margin-bottom: 0.5em;
+	}
+
+	$this form {
+		width: 100%;
+		margin: 0;
+	}
+}
+
+@element '.newsletter-signup-module' and (max-width: 500px) {
+	$this {
+		font-size: 1.1rem;
+	}
+}
+
+/* Print Edition Module */
+
+@element '.print-edition-module' and (max-width: 1160px) {
+	$this {
+		font-size: 0.8em;
+	}
+}
+
+@element '.print-edition-module' and (max-width: 990px) {
+	$this img {
+		width: 300px;
+	}
+
+	$this img {
+		transform: none;
+	}
+}
+
+@element '.print-edition-module' and (max-width: 760px) {
+	$this {
+		max-height: none;
+	}
+
+	$this img {
+		display: block;
+		float: none;
+	}
+
+	$this:hover img {
+		transform: none;
+	}
+}
+
+@element '.print-edition-module' and (max-width: 450px) {
+	$this {
+		font-size: 0.7em;
+		max-height: none;
+		height: auto;
+	}
+
+	$this img {
+		width: 100%;
+		float: none;
+		margin-bottom: 1.5em;
+	}
+
+	$this:hover img {
+		transform: none;
+	}
+
+	$this h1 {
+		font-size: 2.5em;
+	}
+}
