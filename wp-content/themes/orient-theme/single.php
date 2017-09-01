@@ -27,11 +27,11 @@ if (have_posts()) {
 	while (have_posts()) {
 		the_post();
 ?>
-	
+
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 
 	<header class="single__article-header">
-		
+
 		<!-- Taxonomy box: category and series -->
 		<div class="single__taxonomy">
 			<p class="single__taxonomy__section"><?php the_category(' ', 'single'); ?></p>
@@ -63,7 +63,7 @@ if (have_posts()) {
 
 		<!-- Opinion of the author box -->
 		<?php if(get_field("opinion", $post->ID)): ?>
-			<div class="single__disclaimer"><img src="<?php echo get_stylesheet_directory_uri(); ?>/img/bubble.svg">This piece represents the opinion of the author<?php 
+			<div class="single__disclaimer"><img src="<?php echo get_stylesheet_directory_uri(); ?>/img/bubble.svg">This piece represents the opinion of the author<?php
 				// Pluralize authors if there's more than one author for the article
 				$iter = new CoAuthorsIterator();
 				$count = $iter->count();
@@ -83,7 +83,7 @@ if (have_posts()) {
 	<div class="single__content">
 
 		<?php the_content() ?>
-	
+
 	</div>
 
 	<aside class="single__sidebar">
@@ -121,24 +121,26 @@ if (have_posts()) {
 				</svg>
 			</a>
 		</div>
-		
+
 		<h1 class="single__sidebar__heading">Most Popular</h1>
 		<div class="single__sidebar__popular">
-		<?php 
+		<?php
 			$args = array(
 				'post_type' => 'post',
 				'limit' => 5,
 				'range' => 'weekly',
 			);
-			wpp_get_mostpopular($args) 
+			wpp_get_mostpopular($args)
 		?>
 		</div>
+
+		<?php echo home_render("A-square"); ?>
 	</aside>
 
 	<footer class="single__footer">
 
 		<div class="single__article-tags">
-			
+
 			<?php the_tags('<span class="inline-paragraph-title">Read More</span>', ''); ?>
 
 		</div>
@@ -221,12 +223,13 @@ if (have_posts()) {
 			<p class="callout__header">Sign up for our weekly newsletter.</p>
 			<p class="callout__description">Catch up on the latest reports, stories and opinions about Bowdoin and Brunswick in your inbox. Always high-quality. Always free.</p>
 			<form action="http://bowdoinorient.us4.list-manage.com/subscribe/post?u=eab94f63abe221b2ef4a4baec&amp;id=739fef0bb9" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate="">
-				<input class="email" type="email" value="" name="EMAIL" id="mce-EMAIL" placeholder="Enter your email."> 
-				<button type="submit" name="subscribe" id="mc-embedded-subscribe">Sign up</button> 
+				<input class="email" type="email" value="" name="EMAIL" id="mce-EMAIL" placeholder="Enter your email.">
+				<button type="submit" name="subscribe" id="mc-embedded-subscribe">Sign up</button>
 			</form>
 			<p class="callout__footer">We'll never use your email for anything other than this newsletter. Read our full <a href="/policies/">privacy policy</a> for more.</p>
 		</div>
 
+		<?php echo home_render("A-banner"); ?>
 	</footer>
 
 	<div class="article-comments">
@@ -237,7 +240,7 @@ if (have_posts()) {
 			<li>No hate speech, profanity, disrespectful or threatening comments.</li>
 			<li>No personal attacks on reporters.</li>
 			<li>Comments must be under 200 words.</li>
-			<li>You are strongly encouraged to use a real name or identifier ("Class of '92")</li>
+			<li>You are strongly encouraged to use a real name or identifier ("Class of '92").</li>
 			<li>Any comments made with an email address that does not belong to you will get removed.</li>
 		</ul>
 
@@ -251,6 +254,6 @@ if (have_posts()) {
 } // while have posts
 } // if have posts
 
-get_footer(); 
+get_footer();
 
 ?>
