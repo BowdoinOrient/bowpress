@@ -115,6 +115,10 @@
             color: $accent;
         }
     }
+
+	@include mq-equals(small) {
+		font-size: 1.7em;
+	}
 }
 
 .kicker {
@@ -164,9 +168,25 @@
 	border: 1px solid $dark-gray;
 }
 
+.nqireg-square {
+	padding: 0 5%;
+}
+
+@include mq-equals(small) {
+	.nqireg-square {
+		padding: 0 20%;
+	}
+}
+
 .nqireg__caption {
 	font-size: 0.8em;
 	text-transform: uppercase;
 	text-align: center;
 	font-family: $alt-font-family;
+}
+
+.mega-separator {
+	height: 2px;
+	border-top: 1px solid $black;
+	border-bottom: 2px solid $black;
 }

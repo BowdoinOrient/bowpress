@@ -16,6 +16,7 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 	<link rel="stylesheet" href="<?php echo get_stylesheet_uri(); ?>">
 	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
 	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>
+	<script type="text/eqcss" src="<?php echo get_stylesheet_directory_uri(); ?>/sass/element-queries.eqcss"></script>
 	<style>
 	.slick-prev:before, .slick-next:before {
 		color:#333; !important;
@@ -30,7 +31,7 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 	<link rel="author" href="/humans.txt">
 
 	<!-- Icons, etc. -->
-	<!-- 
+	<!--
 	<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png?v=2">
 	<link rel="icon" type="image/png" href="/icons/favicon-32x32.png?v=2" sizes="32x32">
 	<link rel="icon" type="image/png" href="/icons/favicon-16x16.png?v=2" sizes="16x16">

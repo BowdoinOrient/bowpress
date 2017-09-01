@@ -14,8 +14,8 @@
 		top: 0;
 		left: 2em;
 
-		width: 0; 
-		height: 0; 
+		width: 0;
+		height: 0;
 		border-left: 1.2em solid transparent;
 		border-right: 1.2em solid transparent;
 
@@ -55,40 +55,5 @@
 			background-color: $accent;
 			top: 2px;
 		}
-	}
-}
-
-@element '.newsletter-signup-module' and (min-width: 950px) {
-	.newsletter-signup-module form {
-		width: 50%;
-	}
-}
-
-@element '.newsletter-signup-module' and (max-width: 900px) {
-	.newsletter-signup-module {
-		font-size: 1.5rem;
-	}
-}
-
-@element '.newsletter-signup-module' and (max-width: 800px) {
-	.newsletter-signup-module {
-		display: block;
-	}
-
-	.newsletter-signup-module h1 {
-		display: block;
-		width: 100%;
-		margin-bottom: 0.5em;
-	}
-
-	.newsletter-signup-module form {
-		width: 100%;
-		margin: 0;
-	}
-}
-
-@element '.newsletter-signup-module' and (max-width: 500px) {
-	.newsletter-signup-module {
-		font-size: 1.2rem;
 	}
 }
