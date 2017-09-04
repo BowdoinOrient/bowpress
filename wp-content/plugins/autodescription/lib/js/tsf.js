@@ -8,7 +8,7 @@
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -30,6 +30,8 @@
 // @externs_url https://raw.githubusercontent.com/sybrew/the-seo-framework/master/lib/js/tsf.externs.js
 // ==/ClosureCompiler==
 // http://closure-compiler.appspot.com/home
+
+'use strict';
 
 /**
  * Holds The SEO Framework values in an object to avoid polluting global namespace.
@@ -183,17 +185,13 @@ window.tsf = {
 	 * @return {!jQuery} The jQuery doctitle ID's
 	 */
 	docTitles: function() {
-		'use strict';
-
 		/** Concept:
 		if ( this.docTitles.cache )
 			return this.docTitles.cache;
 
-		// converted to var in compiler.
 		let $doctitles = this.docTitles.cache = jQuery( "#autodescription_title, #autodescription-meta\\[doctitle\\], #autodescription-site-settings\\[homepage_title\\]" );
 		*/
 
-		// converted to var in compiler.
 		let $doctitles = jQuery( "#autodescription_title, #autodescription-meta\\[doctitle\\], #autodescription-site-settings\\[homepage_title\\]" );
 
 		return $doctitles;
@@ -209,17 +207,13 @@ window.tsf = {
 	 * @return {!jQuery} The jQuery description ID's
 	 */
 	docDescriptions: function() {
-		'use strict';
-
 		/** Concept:
 		if ( this.docDescriptions.cache )
 			return this.docDescriptions.cache;
 
-		// converted to var in compiler.
 		let $descriptions = this.docDescriptions.cache = jQuery( "#autodescription_description, #autodescription-meta\\[description\\], #autodescription-site-settings\\[homepage_description\\]" );
 		*/
 
-		// converted to var in compiler.
 		let $descriptions = jQuery( "#autodescription_description, #autodescription-meta\\[description\\], #autodescription-site-settings\\[homepage_description\\]" );
 
 		return $descriptions;
@@ -235,8 +229,6 @@ window.tsf = {
 	 * @return {(Boolean|null)} True on OK, false on cancel.
 	 */
 	confirm: function( text ) {
-		'use strict';
-
 		return confirm( text );
 	},
 
@@ -244,17 +236,18 @@ window.tsf = {
 	 * Description length counter.
 	 *
 	 * @since 2.2.4
+	 * @since 2.9.3 Refactored to plain JS for discovering performance bugs.
 	 *
 	 * @function
 	 * @param {!jQuery.Event} event
 	 * @return {undefined}
 	 */
 	updateCharacterCountDescription: function( event ) {
-		'use strict';
 
-		var $this = jQuery( event.target ),
-			calcLength = $this.val().length,
-			$counter = jQuery( '#' + tsf.escapeStr( event.target.id ) + '_chars' ),
+		let calcLength = event.target.value && event.target.value.length || 0,
+			item = document.getElementById( event.target.id + '_chars' ),
+			counterType = tsf.counterType,
+			additionsClass = tsf.additionsClass,
 			counterClass = '',
 			name = '',
 			output = '';
@@ -262,7 +255,7 @@ window.tsf = {
 		// Emptied input, get Description placeholder.
 		if ( 0 === calcLength ) {
 			//* Output length from placeholder.
-			calcLength = $this.prop( 'placeholder' ).length;
+			calcLength = event.target.placeholder && event.target.placeholder.length;
 		}
 
 		if ( calcLength < 100 || calcLength >= 175 ) {
@@ -276,19 +269,22 @@ window.tsf = {
 			name = tsf.getCounterName( 'good' );
 		}
 
-		if ( tsf.additionsClass )
-			counterClass += ' ' + tsf.additionsClass;
-
 		//* Not strict by design.
-		if ( ! tsf.counterType || 1 == tsf.counterType ) {
-			output = calcLength.toString();
-		} else if ( 2 == tsf.counterType ) {
+		if ( counterType < 2 ) {
+			output = calcLength;
+		} else if ( 2 == counterType ) {
 			output = name;
-		} else if ( 3 == tsf.counterType ) {
-			output = calcLength.toString() + ' - ' + name;
+		} else if ( 3 == counterType ) {
+			output = calcLength + ' - ' + name;
 		}
 
-		$counter.html( output ).removeClass().addClass( counterClass );
+		item.innerHTML = output;
+
+		if ( additionsClass )
+			counterClass += ' ' + additionsClass;
+
+		if ( item.className !== counterClass )
+			item.className = counterClass;
 	},
 
 	/**
@@ -301,14 +297,13 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	updateCharacterCountTitle: function( event ) {
-		'use strict';
 
 		var $this = jQuery( event.target ),
 			additions = tsf.params['titleAdditions'].length,
 			description = tsf.params['blogDescription'].length,
 			siteTitle = tsf.params['siteTitle'].length,
-			titleLength = $this.val().length,
-			placeholder = $this.prop( 'placeholder' ).length,
+			titleLength = event.target.value && event.target.value.length || 0,
+			placeholder = jQuery( event.target ).prop( 'placeholder' ).length,
 			tagline = jQuery( '#autodescription-site-settings\\[homepage_title_tagline\\]' ).val(),
 			seplen = 3,
 			$counter = jQuery( '#' + tsf.escapeStr( event.target.id ) + '_chars' ),
@@ -379,7 +374,7 @@ window.tsf = {
 			output = calcLength.toString() + ' - ' + name;
 		}
 
-		$counter.html( output ).removeClass().addClass( counterClass );
+		$counter.text( output ).removeClass().addClass( counterClass );
 	},
 
 	/**
@@ -393,10 +388,9 @@ window.tsf = {
 	 * @return {(String|null)} HTML to jQuery converted string
 	 */
 	escapeStr: function( str ) {
-		'use strict';
 
 		if ( str )
-			return str.replace( /([\[\]\/])/g,'\\$1');
+			return str.replace( /([\[\]\/])/g, '\\$1' );
 
 		return str;
 	},
@@ -411,9 +405,7 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	separatorSwitchTitle: function( event ) {
-		'use strict';
 
-		// converted to var in compiler.
 		let $sep = jQuery( ".tsf-sep-js" ),
 			val = jQuery( event.target ).val();
 
@@ -425,7 +417,7 @@ window.tsf = {
 		} else if ( 'dash' === val ) {
 			$sep.text( " - " );
 		} else {
-			$sep.html( " &" + val + "; " );
+			$sep.html( " &" + val + "; " ).text();
 		}
 	},
 
@@ -433,15 +425,14 @@ window.tsf = {
 	 * Dynamic Description separator replacement in metabox
 	 *
 	 * @since 2.3.4
+	 * @since 2.9.3 Removed sanitation on hardcoded input.
 	 *
 	 * @function
 	 * @param {!jQuery.Event} event
 	 * @return {undefined}
 	 */
 	separatorSwitchDesc: function( event ) {
-		'use strict';
 
-		// converted to var in compiler.
 		let $sep = jQuery( "#autodescription-descsep-js" ),
 			val = jQuery( event.target ).val();
 
@@ -450,7 +441,7 @@ window.tsf = {
 		} else if ( 'dash' === val ) {
 			$sep.text( " - " );
 		} else {
-			$sep.html( " &" + val + "; " );
+			$sep.html( " &" + val + "; " ).text();
 		}
 	},
 
@@ -463,14 +454,17 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	statusBarHover: function() {
-		'use strict';
 
-		// converted to var in compiler.
 		let $wrap = jQuery( '.tsf-seo-bar-inner-wrap' ).find( 'a' );
 
-		$wrap.on( 'mouseenter', tsf.statusBarHoverEnter );
-		$wrap.on( 'mousemove', tsf.statusBarHoverMove );
-		$wrap.on( 'mouseleave', tsf.statusBarHoverLeave );
+		$wrap.off( 'mouseenter mousemove mouseleave mouseout' );
+
+		$wrap.on( {
+			'mouseenter' : tsf.statusBarHoverEnter,
+			'mousemove'  : tsf.statusBarHoverMove,
+			'mouseleave' : tsf.statusBarHoverLeave,
+			'mouseout'   : tsf.statusBarHoverLeave,
+		} );
 	},
 
 	/**
@@ -483,9 +477,7 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	statusBarHoverEnter: function( event ) {
-		'use strict';
 
-		// converted to var in compiler.
 		let $this = jQuery( event.target ),
 			desc = $this.data( 'desc' );
 
@@ -508,7 +500,6 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	statusBarHoverMove: function( event ) {
-		'use strict';
 
 		var $this = jQuery( event.target ),
 			pagex = event.pageX,
@@ -540,28 +531,25 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	statusBarHoverLeave: function( event ) {
-		'use strict';
-
 		jQuery( event.target ).find( 'div.tsf-explanation-desc' ).remove();
 	},
 
 	/**
-	 * Remove Status bar desc if clicked outside (touch support)
+	 * Remove Status bar desc if clicked outside (touch support).
 	 *
-	 * @since 2.1.9
+	 * @since 2.9.3
 	 *
 	 * @function
-	 * @return {undefined}
+	 * @param {jQuery.event} event jQuery event
 	 */
-	removeDesc: function() {
-		'use strict';
+	touchRemoveDesc: function( event ) {
 
-		// converted to var in compiler.
-		let $target = jQuery( document.body.target ),
-			$desc = jQuery( '.tsf-seo-bar-inner-wrap a' );
+		let $target = jQuery( event.target ),
+			hasBalloon = $target.closest( '.tsf-seo-bar-inner-wrap a' ).length;
 
-		if ( ! $target.closest( $desc ).length )
-			$desc.find( 'div.tsf-explanation-desc' ).remove();
+		if ( ! hasBalloon ) {
+			$target.closest( '.tsf-seo-bar-inner-wrap a' ).find( 'div.tsf-explanation-desc' ).remove();
+		}
 	},
 
 	/**
@@ -577,26 +565,22 @@ window.tsf = {
 	 * @return {(undefined|null)}
 	 */
 	tabToggle: function( event ) {
-		'use strict';
 
 		let $this = jQuery( event.target );
 
 		if ( ! $this.is( ':checked' ) )
 			return;
 
-		// converted to var in compiler.
 		let target = $this.prop( 'id' ),
 			name = $this.prop( 'name' );
 
 		if ( typeof name !== 'undefined' ) {
-			// converted to var in compiler.
 			let activeClass = 'tsf-active-tab-content',
 				$newContent = jQuery( '#' + target + '-content' ),
 				$previousContent = jQuery( '.' + activeClass );
 
 			//* Only parse if old content isn't the new.
 			if ( ! $newContent.is( $previousContent ) && typeof $newContent !== 'undefined' ) {
-				// converted to var in compiler.
 				let $allContent = jQuery( '.' + name + '-content' );
 
 				$allContent.fadeOut( 150, function() {
@@ -622,27 +606,23 @@ window.tsf = {
 	 * @param {!jQuery.Event} event
 	 * @return {(undefined|null)}
 	 */
-	flexTabToggle : function( event ){
-		'use strict';
+	flexTabToggle : function( event ) {
 
 		let $this = jQuery( event.target );
 
 		if ( ! $this.is( ':checked' ) )
 			return;
 
-		// converted to var in compiler.
 		let target = $this.prop( 'id' ),
 			name = $this.prop( 'name' );
 
 		if ( typeof name !== 'undefined' ) {
-			// converted to var in compiler.
 			let activeClass = 'tsf-flex-tab-content-active',
 				$newContent = jQuery( '#' + target + '-content' ),
 				$previousContent = jQuery( '.' + activeClass );
 
 			//* Only parse if old content isn't the new.
 			if ( ! $newContent.is( $previousContent ) && typeof $newContent !== 'undefined' ) {
-				// converted to var in compiler.
 				let $allContent = jQuery( '.' + name + '-content' );
 
 				$allContent.fadeOut( 150, function() {
@@ -671,19 +651,16 @@ window.tsf = {
 
 		if ( tsf.hasInput ) {
 			if ( tsf.states['isSettingsPage'] ) {
-				// converted to var in compiler.
 				let $buttons = jQuery( '.tsf-nav-tab-wrapper .tsf-tab:nth-of-type(n+2) input:checked' );
 
 				// Select all second or later tabs that have attribute checked.
 				if ( $buttons.length ) {
 					$buttons.each( function( i ) {
-						// converted to var in compiler.
 						let $this = jQuery( this ),
 							target = $this.prop( 'id' ),
 							name = $this.prop( 'name' );
 
 						if ( typeof name !== 'undefined' ) {
-							// converted to var in compiler.
 							let activeClass = 'tsf-active-tab-content',
 								$newContent = jQuery( '#' + target + '-content' );
 
@@ -716,9 +693,7 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	taglineToggleTitle: function( event ) {
-		'use strict';
 
-		// converted to var in compiler.
 		let $this = jQuery( event.target ),
 			$tag = jQuery( '.tsf-custom-blogname-js' );
 
@@ -743,9 +718,7 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	taglineToggleDesc: function( event ) {
-		'use strict';
 
-		// converted to var in compiler.
 		let $this = jQuery( event.target ),
 			$tagDesc = jQuery( '#tsf-on-blogname-js' );
 
@@ -766,9 +739,7 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	titleLocationToggle: function( event ) {
-		'use strict';
 
-		// converted to var in compiler.
 		let val = jQuery( event.target ).val(),
 			$titleExampleLeft = jQuery( '.tsf-title-additions-example-left' ),
 			$titleExampleRight = jQuery( '.tsf-title-additions-example-right' );
@@ -792,9 +763,7 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	titlePrefixToggle: function( event ) {
-		'use strict';
 
-		// converted to var in compiler.
 		let $this = jQuery( event.target ),
 			$prefix = jQuery( '.tsf-title-prefix-example' );
 
@@ -815,9 +784,7 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	additionsToggleDesc: function( event ) {
-		'use strict';
 
-		// converted to var in compiler.
 		let $this = jQuery( event.target ),
 			$tagDesc = jQuery( '#tsf-description-additions-js' );
 
@@ -838,12 +805,10 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	taglineToggleOnload: function() {
-		'use strict';
 
 		if ( ! tsf.hasInput )
 			return;
 
-		// converted to var in compiler.
 		let $tagTitle = jQuery( '#tsf-title-tagline-toggle :input' ),
 			$title = jQuery( '.tsf-custom-blogname-js' ),
 			$tagDescAdditions = jQuery( '#tsf-description-additions-toggle :input' ),
@@ -889,12 +854,11 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	titleProp: function( event ) {
-		'use strict';
 
-		var val = jQuery( event.target ).val(),
+		let val = event.target.value || '',
 			$title = jQuery( '.tsf-custom-title-js' );
 
-		if ( val.length === 0 ) {
+		if ( 0 === val.length ) {
 			$title.text( tsf.params['siteTitle'] );
 		} else {
 			$title.text( val );
@@ -911,9 +875,8 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	taglineProp: function( event ) {
-		'use strict';
 
-		var val = jQuery( event.target ).val(),
+		var val = event.target.value || '',
 			$floatTag = jQuery( '.tsf-custom-tagline-js' ),
 			$target = jQuery( '#autodescription-site-settings\\[homepage_title\\]' ),
 			leftRight = jQuery( '#tsf-home-title-location input:checked' ).val(),
@@ -952,9 +915,7 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	taglinePropTrigger: function() {
-		'use strict';
 
-		// converted to var in compiler.
 		let settingsChangedCache = tsf.settingsChanged;
 
 		if ( tsf.states['isSettingsPage'] ) {
@@ -980,7 +941,6 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	taglinePropTriggerResize: function() {
-		'use strict';
 
 		let resizeTimeout = 0,
 			prevWidth = 0;
@@ -1017,9 +977,7 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	titleToggle: function() {
-		'use strict';
 
-		// converted to var in compiler.
 		let $this = jQuery( event.target ),
 			$tagDesc = jQuery( '.tsf-title-additions-js' );
 
@@ -1034,31 +992,40 @@ window.tsf = {
 	 * Have all form fields in The SEO Framework metaboxes set a dirty flag when changed.
 	 *
 	 * @since 2.0.0
+	 * @since 2.9.3 No longer heavily invokes change listeners after change has been set.
 	 *
 	 * @function
 	 * @return {undefined}
 	 */
 	attachUnsavedChangesListener: function() {
-		'use strict';
 
 		if ( ! tsf.hasInput )
 			return;
 
-		jQuery( '.tsf-metaboxes :input, #tsf-inpost-box .inside :input' ).not( '.tsf-tab :input, .tsf-flex-nav-tab :input' ).change( function() {
-			tsf.registerChange();
-		} );
+		//= Self calling and cancelling function.
+		let setUnsetChange = (function( event ) {
+			tsf.settingsChanged || tsf.registerChange();
+			jQuery( input ).not( except ).off( event.type, setUnsetChange );
+		});
 
-		jQuery( '.tsf-metaboxes input[type=text], .tsf-metaboxes textarea, #tsf-inpost-box .inside input[type=text], #tsf-inpost-box .inside textarea' ).not(
-			'.tsf-nav-tab-wrapper input, .tsf-flex-nav-tab-wrapper input' ).on( 'input', function() {
-			tsf.registerChange();
-		} );
+		//= Mouse input
+		let input = '.tsf-metaboxes :input, #tsf-inpost-box .inside :input',
+			except = '.tsf-tab :input, .tsf-flex-nav-tab :input';
+		jQuery( input ).not( except ).on( 'change', setUnsetChange );
 
+		//= Text input
+		input = '.tsf-metaboxes input[type=text], .tsf-metaboxes textarea, #tsf-inpost-box .inside input[type=text], #tsf-inpost-box .inside textarea';
+		except = '.tsf-nav-tab-wrapper input, .tsf-flex-nav-tab-wrapper input';
+		jQuery( input ).not( except ).on( 'input', setUnsetChange );
+
+		//= Alert caller (doesn't work well when leave alerts have been disabled)
 		window.onbeforeunload = function() {
 			if ( tsf.settingsChanged ) {
 				return tsf.i18n['saveAlert'];
 			}
 		};
 
+		//= Remove alert on saving object or delete calls.
 		jQuery( '.tsf-metaboxes input[type="submit"], #publishing-action input[type="submit"], #save-action input[type="submit"], a.submitdelete' ).click( function() {
 			window.onbeforeunload = null;
 		} );
@@ -1073,8 +1040,6 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	registerChange: function() {
-		'use strict';
-
 		tsf.settingsChanged = true;
 	},
 
@@ -1087,8 +1052,6 @@ window.tsf = {
 	 * @return {(Boolean|null)} True if reset should occur, false if not.
 	 */
 	confirmedReset: function() {
-		'use strict';
-
 		return confirm( tsf.i18n['confirmReset'] );
 	},
 
@@ -1102,9 +1065,7 @@ window.tsf = {
 	 * @return {(!jQuery|undefined)}
 	 */
 	dynamicPlaceholder: function( event ) {
-		'use strict';
 
-		// converted to var in compiler.
 		let hasAdditions = tsf.params['titleAdditions'].length,
 			$placeholder = jQuery( '#tsf-title-placeholder' );
 
@@ -1115,7 +1076,6 @@ window.tsf = {
 			return $placeholder.empty();
 		}
 
-		// converted to var in compiler.
 		let after = false,
 			check = jQuery( '#tsf-home-title-location input:checked' ).val(),
 			rtl = tsf.states['isRTL'],
@@ -1165,7 +1125,6 @@ window.tsf = {
 
 		if ( typeof $tagbox !== "undefined" && $tagbox.length > 0 && ! $tagbox.is( ':checked' ) ) {
 			//* We're on SEO Settings Page now, and tagline has been disabled.
-			// converted to var in compiler.
 			let $this = jQuery( event.target );
 
 			$this.css( 'text-indent', "initial" );
@@ -1175,7 +1134,6 @@ window.tsf = {
 				inputVal = $this.val(),
 				$offsetTest = jQuery( "#tsf-title-offset" );
 
-			// converted to var in compiler.
 			let offsetWidth = 0,
 				outerWidth = $this.outerWidth(),
 				heightPad = ( $this.outerHeight( true ) - $this.height() ) / 2,
@@ -1254,7 +1212,6 @@ window.tsf = {
 					if ( after ) {
 						$placeholder.css( pos, horPad + leftOffset + $offsetTest.width() + "px" );
 					} else {
-						// converted to var in compiler.
 						let indent = horPad + $placeholder.width();
 
 						if ( indent < 0 )
@@ -1277,16 +1234,13 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	selectTitleInput: function() {
-		'use strict';
 
-		// converted to var in compiler.
 		let $input = tsf.docTitles();
 
 		$input.focus();
 
 		if ( $input.setSelectionRange ) {
 			// Go to end times 2 if setSelectionRange exists.
-			// converted to var in compiler.
 			let length = $input.val().length * 2;
 			$input.setSelectionRange( length, length );
 		} else {
@@ -1304,12 +1258,10 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	triggerDescriptionOnLoad: function() {
-		'use strict';
 
 		if ( ! tsf.hasInput )
 			return;
 
-		// converted to var in compiler.
 		let $input = tsf.docDescriptions();
 
 		$input.trigger( 'input', tsf.updateCharacterCountDescription );
@@ -1324,12 +1276,10 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	triggerTitleOnLoad: function() {
-		'use strict';
 
 		if ( ! tsf.hasInput )
 			return;
 
-		// converted to var in compiler.
 		let $input = tsf.docTitles();
 
 		$input.trigger( 'input', tsf.updateCharacterCountTitle );
@@ -1344,8 +1294,6 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	onLoadUnregisterChange: function() {
-		'use strict';
-
 		//* Prevent trigger of settings change
 		tsf.settingsChanged = false;
 	},
@@ -1354,19 +1302,15 @@ window.tsf = {
 	 * Dismissible notices. Uses class .tsf-notice.
 	 *
 	 * @since 2.6.0
+	 * @since 2.9.3 Now correctly removes the node from DOM.
 	 *
 	 * @function
 	 * @param {!jQuery.Event} event
 	 * @return {undefined}
 	 */
 	dismissNotice: function( event ) {
-		'use strict';
-
-		// converted to var in compiler.
-		let $this = jQuery( event.target );
-
-		$this.parents( '.tsf-notice' ).slideUp( 200, function() {
-			$this.remove();
+		jQuery( event.target ).parents( '.tsf-notice' ).slideUp( 200, function() {
+			this.remove();
 		} );
 	},
 
@@ -1380,8 +1324,6 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	setAjaxLoader: function( target ) {
-		'use strict';
-
 		jQuery( target ).toggleClass( 'tsf-loading' );
 	},
 
@@ -1396,9 +1338,7 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	unsetAjaxLoader: function( target, success ) {
-		'use strict';
 
-		// converted to var in compiler.
 		let newclass = 'tsf-success',
 			fade = 2500;
 
@@ -1421,8 +1361,6 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	resetAjaxLoader: function( target ) {
-		'use strict';
-
 		jQuery( target ).stop().empty().prop( 'class', 'tsf-ajax' ).css( 'opacity', '1' ).removeProp( 'style' );
 	},
 
@@ -1436,7 +1374,6 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	counterUpdate: function( event ) {
-		'use strict';
 
 		// Count up, reset to 0 if needed. We have 4 options: 0, 1, 2, 3
 		tsf.counterType = tsf.counterType + 1;
@@ -1468,6 +1405,11 @@ window.tsf = {
 			async: true,
 			success: function( response ) {
 
+				/**
+				 * @TODO convert to json header and/or test for availability of response.type before parsing?
+				 * @see convertJSONResponse() @ https://github.com/sybrew/The-SEO-Framework-Extension-Manager/blob/master/lib/js/tsfem.js
+				 * @see send_json() @ https://github.com/sybrew/The-SEO-Framework-Extension-Manager/blob/master/inc/classes/core.class.php
+				 */
 				response = jQuery.parseJSON( response );
 
 				//* I could do value check, but that will simply lag behind. Unless an annoying execution delay is added.
@@ -1492,8 +1434,6 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	counterUpdatedResponse: function( target, success ) {
-		'use strict';
-
 		switch ( success ) {
 			case 0:
 				tsf.unsetAjaxLoader( target, false );
@@ -1517,12 +1457,10 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	additionsClassInit: function() {
-		'use strict';
 
 		if ( ! tsf.hasInput )
 			return;
 
-		// converted to var in compiler.
 		let counterType = tsf.counterType,
 			settingsChangedCache = tsf.settingsChanged;
 
@@ -1555,8 +1493,6 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	updateCounters: function() {
-		'use strict';
-
 		tsf.triggerTitleOnLoad();
 		tsf.triggerDescriptionOnLoad();
 	},
@@ -1571,8 +1507,6 @@ window.tsf = {
 	 * @return {String} name Human readable counter name.
 	 */
 	getCounterName: function( type ) {
-		'use strict';
-
 		return tsf.i18n[ type ];
 	},
 
@@ -1587,9 +1521,7 @@ window.tsf = {
 	 * @return {String} sep The converted separator.
 	 */
 	getSep: function( type ) {
-		'use strict';
 
-		// converted to var in compiler.
 		let sep = '',
 			retVal = '';
 
@@ -1648,7 +1580,6 @@ window.tsf = {
 	 * @return {(undefined|null)}
 	 */
 	openImageEditor: function( event ) {
-		'use strict';
 
 		if ( jQuery( event.target ).prop( 'disabled' ) || 'undefined' === typeof wp.media ) {
 			//* TODO error handling?
@@ -1693,47 +1624,51 @@ window.tsf = {
 			],
 		} );
 
-		frame.on( 'select', function() {
-			frame.setState( 'cropper' );
-		} );
+		let selectFunc = (function() {
+				frame.setState( 'cropper' );
+			} );
+		frame.off( 'select', selectFunc );
+		frame.on( 'select', selectFunc );
 
-		frame.on( 'cropped', function( croppedImage ) {
+		let croppedFunc = (function( croppedImage ) {
+				let url = croppedImage.url,
+					attachmentId = croppedImage.id,
+					w = croppedImage.width,
+					h = croppedImage.height;
 
-			// converted to var in compiler.
-			let url = croppedImage.url,
-				attachmentId = croppedImage.id,
-				w = croppedImage.width,
-				h = croppedImage.height;
+				// Send the attachment id to our hidden input. URL to explicit output.
+				jQuery( '#' + inputID + '-url' ).val( url );
+				jQuery( '#' + inputID + '-id' ).val( attachmentId );
+			} );
+		frame.off( 'cropped', croppedFunc );
+		frame.on( 'cropped', croppedFunc );
 
-			// Send the attachment id to our hidden input. URL to explicit output.
-			jQuery( '#' + inputID + '-url' ).val( url );
-			jQuery( '#' + inputID + '-id' ).val( attachmentId );
-		} );
+		let skippedcropFunc = (function( selection ) {
+				let url = selection.get( 'url' ),
+					attachmentId = selection.get( 'id' ),
+					w = selection.get( 'width' ),
+					h = selection.get( 'height' );
 
-		frame.on( 'skippedcrop', function( selection ) {
+				// Send the attachment id to our hidden input. URL to explicit output.
+				jQuery( '#' + inputID + '-url' ).val( url );
+				jQuery( '#' + inputID + '-id' ).val( attachmentId );
+			} );
+		frame.off( 'skippedcrop', skippedcropFunc );
+		frame.on( 'skippedcrop', skippedcropFunc );
 
-			// converted to var in compiler.
-			let url = selection.get( 'url' ),
-				attachmentId = selection.get( 'id' ),
-				w = selection.get( 'width' ),
-				h = selection.get( 'height' );
+		let doneFunc = (function( imageSelection ) {
+				jQuery( '#' + inputID + '-select' ).text( tsf.other[ inputID ]['change'] );
+				jQuery( '#' + inputID + '-url' ).prop( 'readonly', true ).css( 'opacity', 0 ).animate(
+					{ 'opacity' : 1 },
+					{ 'queue' : true, 'duration' : 1000 },
+					'swing'
+				);
 
-			// Send the attachment id to our hidden input. URL to explicit output.
-			jQuery( '#' + inputID + '-url' ).val( url );
-			jQuery( '#' + inputID + '-id' ).val( attachmentId );
-		} );
-
-		frame.on( 'skippedcrop cropped', function( imageSelection ) {
-			jQuery( '#' + inputID + '-select' ).text( tsf.other[ inputID ]['change'] );
-			jQuery( '#' + inputID + '-url' ).prop( 'readonly', true ).css( 'opacity', 0 ).animate(
-				{ 'opacity' : 1 },
-				{ 'queue' : true, 'duration' : 1000 },
-				'swing'
-			);
-
-			tsf.appendRemoveButton( $target, inputID, true );
-			tsf.registerChange();
-		} );
+				tsf.appendRemoveButton( $target, inputID, true );
+				tsf.registerChange();
+			} );
+		frame.off( 'skippedcrop cropped', doneFunc );
+		frame.on( 'skippedcrop cropped', doneFunc );
 
 		frame.open();
 	},
@@ -1749,7 +1684,6 @@ window.tsf = {
 	 * @return {(undefined|null)}
 	 */
 	appendRemoveButton: function( target, inputID, animate ) {
-		'use strict';
 
 		if ( target && inputID ) {
 			if ( ! jQuery( '#' + inputID + '-remove' ).length ) {
@@ -1783,7 +1717,6 @@ window.tsf = {
 	 * @return {(undefined|null)}
 	 */
 	removeEditorImage: function( event ) {
-		'use strict';
 
 		var $target = jQuery( event.target ),
 			inputID = $target.data( 'inputid' );
@@ -1819,7 +1752,6 @@ window.tsf = {
 	 * @return {(undefined|null)}
 	 */
 	extendCropper: function() {
-		'use strict';
 
 		if ( 'undefined' !== typeof tsf.cropper.control )
 			return;
@@ -1835,7 +1767,6 @@ window.tsf = {
 		 * @augments Backbone.Model
 		 */
 		var TSFCropper;
-		// converted to var in compiler.
 		let Controller = wp.media.controller;
 
 		TSFCropper = Controller.Cropper.extend( {
@@ -1889,8 +1820,8 @@ window.tsf = {
 		TSFCropper.prototype.control = {};
 		TSFCropper.control = {
 			'params' : {
-				'flex_width' : 1500,
-				'flex_height' : 1500,
+				'flex_width' : 4096,
+				'flex_height' : 4096,
 				'width' : 1200,
 				'height' : 630,
 			},
@@ -1906,15 +1837,15 @@ window.tsf = {
 	 * control-specific data, to be fed to the imgAreaSelect plugin in
 	 * wp.media.view.Cropper.
 	 *
+	 * @since 2.8.0
+	 *
 	 * @function
 	 * @param {wp.media.model.Attachment} attachment
 	 * @param {wp.media.controller.Cropper} controller
 	 * @return {Object} imgSelectOptions
 	 */
 	calculateImageSelectOptions: function( attachment, controller ) {
-		'use strict';
 
-		// converted to var in compiler.
 		let control = tsf.cropper.control;
 
 		var flexWidth  = !! parseInt( control.params.flex_width, 10 ),
@@ -1922,7 +1853,6 @@ window.tsf = {
 			xInit = parseInt( control.params.width, 10 ),
 			yInit = parseInt( control.params.height, 10 );
 
-		// converted to var in compiler.
 		let realWidth  = attachment.get( 'width' ),
 			realHeight = attachment.get( 'height' ),
 			ratio = xInit / yInit,
@@ -1967,6 +1897,7 @@ window.tsf = {
 
 		// @TODO Convert set img min-width/height to output ratio.
 		// i.e. 200x2000 will become x = 1500/2000*200 = 150px, which is too small.
+		//= Unlikely...
 
 		if ( true === flexHeight ) {
 			imgSelectOptions.minHeight = 200;
@@ -1985,6 +1916,8 @@ window.tsf = {
 	 * Return whether the image must be cropped, based on required dimensions.
 	 * Disregards flexWidth/Height.
 	 *
+	 * @since 2.8.0
+	 *
 	 * @function
 	 * @param {Number} dstW
 	 * @param {Number} dstH
@@ -1993,7 +1926,6 @@ window.tsf = {
 	 * @return {Boolean}
 	 */
 	mustBeCropped: function( dstW, dstH, imgW, imgH ) {
-		'use strict';
 
 		if ( imgW <= dstW && imgH <= dstH )
 			return false;
@@ -2010,8 +1942,7 @@ window.tsf = {
 	 * @return {(undefined|null)}
 	 */
 	resetImageEditorActions: function() {
-		'use strict';
-
+		jQuery( '.tsf-remove-social-image' ).off( 'click', tsf.removeEditorImage );
 		jQuery( '.tsf-remove-social-image' ).on( 'click', tsf.removeEditorImage );
 	},
 
@@ -2024,8 +1955,8 @@ window.tsf = {
 	 * @return {(undefined|null)}
 	 */
 	setupImageEditorActions: function() {
-		'use strict';
-
+		jQuery( '.tsf-set-social-image' ).off( 'click', tsf.openImageEditor );
+		jQuery( '.tsf-remove-social-image' ).off( 'click', tsf.removeEditorImage );
 		jQuery( '.tsf-set-social-image' ).on( 'click', tsf.openImageEditor );
 		jQuery( '.tsf-remove-social-image' ).on( 'click', tsf.removeEditorImage );
 	},
@@ -2039,9 +1970,7 @@ window.tsf = {
 	 * @return {(undefined|null)}
 	 */
 	checkImageEditorInput: function() {
-		'use strict';
 
-		// converted to var in compiler.
 		let $buttons = jQuery( '.tsf-set-social-image' );
 
 		if ( $buttons.length ) {
@@ -2073,14 +2002,11 @@ window.tsf = {
 	 * @return {(undefined|null)}
 	 */
 	setColorOnload: function() {
-		'use strict';
 
-		// converted to var in compiler.
 		let $selectors = jQuery( '.tsf-color-picker' );
 
 		if ( $selectors.length ) {
 			jQuery.each( $selectors, function( index, value ) {
-				// converted to var in compiler.
 				let $input = jQuery( value ),
 					currentColor = '',
 					defaultColor = $input.data( 'tsf-default-color' );
@@ -2119,7 +2045,6 @@ window.tsf = {
 	 * @return {(undefined|null)}
 	 */
 	setupVars: function() {
-		'use strict';
 
 		//The current title separator.
 		tsf.titleSeparator = tsf.params['titleSeparator'];
@@ -2146,7 +2071,6 @@ window.tsf = {
 	 * @return {(undefined|null)}
 	 */
 	_initTitlepropListener: function() {
-		'use strict';
 
 		if ( tsf.hasInput ) {
 			let jQ = jQuery;
@@ -2196,7 +2120,6 @@ window.tsf = {
 	 * @return {(undefined|null)}
 	 */
 	_doFlexResizeListener: function() {
-		'use strict';
 
 		if ( ! jQuery( '.tsf-flex' ).length )
 			return;
@@ -2216,9 +2139,7 @@ window.tsf = {
 			clearTimeout( resizeTimeout );
 
 			// Onload delays are 0, after than it's 10, 20 and 30 respectively.
-			let _delay = 0,
-				__delay = 0,
-				___delay = 0;
+			let _delay = 0;
 
 			resizeTimeout = setTimeout( function() {
 				if ( $tabWrapper.length ) {
@@ -2263,20 +2184,18 @@ window.tsf = {
 							$navName.fadeIn( 250 );
 							$lastWidth.tabWrapper.shown = 1;
 						}
-					}, __delay );
+					}, _delay * 2 );
 
 					// Wait for an additional 10 ms for slow browsers.
 					setTimeout( function() {
 						$lastWidth.tabWrapper.outer = outerWrapWidth;
 						$lastWidth.tabWrapper.inner = innerWrapWidth;
-					}, ___delay );
+					}, _delay * 3 );
 				}
 			}, timeOut );
 
 			// Update future timeouts.
 			_delay = 10;
-			__delay = 20;
-			___delay = 30;
 			timeOut = 75;
 		} );
 
@@ -2322,8 +2241,6 @@ window.tsf = {
 	 * @function
 	 */
 	_triggerReady: function() {
-		'use strict';
-
 		jQuery( document.body ).trigger( 'tsf-ready' );
 	},
 
@@ -2346,7 +2263,6 @@ window.tsf = {
 	 * @return {undefined}
 	 */
 	ready: function( jQ ) {
-		'use strict';
 
 		// Set up object parameters.
 		tsf.setupVars();
@@ -2395,7 +2311,7 @@ window.tsf = {
 		jQ( document.body ).ready( tsf._doFlexResizeListener );
 
 		// Initialize status bar removal hover for touch screens.
-		jQ( document.body ).on( 'click touchstart MSPointerDown', tsf.removeDesc );
+		jQ( document.body ).on( 'click touchstart MSPointerDown', tsf.touchRemoveDesc );
 
 		// Bind character counters.
 		tsf.docDescriptions().on( 'input', tsf.updateCharacterCountDescription );
@@ -2424,7 +2340,6 @@ window.tsf = {
 
 		// AJAX counter
 		jQ( '.tsf-counter' ).on( 'click', tsf.counterUpdate );
-
 	}
 };
 jQuery( tsf.ready );

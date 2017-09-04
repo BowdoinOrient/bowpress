@@ -14,8 +14,6 @@ function wpcf7_add_form_tag_date() {
 }
 
 function wpcf7_date_form_tag_handler( $tag ) {
-	$tag = new WPCF7_FormTag( $tag );
-
 	if ( empty( $tag->name ) ) {
 		return '';
 	}
@@ -34,7 +32,7 @@ function wpcf7_date_form_tag_handler( $tag ) {
 
 	$atts['class'] = $tag->get_class_option( $class );
 	$atts['id'] = $tag->get_id_option();
-	$atts['tabindex'] = $tag->get_option( 'tabindex', 'int', true );
+	$atts['tabindex'] = $tag->get_option( 'tabindex', 'signed_int', true );
 	$atts['min'] = $tag->get_date_option( 'min' );
 	$atts['max'] = $tag->get_date_option( 'max' );
 	$atts['step'] = $tag->get_option( 'step', 'int', true );
@@ -86,8 +84,6 @@ add_filter( 'wpcf7_validate_date', 'wpcf7_date_validation_filter', 10, 2 );
 add_filter( 'wpcf7_validate_date*', 'wpcf7_date_validation_filter', 10, 2 );
 
 function wpcf7_date_validation_filter( $result, $tag ) {
-	$tag = new WPCF7_FormTag( $tag );
-
 	$name = $tag->name;
 
 	$min = $tag->get_date_option( 'min' );
@@ -130,7 +126,8 @@ function wpcf7_date_messages( $messages ) {
 		'date_too_late' => array(
 			'description' => __( "Date is later than maximum limit", 'contact-form-7' ),
 			'default' => __( "The date is after the latest one allowed.", 'contact-form-7' )
-		) ) );
+		),
+	) );
 }
 
 

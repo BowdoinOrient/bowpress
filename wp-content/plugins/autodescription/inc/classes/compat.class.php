@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -54,6 +54,8 @@ class Compat extends Core {
 	 * rather than common paths. As they can require manual FTP upload.
 	 *
 	 * @since 2.8.0
+	 * @TODO Add transients that will bypass all these checks.
+	 *       Careful, recheck on each activation -- and even FTP deletion.
 	 */
 	protected function load_early_compat_files() {
 
@@ -76,7 +78,10 @@ class Compat extends Core {
 			}
 		}
 
-		if ( $this->detect_plugin( array( 'constants' => array( 'ICL_LANGUAGE_CODE' ) ) ) ) {
+		if ( $this->detect_plugin( array( 'globals' => array( 'polylang' ) ) ) ) {
+			//* PolyLang... it includes compat for WPML, but let's see how this works for now.
+			$this->_include_compat( 'polylang', 'plugin' );
+		} elseif ( $this->detect_plugin( array( 'constants' => array( 'ICL_LANGUAGE_CODE' ) ) ) ) {
 			//* WPML
 			$this->_include_compat( 'wpml', 'plugin' );
 		} elseif ( $this->detect_plugin( array( 'constants' => array( 'QTX_VERSION' ) ) ) ) {
@@ -92,6 +97,9 @@ class Compat extends Core {
 		if ( $this->detect_plugin( array( 'functions' => array( 'bbpress' ) ) ) ) {
 			//* bbPress
 			$this->_include_compat( 'bbpress', 'plugin' );
+		} elseif ( $this->detect_plugin( array( 'constants' => array( 'WPFORO_BASENAME' ) ) ) ) {
+			//* wpForo
+			$this->_include_compat( 'wpforo', 'plugin' );
 		}
 	}
 

@@ -7,7 +7,7 @@ namespace The_SEO_Framework;
 defined( 'ABSPATH' ) and $_this = \the_seo_framework_class() and $this instanceof $_this or die;
 
 /**
- * Warns homepage global title and description about recieving input.
+ * Warns homepage global title and description about receiving input.
  *
  * @since 1.0.0
  */
@@ -19,6 +19,7 @@ defined( 'ABSPATH' ) and $_this = \the_seo_framework_class() and $this instanceo
  * Filters the canonical URL path.
  *
  * @since 2.8.0
+ * @since 2.9.2 : Now passes $external paramerer
  * @access private
  *
  * @param string $path the URL path.
@@ -27,35 +28,48 @@ defined( 'ABSPATH' ) and $_this = \the_seo_framework_class() and $this instanceo
  * @return string The URL path.
  */
 function _wpml_filter_url_path( $path = '', $id = 0, $external = false ) {
-	return \The_SEO_Framework\_wmpl_get_relative_url( $path, $id );
+	return \The_SEO_Framework\_wmpl_get_relative_url( $path, $id, $external );
 }
 
 /**
  * Generate relative WPML url.
  *
  * @since 2.4.3
+ * @since 2.9.2 : 1. Added $is_external staticvar.
+ *              : 2. Added $current_language staticvar.
+ *              : 3. Cached $current_language through WPML determination, improving performance.
+ *              : 4. Can now receive $external parameter.
+ *
+ * @staticvar bool $is_external
  * @staticvar bool $gli_exists
  * @staticvar string $default_lang
+ * @staticvar string $current_language
+ * @staticvar string $lang_code
  * @global object $sitepress
  * @NOTE: Handles full path, including home directory.
  * @access private
  *
  * @param string $path The current path.
  * @param int $post_id The Post ID.
+ * @param bool $external Whether the call is made from outside the current ID scope.
  * @return relative path for WPML urls.
  */
-function _wmpl_get_relative_url( $path = '', $post_id = '' ) {
+function _wmpl_get_relative_url( $path = '', $post_id = '', $external = false ) {
 	global $sitepress;
+
+	if ( ! is_object( $sitepress ) )
+		return $path;
+
+	static $is_external = null;
+	if ( null === $is_external )
+		$is_external = \the_seo_framework()->is_sitemap() || \the_seo_framework()->is_robots();
 
 	//* Reset cache.
 	\the_seo_framework()->url_slashit = true;
 	\the_seo_framework()->unset_current_subdomain();
 
-	if ( ! isset( $sitepress ) )
-		return $path;
-
 	static $gli_exists = null;
-	if ( is_null( $gli_exists ) )
+	if ( null === $gli_exists )
 		$gli_exists = function_exists( 'wpml_get_language_information' );
 
 	if ( false === $gli_exists )
@@ -66,35 +80,47 @@ function _wmpl_get_relative_url( $path = '', $post_id = '' ) {
 
 	//* Cache default language.
 	static $default_lang = null;
-	if ( is_null( $default_lang ) )
-		$default_lang = $sitepress->get_default_language();
+	if ( null === $default_lang )
+		$default_lang = is_callable( array( $sitepress, 'get_default_language' ) ) ? $sitepress->get_default_language() : '';
 
-	/**
-	 * Applies filters wpml_post_language_details : array|wp_error
-	 *
-	 * ... Somehow WPML thought this would be great and understandable.
-	 * This should be put inside a callable function.
-	 * @since 2.6.0
-	 */
-	$lang_info = \apply_filters( 'wpml_post_language_details', null, $post_id );
+	//* Cache current language.
+	static $current_language = null;
+	if ( null === $current_language )
+		$current_language = ! ( $is_external || $external ) && is_callable( array( $sitepress, 'get_current_language' ) ) ? $sitepress->get_current_language() : '';
 
-	if ( \is_wp_error( $lang_info ) ) {
-		//* Terms and Taxonomies.
-		$lang_info = array();
+	if ( empty( $current_language ) ) {
+		/**
+		 * Applies filters 'wpml_post_language_details' : array|wp_error
+		 *
+		 * Only works for singular items.
+		 *
+		 * ... Somehow WPML thought this would be great and understandable.
+		 * This should be put inside a callable function.
+		 *
+		 * @since 2.6.0
+		 */
+		$lang_info = \apply_filters( 'wpml_post_language_details', null, $post_id );
 
-		//* Cache the code.
-		static $lang_code = null;
-		if ( is_null( $lang_code ) && defined( 'ICL_LANGUAGE_CODE' ) )
-			$lang_code = ICL_LANGUAGE_CODE;
+		if ( \is_wp_error( $lang_info ) ) {
+			//* Terms and Taxonomies.
+			$lang_info = array();
 
-		$lang_info['language_code'] = $lang_code;
+			//* Cache the code.
+			static $lang_code = null;
+			if ( null === $lang_code )
+				$lang_code = defined( 'ICL_LANGUAGE_CODE' ) ? ICL_LANGUAGE_CODE : false;
+
+			$lang_info['language_code'] = $lang_code;
+		}
+
+		//* If filter isn't used, bail.
+		if ( empty( $lang_info['language_code'] ) )
+			return $path;
+
+		$current_lang = $lang_info['language_code'];
+	} else {
+		$current_lang = $current_language;
 	}
-
-	//* If filter isn't used, bail.
-	if ( false === isset( $lang_info['language_code'] ) )
-		return $path;
-
-	$current_lang = $lang_info['language_code'];
 
 	//* No need to alter URL if we're on default lang.
 	if ( $current_lang === $default_lang )
@@ -102,8 +128,8 @@ function _wmpl_get_relative_url( $path = '', $post_id = '' ) {
 
 	//* Cache negotiation type.
 	static $negotiation_type = null;
-	if ( is_null( $negotiation_type ) )
-		$negotiation_type = $sitepress->get_setting( 'language_negotiation_type' );
+	if ( null === $negotiation_type )
+		$negotiation_type = is_callable( array( $sitepress, 'get_current_language' ) ) ? $sitepress->get_setting( 'language_negotiation_type' ) : '';
 
 	switch ( $negotiation_type ) :
 		case '1' :

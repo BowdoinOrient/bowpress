@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -67,6 +67,7 @@ class Doing_It_Right extends Generate_Ldjson {
 	 * Adds post states in post/page edit.php query
 	 *
 	 * @since 2.1.0
+	 * @since 2.9.4 Now listens to `alter_search_query` and `alter_archive_query` options.
 	 *
 	 * @param array $states The current post states array
 	 * @param object $post The Post Object.
@@ -76,10 +77,14 @@ class Doing_It_Right extends Generate_Ldjson {
 		$post_id = isset( $post->ID ) ? $post->ID : false;
 
 		if ( $post_id ) {
-			$searchexclude = (bool) $this->get_custom_field( 'exclude_local_search', $post_id );
+			$search_exclude = $this->get_option( 'alter_search_query' ) && $this->get_custom_field( 'exclude_local_search', $post_id );
+			$archive_exclude = $this->get_option( 'alter_archive_query' ) && $this->get_custom_field( 'exclude_from_archive', $post_id );
 
-			if ( $searchexclude )
+			if ( $search_exclude )
 				$states[] = \esc_html__( 'No Search', 'autodescription' );
+
+			if ( $archive_exclude )
+				$states[] = \esc_html__( 'No Archive', 'autodescription' );
 		}
 
 		return $states;
@@ -689,13 +694,13 @@ class Doing_It_Right extends Generate_Ldjson {
 	 *
 	 * @param array $args The term args.
 	 * @return array $data {
-	 *	 'title' => $title,
-	 *	 'title_is_from_custom_field' => $title_is_from_custom_field,
-	 *	 'description' => $description,
-	 *	 'description_is_from_custom_field' => $description_is_from_custom_field,
-	 *	 'noindex' => $noindex,
-	 *	 'nofollow' => $nofollow,
-	 *	 'noarchive' => $noarchive
+	 *    $title,
+	 *    $title_is_from_custom_field,
+	 *    $description,
+	 *    $description_is_from_custom_field,
+	 *    $noindex,
+	 *    $nofollow,
+	 *    $noarchive
 	 * }
 	 */
 	protected function the_seo_bar_term_data( $args ) {
@@ -739,14 +744,14 @@ class Doing_It_Right extends Generate_Ldjson {
 		$nofollow = (bool) $nofollow;
 		$noarchive = (bool) $noarchive;
 
-		return array(
-			'title' => $title,
-			'title_is_from_custom_field' => $title_is_from_custom_field,
-			'description' => $description,
-			'description_is_from_custom_field' => $description_is_from_custom_field,
-			'noindex' => $noindex,
-			'nofollow' => $nofollow,
-			'noarchive' => $noarchive,
+		return compact(
+			'title',
+			'title_is_from_custom_field',
+			'description',
+			'description_is_from_custom_field',
+			'noindex',
+			'nofollow',
+			'noarchive'
 		);
 	}
 
@@ -759,13 +764,13 @@ class Doing_It_Right extends Generate_Ldjson {
 	 *
 	 * @param array $args The post args.
 	 * @return array $data {
-	 *	 'title' => $title,
-	 *	 'title_is_from_custom_field' => $title_is_from_custom_field,
-	 *	 'description' => $description,
-	 *	 'description_is_from_custom_field' => $description_is_from_custom_field,
-	 *	 'noindex' => $noindex,
-	 *	 'nofollow' => $nofollow,
-	 *	 'noarchive' => $noarchive
+	 *    $title,
+	 *    $title_is_from_custom_field,
+	 *    $description,
+	 *    $description_is_from_custom_field,
+	 *    $noindex,
+	 *    $nofollow,
+	 *    $noarchive
 	 * }
 	 */
 	protected function the_seo_bar_post_data( $args ) {
@@ -805,14 +810,14 @@ class Doing_It_Right extends Generate_Ldjson {
 		$nofollow = (bool) $nofollow;
 		$noarchive = (bool) $noarchive;
 
-		return array(
-			'title' => $title,
-			'title_is_from_custom_field' => $title_is_from_custom_field,
-			'description' => $description,
-			'description_is_from_custom_field' => $description_is_from_custom_field,
-			'noindex' => $noindex,
-			'nofollow' => $nofollow,
-			'noarchive' => $noarchive,
+		return compact(
+			'title',
+			'title_is_from_custom_field',
+			'description',
+			'description_is_from_custom_field',
+			'noindex',
+			'nofollow',
+			'noarchive'
 		);
 	}
 
@@ -1048,10 +1053,10 @@ class Doing_It_Right extends Generate_Ldjson {
 					 */
 					$desc_value = ctype_upper( $desc_value ) ? $desc_value : ucfirst( $desc_value );
 
-					/* translators: 1: Word, 2: Occurences */
+					/* translators: 1: Word, 2: Occurrences */
 					$notice .= sprintf( \esc_attr__( '%1$s is used %2$d times.', 'autodescription' ), '<span>' . $desc_value . '</span>', $desc_count );
 
-					//* Don't add break at last occurence.
+					//* Don't add break at last occurrence.
 					$notice .= $i === $count ? '' : '<br>';
 					$i++;
 				}

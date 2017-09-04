@@ -2,11 +2,11 @@
 Contributors: takayukister
 Donate link: https://contactform7.com/donate/
 Tags: contact, form, contact form, feedback, email, ajax, captcha, akismet, multilingual
-Requires at least: 4.6
-Tested up to: 4.7.2
-Stable tag: 4.7
+Requires at least: 4.7
+Tested up to: 4.8.1
+Stable tag: 4.9
 License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Just another contact form plugin. Simple but flexible.
 
@@ -62,28 +62,34 @@ Do you have questions or issues with Contact Form 7? Use these support channels 
 
 For more information, see [Releases](https://contactform7.com/category/releases/).
 
-= 4.7 =
+= 4.9 =
 
-* Added REST API custom endpoints to manipulate contact form data.
-* Config Validator: Added test items for field names and attachment file paths.
-* Added custom DOM events: `wpcf7invalid`, `wpcf7spam`, `wpcf7mailsent`, `wpcf7mailfailed` and `wpcf7submit`.
-* New action hook: `wpcf7_after_flamingo`.
-* Added `size` option to `select` and `select*` form-tag types.
-* Made it possible to use the 3rd parameter of `wpcf7_add_form_tag()` to specify "features" of the form-tag type.
+* Supports subscribers_only setting
+* Changes the default value of WPCF7_VERIFY_NONCE to false
+* WPCF7_FormTagsManager::collect_tag_types() supports invert option
+* New filter hooks: wpcf7_verify_nonce, wpcf7_subscribers_only_notice, wpcf7_remote_ip_addr, and wpcf7_submission_is_blacklisted
+* Fixed: Form-tag's tabindex option did not accept 0 or negative integer values
+* Shows a validation error when no option in a radio buttons group is checked
+* Config validator: Adds a validation rule against the use of deprecated settings (on_sent_ok and on_submit)
+* Allows to pass the skip_mail option through the WPCF7_ContactForm::submit() and WPCF7_Submission::get_instance() function parameters.
+* Triggers wpcf7beforesubmit custom DOM event. You can manipulate the formData object through an event handler.
 
-= 4.6.1 =
+= 4.8.1 =
 
-* Fixed: "0" input could pass the `minlength` validation.
-* Fixed: `exclude_blank` option was applied to all mail fields, not only to the message body.
-* Fixed: `wpcf7_autop()` incorrectly inserted `<br />` around hidden and block-type form-tags.
-* Fixed: Applying `strtolower()` to uploaded file names was unnecessary and could cause troubles in a non-English environment.
+* wpcf7.initForm JavaScript function added to isolate form initialization process.
+* Fix response message duplication caused by repeated click on submit button.
+* Clear $phpmailer->AltBody to avoid unintended inheritance from previous wp_mail() calls.
+* Fix incorrect character count of textarea input.
+* Akismet: Exclude the comment_author, comment_author_email, and comment_author_url values from the comment_content value.
+* REST API: More reliable approach to build route URLs.
+* Include free_text inputs into event.detail.inputs.
 
-= 4.6 =
+= 4.8 =
 
-* Ajax loader: HTML markup changed to `<span>` to be easily customizable with CSS.
-* Appends a proper header and footer to HTML mail content automatically.
-* `[_serial_number]` special mail-tag.
-* New form-tag type for hidden fields.
-* `default:shortcode_attr` form-tag option.
-* `WPCF7_Shortcode`, `WPCF7_ShortcodeManager`, `wpcf7_add_shortcode()`, `wpcf7_scan_shortcode()`, and some other classes and functions have become deprecated.
-* Removed all language files from the _languages_ folder. Translations have moved to [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/contact-form-7).
+* Stopped using jquery.form.js.
+* Added custom REST API endpoints for Ajax form submissions.
+* WPCF7_FormTag class implements ArrayAccess interface.
+* WPCF7_FormTagsManager::filter() filters form-tags based on features they support.
+* New form-tag features: do-not-store, display-block, and display-hidden
+* Removed inappropriate content from h1 headings.
+* Added the support of size:invisible option to the reCAPTCHA form-tag.

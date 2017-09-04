@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -45,7 +45,7 @@ class Site_Options extends Sanitize {
 	 * Hold the SEO Settings Page ID for this plugin.
 	 *
 	 * @since 2.2.2
-	 * @since 2.70 Renamed var from page_id and made public.
+	 * @since 2.7.0 Renamed var from page_id and made public.
 	 *
 	 * @var string The page ID
 	 */
@@ -105,8 +105,14 @@ class Site_Options extends Sanitize {
 		 */
 		return array(
 			// General. Performance.
-			'cache_meta_description' => 1, // Description transient cache.
-			'cache_meta_schema'      => 1, // Schema.org transient cache.
+			'alter_search_query' => 1, // Search query adjustments.
+			'alter_archive_query' => 1, // Archive query adjustments.
+
+			'alter_archive_query_type' => 'in_query', // Archive query type.
+			'alter_search_query_type' => 'in_query', // Search query type.
+
+			'cache_meta_description' => 0, // Description transient cache.
+			'cache_meta_schema'      => 0, // Schema.org transient cache.
 			'cache_sitemap'          => 1, // Sitemap transient cache.
 			'cache_object'           => 1, // Object caching.
 
@@ -127,7 +133,7 @@ class Site_Options extends Sanitize {
 			'description_separator' => 'pipe', // Description separator, dropdown
 			'description_additions' => 1,  // "Title on Blogname" within Description
 			'description_blogname'  => 1,  // "on Blogname" within Description
-		//	'description_custom'    => '', // Custom prefix
+		//	'description_custom'    => '', // Custom prefix TODO
 
 			// Robots directory.
 			'noodp'  => 1, // Site noopd robots settings
@@ -399,7 +405,12 @@ class Site_Options extends Sanitize {
 	 */
 	protected function pre_output_site_updated_plugin_notice() {
 
-		if ( $this->is_seo_settings_page( false ) ) {
+		/**
+		 * Security check:
+		 * Only checks for extra parameters. Then redirects further to only output
+		 * notice. User capability is checked beforehand.
+		 */
+		if ( \current_user_can( $this->settings_capability() ) && $this->is_seo_settings_page( false ) ) {
 			//* Redirect to current page if on options page to correct option values. Once.
 			if ( ! isset( $_REQUEST['tsf-settings-updated'] ) || 'true' !== $_REQUEST['tsf-settings-updated'] )
 				$this->admin_redirect( $this->seo_settings_page_slug, array( 'tsf-settings-updated' => 'true' ) );
@@ -456,17 +467,19 @@ class Site_Options extends Sanitize {
 	 * Return current option array.
 	 *
 	 * @since 2.6.0
-	 * @since 2.9.0 Added $use_cache parameter.
+	 * @since 2.9.2 Added $use_current parameter.
 	 * @staticvar array $cache The option cache.
 	 *
 	 * @param string $setting The setting key.
+	 * @param bool $use_current Whether to use WordPress' version and update the cache
+	 *             or use locally the cached version.
 	 * @return array Options.
 	 */
-	public function get_all_options( $setting = null ) {
+	public function get_all_options( $setting = null, $use_current = false ) {
 
 		static $cache = array();
 
-		if ( isset( $cache[ $setting ] ) )
+		if ( ! $use_current && isset( $cache[ $setting ] ) )
 			return $cache[ $setting ];
 
 		if ( is_null( $setting ) )
@@ -536,6 +549,9 @@ class Site_Options extends Sanitize {
 	 * @since 2.2.2
 	 * @uses $this->the_seo_framework_get_option() Return option from the options table and cache result.
 	 * @uses THE_SEO_FRAMEWORK_NETWORK_OPTIONS
+	 *
+	 * Unused.
+	 * @todo deprecate.
 	 *
 	 * @param string  $key       Option name.
 	 * @param boolean $use_cache Optional. Whether to use the cache value or not. Defaults to true.
@@ -619,8 +635,8 @@ class Site_Options extends Sanitize {
 	 */
 	public function register_settings() {
 
-		//* If this page doesn't store settings, no need to register them
-		if ( empty( $this->settings_field ) )
+		//* If the settings field doesn't exist, we can't register it.
+		if ( ! $this->settings_field )
 			return;
 
 		\register_setting( $this->settings_field, $this->settings_field );
@@ -639,7 +655,13 @@ class Site_Options extends Sanitize {
 	 */
 	protected function check_options_reset() {
 
-		if ( false === $this->is_seo_settings_page( false ) )
+		/**
+		 * Security check:
+		 * Further checks are based on previously set options.
+		 * These can only be set when one has access to the Settings Page or database.
+		 * Also checks for capabilities.
+		 */
+		if ( ! \current_user_can( $this->settings_capability() ) || ! $this->is_seo_settings_page( false ) )
 			return;
 
 		if ( $this->get_option( 'tsf-settings-reset', false ) ) {
@@ -921,6 +943,7 @@ class Site_Options extends Sanitize {
 	 *
 	 * @since 2.5.2
 	 * @see https://www.facebook.com/translations/FacebookLocales.xml
+	 * @see $this->language_keys() for the associative array keys.
 	 *
 	 * @return array Valid Facebook locales
 	 */
@@ -1070,7 +1093,8 @@ class Site_Options extends Sanitize {
 	}
 
 	/**
-	 * Returns Facebook locales array keys.
+	 * Returns Facebook locales' associative array keys.
+	 *
 	 * This is apart from the fb_locales array since there are "duplicated" keys.
 	 * Use this to compare the numeric key position.
 	 *

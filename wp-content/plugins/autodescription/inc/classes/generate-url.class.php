@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -66,19 +66,21 @@ class Generate_Url extends Generate_Title {
 	 * @since 2.4.2 : Refactored arguments
 	 * @since 2.8.0 : No longer tolerates $id as Post object.
 	 * @since 2.9.0 : When using 'home => true' args parameter, the home path is added when set.
+	 * @since 2.9.2 Added filter usage cache.
+	 * @staticvar array $_has_filters
 	 *
 	 * @param string $url the url
 	 * @param array $args : accepted args : {
-	 * 		@param bool $paged Return current page URL without pagination if false
-	 * 		@param bool $paged_plural Whether to add pagination for the second or later page.
-	 * 		@param bool $from_option Get the canonical uri option
-	 * 		@param object $post The Post Object.
-	 * 		@param bool $external Whether to fetch the current WP Request or get the permalink by Post Object.
-	 * 		@param bool $is_term Fetch url for term.
-	 * 		@param object $term The term object.
-	 * 		@param bool $home Fetch home URL.
-	 * 		@param bool $forceslash Fetch home URL and slash it, always.
-	 *		@param int $id The Page or Term ID.
+	 *    @param bool $paged Return current page URL without pagination if false
+	 *    @param bool $paged_plural Whether to add pagination for the second or later page.
+	 *    @param bool $from_option Get the canonical uri option
+	 *    @param object $post The Post Object.
+	 *    @param bool $external Whether to fetch the current WP Request or get the permalink by Post Object.
+	 *    @param bool $is_term Fetch url for term.
+	 *    @param object $term The term object.
+	 *    @param bool $home Fetch home URL.
+	 *    @param bool $forceslash Fetch home URL and slash it, always.
+	 *    @param int $id The Page or Term ID.
 	 * }
 	 * @return string Escape url.
 	 */
@@ -126,32 +128,43 @@ class Generate_Url extends Generate_Title {
 			$path = $this->get_home_path();
 		}
 
-		/**
-		 * Applies filters 'the_seo_framework_url_path' : array
-		 *
-		 * @since 2.8.0
-		 *
-		 * @param string $path the URL path.
-		 * @param int $id The current post, page or term ID.
-		 * @param bool $external Whether the call is made from outside the current ID scope. Like from the Sitemap.
-		 */
-		$path = (string) \apply_filters( 'the_seo_framework_url_path', $path, $args['id'], $args['external'] );
+		static $_has_filters = null;
+		if ( null === $_has_filters ) {
+			$_has_filters = array();
+			$_has_filters['the_seo_framework_url_path'] = \has_filter( 'the_seo_framework_url_path' );
+			$_has_filters['the_seo_framework_url_output_args'] = \has_filter( 'the_seo_framework_url_output_args' );
+		}
 
-		/**
-		 * Applies filters 'the_seo_framework_sanitize_redirect_url' : array
-		 *
-		 * @since 2.8.0
-		 *
-		 * @param array : { 'url' => The full URL built from $path, 'scheme' => The preferred scheme }
-		 * @param string $path the URL path.
-		 * @param int $id The current post, page or term ID.
-		 * @param bool $external Whether the call is made from outside the current ID scope. Like from the Sitemap.
-		 */
-		$url_filter = (array) \apply_filters( 'the_seo_framework_url_output_args', array(), $path, $args['id'], $args['external'] );
+		if ( $_has_filters['the_seo_framework_url_path'] ) {
+			/**
+			 * Applies filters 'the_seo_framework_url_path' : array
+			 *
+			 * @since 2.8.0
+			 *
+			 * @param string $path the URL path.
+			 * @param int $id The current post, page or term ID.
+			 * @param bool $external Whether the call is made from outside the current ID scope. Like from the Sitemap.
+			 */
+			$path = (string) \apply_filters( 'the_seo_framework_url_path', $path, $args['id'], $args['external'] );
+		}
 
-		if ( $url_filter ) {
-			$url = $url_filter['url'];
-			$scheme = $url_filter['scheme'];
+		if ( $_has_filters['the_seo_framework_url_output_args'] ) {
+			/**
+			 * Applies filters 'the_seo_framework_sanitize_redirect_url' : array
+			 *
+			 * @since 2.8.0
+			 *
+			 * @param array : { 'url' => The full URL built from $path, 'scheme' => The preferred scheme }
+			 * @param string $path the URL path.
+			 * @param int $id The current post, page or term ID.
+			 * @param bool $external Whether the call is made from outside the current ID scope. Like from the Sitemap.
+			 */
+			$url_filter = (array) \apply_filters( 'the_seo_framework_url_output_args', array(), $path, $args['id'], $args['external'] );
+
+			if ( $url_filter ) {
+				$url = $url_filter['url'];
+				$scheme = $url_filter['scheme'];
+			}
 		}
 
 		//* Non-custom URL
@@ -179,10 +192,10 @@ class Generate_Url extends Generate_Title {
 		}
 
 		if ( $this->pretty_permalinks ) {
-			$url = \esc_url( $url );
+			$url = \esc_url( $url, array( 'http', 'https' ) );
 		} else {
 			//* Keep the &'s more readable.
-			$url = \esc_url_raw( $url );
+			$url = \esc_url_raw( $url, array( 'http', 'https' ) );
 		}
 
 		$this->the_seo_framework_debug && false === $this->doing_sitemap and $this->debug_init( __METHOD__, false, $debug_key, array( 'url_output' => $url ) );
@@ -194,6 +207,8 @@ class Generate_Url extends Generate_Title {
 	 * Parse and sanitize url args.
 	 *
 	 * @since 2.4.2
+	 * @since 2.9.2 Added filter usage cache.
+	 * @staticvar bool $_has_filter
 	 *
 	 * @param array $args required The passed arguments.
 	 * @param array $defaults The default arguments.
@@ -203,7 +218,7 @@ class Generate_Url extends Generate_Title {
 	public function parse_url_args( $args = array(), $defaults = array(), $get_defaults = false ) {
 
 		//* Passing back the defaults reduces the memory usage.
-		if ( empty( $defaults ) ) {
+		if ( empty( $defaults ) ) :
 			$defaults = array(
 				'paged'            => false,
 				'paged_plural'     => true,
@@ -217,27 +232,33 @@ class Generate_Url extends Generate_Title {
 				'id'               => $this->get_the_real_ID(),
 			);
 
-			/**
-			 * @applies filters the_seo_framework_url_args : {
-			 * 		@param bool $paged Return current page URL without pagination if false
-			 * 		@param bool $paged_plural Whether to add pagination for the second or later page.
-			 * 		@param bool $from_option Get the canonical uri option
-			 * 		@param object $post The Post Object.
-			 * 		@param bool $external Whether to fetch the current WP Request or get the permalink by Post Object.
-			 * 		@param bool $is_term Fetch url for term.
-			 * 		@param object $term The term object.
-			 * 		@param bool $home Fetch home URL.
-			 * 		@param bool $forceslash Fetch home URL and slash it, always.
-			 *		@param int $id The Page or Term ID.
-			 * }
-			 *
-			 * @since 2.5.0
-			 *
-			 * @param array $defaults The url defaults.
-			 * @param array $args The input args.
-			 */
-			$defaults = (array) \apply_filters( 'the_seo_framework_url_args', $defaults, $args );
-		}
+			static $_has_filter = null;
+			if ( null === $_has_filter )
+				$_has_filter = \has_filter( 'the_seo_framework_url_args' );
+
+			if ( $_has_filter ) {
+				/**
+				 * @applies filters the_seo_framework_url_args : {
+				 *  	@param bool $paged Return current page URL without pagination if false
+				 *  	@param bool $paged_plural Whether to add pagination for the second or later page.
+				 *  	@param bool $from_option Get the canonical uri option
+				 *  	@param object $post The Post Object.
+				 *  	@param bool $external Whether to fetch the current WP Request or get the permalink by Post Object.
+				 *  	@param bool $is_term Fetch url for term.
+				 *  	@param object $term The term object.
+				 *  	@param bool $home Fetch home URL.
+				 *  	@param bool $forceslash Fetch home URL and slash it, always.
+				 *  	@param int $id The Page or Term ID.
+				 * }
+				 *
+				 * @since 2.5.0
+				 *
+				 * @param array $defaults The url defaults.
+				 * @param array $args The input args.
+				 */
+				$defaults = (array) \apply_filters( 'the_seo_framework_url_args', $defaults, $args );
+			}
+		endif;
 
 		//* Return early if it's only a default args request.
 		if ( $get_defaults )
@@ -261,14 +282,15 @@ class Generate_Url extends Generate_Title {
 	/**
 	 * Reparse URL args.
 	 *
-	 * @param array $args required The passed arguments.
-	 *
 	 * @since 2.6.2
+	 * @since 2.9.2 Now passes args to filter.
+	 *
+	 * @param array $args required The passed arguments.
 	 * @return array $args parsed args.
 	 */
 	public function reparse_url_args( $args = array() ) {
 
-		$default_args = $this->parse_url_args( '', '', true );
+		$default_args = $this->parse_url_args( $args, '', true );
 
 		if ( is_array( $args ) ) {
 			if ( empty( $args ) ) {
@@ -311,14 +333,16 @@ class Generate_Url extends Generate_Title {
 				$path = $this->get_relative_term_url( $term, $args );
 			} elseif ( ! $args['external'] && isset( $GLOBALS['wp']->request ) ) {
 				//* Everything else.
-				$path = \trailingslashit( \get_option( 'home' ) ) . $GLOBALS['wp']->request;
-				$path = $this->set_url_scheme( $path, 'relative' );
+				$_url = \trailingslashit( \get_option( 'home' ) ) . $GLOBALS['wp']->request;
+				$path = $this->set_url_scheme( $_url, 'relative' );
 			} else {
 				//* Nothing to see here...
 				$path = '';
 			}
+		elseif ( $this->is_search() ) :
+			$_url = \get_search_link();
+			$path = $this->set_url_scheme( $_url, 'relative' );
 		else :
-
 			/**
 			 * Reworked to use the $args['id'] check based on get_the_real_ID.
 			 * @since 2.6.0 & 2.6.2
@@ -369,7 +393,7 @@ class Generate_Url extends Generate_Title {
 			$url = \get_home_url();
 		} elseif ( ! $args['external'] ) {
 			if ( isset( $GLOBALS['wp']->request ) )
-				$url = \trailingslashit( \get_option( 'home' ) ) . $GLOBALS['wp']->request;
+				$url = \trailingslashit( \get_home_url() ) . $GLOBALS['wp']->request;
 		}
 
 		//* No permalink found.
@@ -521,7 +545,9 @@ class Generate_Url extends Generate_Title {
 	 * Can be automatically be detected.
 	 *
 	 * @since 2.8.0
+	 * @since 2.9.2 Added filter usage cache.
 	 * @staticvar string $scheme
+	 * @staticvar bool $_has_filter
 	 *
 	 * @return string The preferred URl scheme.
 	 */
@@ -547,14 +573,23 @@ class Generate_Url extends Generate_Title {
 				break;
 		endswitch;
 
-		/**
-		 * Applies filters 'the_seo_framework_preferred_url_scheme' : string
-		 *
-		 * @since 2.8.0
-		 *
-		 * @param string $scheme The current URL scheme.
-		 */
-		return $scheme = (string) \apply_filters( 'the_seo_framework_preferred_url_scheme', $scheme );
+		static $_has_filter = null;
+
+		if ( null === $_has_filter )
+			$_has_filter = \has_filter( 'the_seo_framework_preferred_url_scheme' );
+
+		if ( $_has_filter ) {
+			/**
+			 * Applies filters 'the_seo_framework_preferred_url_scheme' : string
+			 *
+			 * @since 2.8.0
+			 *
+			 * @param string $scheme The current URL scheme.
+			 */
+			$scheme = (string) \apply_filters( 'the_seo_framework_preferred_url_scheme', $scheme );
+		}
+
+		return $scheme;
 	}
 
 	/**
@@ -613,6 +648,8 @@ class Generate_Url extends Generate_Title {
 	 *
 	 * @since 2.6.0
 	 * @since 2.8.0 Deprecated.
+	 * @since 2.9.2 Added filter usage cache.
+	 * @staticvar $_has_filter;
 	 * @deprecated
 	 *
 	 * @param string $url The url with scheme.
@@ -621,36 +658,41 @@ class Generate_Url extends Generate_Title {
 	 */
 	public function set_url_scheme_filter( $url, $current_scheme ) {
 
-		/**
-		 * Applies filters the_seo_framework_canonical_force_scheme : Changes scheme.
-		 *
-		 * Accepted variables:
-		 * (string) 'https'		: Force https
-		 * (bool) true 			: Force https
-		 * (bool) false			: Force http
-		 * (string) 'http'		: Force http
-		 * (string) 'relative' 	: Scheme relative
-		 * (void) null			: Do nothing
-		 *
-		 *
-		 * @since 2.4.2
-		 * @since 2.8.0 Deprecated.
-		 * @deprecated
-		 *
-		 * @param string $current_scheme the current used scheme.
-		 */
-		$scheme_settings = \apply_filters( 'the_seo_framework_canonical_force_scheme', null, $current_scheme );
+		static $_has_filter = null;
+		if ( null === $_has_filter )
+			$_has_filter = \has_filter( 'the_seo_framework_canonical_force_scheme' );
 
-		if ( isset( $scheme_settings ) ) {
+		if ( $_has_filter ) {
 
 			$this->_deprecated_filter( 'the_seo_framework_canonical_force_scheme', '2.8.0', 'the_seo_framework_preferred_url_scheme' );
 
-			if ( 'https' === $scheme_settings || 'http' === $scheme_settings || 'relative' === $scheme_settings ) {
-				$url = $this->set_url_scheme( $url, $scheme_settings, false );
-			} elseif ( ! $scheme_settings ) {
-				$url = $this->set_url_scheme( $url, 'http', false );
-			} elseif ( $scheme_setting ) {
-				$url = $this->set_url_scheme( $url, 'https', false );
+			/**
+			 * Applies filters the_seo_framework_canonical_force_scheme : Changes scheme.
+			 *
+			 * Accepted variables:
+			 * (string) 'https'		: Force https
+			 * (bool) true 			: Force https
+			 * (bool) false			: Force http
+			 * (string) 'http'		: Force http
+			 * (string) 'relative' 	: Scheme relative
+			 * (void) null			: Do nothing
+			 *
+			 * @since 2.4.2
+			 * @since 2.8.0 Deprecated.
+			 * @deprecated
+			 *
+			 * @param string $current_scheme the current used scheme.
+			 */
+			$scheme_settings = \apply_filters( 'the_seo_framework_canonical_force_scheme', null, $current_scheme );
+
+			if ( null !== $scheme_settings ) {
+				if ( 'https' === $scheme_settings || 'http' === $scheme_settings || 'relative' === $scheme_settings ) {
+					$url = $this->set_url_scheme( $url, $scheme_settings, false );
+				} elseif ( ! $scheme_settings ) {
+					$url = $this->set_url_scheme( $url, 'http', false );
+				} elseif ( $scheme_setting ) {
+					$url = $this->set_url_scheme( $url, 'https', false );
+				}
 			}
 		}
 
@@ -730,19 +772,27 @@ class Generate_Url extends Generate_Title {
 		if ( 0 === $post_id )
 			$post_id = $this->get_the_real_ID();
 
+		//* Get additional public queries from the page URL.
 		$url = $this->the_url_from_cache( '', $post_id, false, false, false );
 		$query = parse_url( $url, PHP_URL_QUERY );
 
 		$additions = '';
-		if ( isset( $query ) ) {
+		if ( ! empty( $query ) ) {
 			if ( false !== strpos( $query, '&' ) ) {
+				//= This can fail on malformed URLs
 				$query = explode( '&', $query );
 			} else {
 				$query = array( $query );
 			}
 
 			foreach ( $query as $arg ) {
-				if ( false === strpos( $path, $arg ) )
+				/**
+				 * @since 2.9.4 Added $args availability check.
+				 * This is a band-aid, not a fix.
+				 * @TODO inspect prior explode().
+				 * @link https://wordpress.org/support/topic/error-when-previewing-a-draft-of-knowledge-base-article/#post-9452791
+				 */
+				if ( $arg && false === strpos( $path, $arg ) )
 					$additions .= '&' . $arg;
 			}
 		}
@@ -763,7 +813,7 @@ class Generate_Url extends Generate_Title {
 		$home_url = $this->the_home_url_from_cache( true );
 		$url = $home_url . $path . $additions;
 
-		return \esc_url_raw( $url );
+		return \esc_url_raw( $url, array( 'http', 'https' ) );
 	}
 
 	/**
@@ -783,17 +833,16 @@ class Generate_Url extends Generate_Title {
 		$prev = '';
 		$next = '';
 
-		if ( $this->is_singular() ) {
-			if ( $this->is_real_front_page() || $this->is_front_page_by_id( $post_id ) ) {
+		if ( $this->is_singular() ) :
+			if ( $this->is_real_front_page() || $this->is_static_frontpage( $post_id ) ) {
 				$output_singular_paged = $this->is_option_checked( 'prev_next_frontpage' );
 			} else {
 				$output_singular_paged = $this->is_option_checked( 'prev_next_posts' );
 			}
 
-			if ( $output_singular_paged ) {
+			if ( $output_singular_paged ) :
 
 				$page = $this->page();
-				$numpages = substr_count( $this->get_post_content( $post_id ), '<!--nextpage-->' ) + 1;
 
 				if ( ! $page )
 					$page = 1;
@@ -801,10 +850,11 @@ class Generate_Url extends Generate_Title {
 				if ( 'prev' === $prev_next ) {
 					$prev = $page > 1 ? $this->get_paged_post_url( $page - 1, $post_id, 'prev' ) : '';
 				} elseif ( 'next' === $prev_next ) {
-					$next = $page < $numpages ? $this->get_paged_post_url( $page + 1, $post_id, 'next' ) : '';
+					$_numpages = substr_count( $this->get_post_content( $post_id ), '<!--nextpage-->' ) + 1;
+					$next = $page < $_numpages ? $this->get_paged_post_url( $page + 1, $post_id, 'next' ) : '';
 				}
-			}
-		} elseif ( $this->is_archive() || $this->is_home() ) {
+			endif;
+		elseif ( $this->is_archive() || $this->is_home() ) :
 
 			$output_archive_paged = false;
 			if ( $this->is_real_front_page() || $this->is_front_page_by_id( $post_id ) ) {
@@ -834,13 +884,13 @@ class Generate_Url extends Generate_Title {
 					$next = \get_pagenum_link( $paged, false );
 				}
 			}
-		}
+		endif;
 
 		if ( $prev )
-			return $this->set_preferred_url_scheme( \esc_url_raw( $prev ) );
+			return $this->set_preferred_url_scheme( \esc_url_raw( $prev, array( 'http', 'https' ) ) );
 
 		if ( $next )
-			return $this->set_preferred_url_scheme( \esc_url_raw( $next ) );
+			return $this->set_preferred_url_scheme( \esc_url_raw( $next, array( 'http', 'https' ) ) );
 
 		return '';
 	}
@@ -881,17 +931,16 @@ class Generate_Url extends Generate_Title {
 				if ( isset( $query_arg ) )
 					$urlfromcache = str_replace( '?' . $query_arg, '', $urlfromcache );
 
-				// Calculate current page number.
-				$current = 'next' === $pos ? ( $i - 1 ) : ( $i + 1 );
-				$current = (string) $current;
-
 				//* Continue if still bigger than or equal to 2.
 				if ( $i >= 2 ) {
-					//* We're adding a page.
-					$last_occurence = strrpos( $urlfromcache, '/' . $current . '/' );
+					// Calculate current page number.
+					$_current = 'next' === $pos ? (string) ( $i - 1 ) : (string) ( $i + 1 );
 
-					if ( false !== $last_occurence )
-						$urlfromcache = substr_replace( $urlfromcache, '/', $last_occurence, strlen( '/' . $current . '/' ) );
+					//* We're adding a page.
+					$_last_occurrence = strrpos( $urlfromcache, '/' . $_current . '/' );
+
+					if ( false !== $_last_occurrence )
+						$urlfromcache = substr_replace( $urlfromcache, '/', $_last_occurrence, strlen( '/' . $_current . '/' ) );
 				}
 			}
 
@@ -1017,11 +1066,11 @@ class Generate_Url extends Generate_Title {
 	 *
 	 * @since 2.6.0
 	 *
-	 * @param int $paged
+	 * @param int $paged The current page number.
 	 * @param bool $singular Whether to allow plural and singular.
 	 * @param bool $plural Whether to allow plural regardless.
 	 *
-	 * @return int|bool $paged. False if not allowed. Int if allowed.
+	 * @return int|bool $paged. False if not allowed or on page 0. int if allowed.
 	 */
 	protected function maybe_get_paged( $paged = 0, $singular = false, $plural = true ) {
 
@@ -1061,6 +1110,8 @@ class Generate_Url extends Generate_Title {
 	 * If this fails, you're going to have a bad time.
 	 *
 	 * @since 2.7.0
+	 * @since 2.9.2 : Now considers port too.
+	 *              : Now uses get_home_url(), rather than get_option('home').
 	 * @staticvar string $cache
 	 *
 	 * @return string The home URL host.
@@ -1072,9 +1123,12 @@ class Generate_Url extends Generate_Title {
 		if ( isset( $cache ) )
 			return $cache;
 
-		$parsed_url = \wp_parse_url( \get_option( 'home' ) );
+		$parsed_url = \wp_parse_url( \get_home_url() );
 
 		$host = isset( $parsed_url['host'] ) ? $parsed_url['host'] : '';
+
+		if ( $host && isset( $parsed_url['port'] ) )
+			$host .= ':' . $parsed_url['port'];
 
 		return $cache = $host;
 	}

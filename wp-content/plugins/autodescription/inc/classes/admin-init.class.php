@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -162,6 +162,8 @@ class Admin_Init extends Init {
 	 * @since 2.6.0
 	 * @staticvar bool $registered : Prevents Re-registering of the style.
 	 * @access private
+	 *
+	 * @return void Early if already registered.
 	 */
 	public function _register_admin_javascript() {
 
@@ -433,7 +435,7 @@ class Admin_Init extends Init {
 	/**
 	 * Checks ajax referred set by set_js_nonces based on capability.
 	 *
-	 * Performs die() on fail.
+	 * Performs die() on failure.
 	 *
 	 * @since 2.9.0
 	 * @access private
@@ -521,6 +523,9 @@ class Admin_Init extends Init {
 	 * for alerts, etc.
 	 *
 	 * @since 2.2.2
+	 * @since 2.9.2 : Added user-friendly exception handling.
+	 * @since 2.9.3 : 1. Query arguments work again (regression 2.9.2).
+	 *                2. Now only accepts http and https protocols.
 	 *
 	 * @param string $page Menu slug.
 	 * @param array  $query_args Optional. Associative array of query string arguments
@@ -539,10 +544,61 @@ class Admin_Init extends Init {
 				unset( $query_args[ $key ] );
 		}
 
-		$url = \add_query_arg( $query_args, $url );
+		$target = \add_query_arg( $query_args, $url );
+		$target = \esc_url_raw( $target, array( 'http', 'https' ) );
 
-		\wp_safe_redirect( \esc_url_raw( $url ), 302 );
+		//* Predict white screen:
+		$headers_sent = headers_sent();
+
+		/**
+		 * Dev debug:
+		 * 1. Change 302 to 500 if you wish to test headers.
+		 * 2. Also force handle_admin_redirect_error() to run.
+		 */
+		\wp_safe_redirect( $target, 302 );
+
+		//* White screen of death for non-debugging users. Let's make it friendlier.
+		if ( $headers_sent ) {
+			$this->handle_admin_redirect_error( $target );
+		}
+
 		exit;
+	}
+
+	/**
+	 * Provides an accessible error for when redirecting fails.
+	 *
+	 * @since 2.9.2
+	 * @link https://developer.wordpress.org/reference/functions/wp_redirect/
+	 *
+	 * @param string $target The redirect target location. Should be escaped.
+	 * @return void
+	 */
+	protected function handle_admin_redirect_error( $target = '' ) {
+
+		if ( empty( $target ) )
+			return;
+
+		$headers_list = headers_list();
+		$location = sprintf( 'Location: %s', \wp_sanitize_redirect( $target ) );
+
+		//* Test if WordPress' redirect header is sent. Bail if true.
+		if ( in_array( $location, $headers_list, true ) )
+			return;
+
+		//* Output message:
+		printf( '<p><strong>%s</strong></p>',
+			//* Markdown escapes.
+			$this->convert_markdown(
+				sprintf(
+					/* translators: %s = Redirect URL markdown */
+					\esc_html__( 'There has been an error redirecting. Refresh the page or follow [this link](%s).', 'autodescription' ),
+					$target
+				),
+				array( 'a' ),
+				array( 'a_internal' => true )
+			)
+		);
 	}
 
 	/**
@@ -561,7 +617,7 @@ class Admin_Init extends Init {
 			//* If current user isn't allowed to edit posts, don't do anything and kill PHP.
 			if ( ! \current_user_can( 'edit_posts' ) ) {
 				//* Remove output buffer.
-				$this->clean_reponse_header();
+				$this->clean_response_header();
 
 				//* Encode and echo results. Requires JSON decode within JS.
 				echo json_encode( array( 'type' => 'failure', 'value' => '' ) );
@@ -587,7 +643,7 @@ class Admin_Init extends Init {
 			);
 
 			//* Remove output buffer.
-			$this->clean_reponse_header();
+			$this->clean_response_header();
 
 			//* Encode and echo results. Requires JSON decode within JS.
 			echo json_encode( $results );
@@ -617,12 +673,12 @@ class Admin_Init extends Init {
 
 		$attachment_id = \absint( $_POST['id'] );
 
-		$context = str_replace( '_', '-', $_POST['context'] );
+		$context = \sanitize_key( str_replace( '_', '-', $_POST['context'] ) );
 		$data    = array_map( 'absint', $_POST['cropDetails'] );
 		$cropped = \wp_crop_image( $attachment_id, $data['x1'], $data['y1'], $data['width'], $data['height'], $data['dst_width'], $data['dst_height'] );
 
 		if ( ! $cropped || \is_wp_error( $cropped ) )
-			\wp_send_json_error( array( 'message' => \esc_js__( 'Image could not be processed.', 'autodescription' ) ) );
+			\wp_send_json_error( array( 'message' => \esc_js( \__( 'Image could not be processed.', 'autodescription' ) ) ) );
 
 		switch ( $context ) :
 			case 'tsf-image':
@@ -684,7 +740,7 @@ class Admin_Init extends Init {
 				break;
 
 			default :
-				\wp_send_json_error( array( 'message' => \esc_js__( 'Image could not be processed.', 'autodescription' ) ) );
+				\wp_send_json_error( array( 'message' => \esc_js( \__( 'Image could not be processed.', 'autodescription' ) ) ) );
 				break;
 		endswitch;
 
