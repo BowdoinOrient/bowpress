@@ -113,7 +113,7 @@
 	float: left;
 	margin-bottom: 3em;
 	font-size: 1.2em;
-	
+
 	& > * {
 		width: 80%;
 		margin-bottom: $vertical-rhythm;
@@ -406,6 +406,7 @@
 
 .single__article-tags {
 	font-family: $alt-font-family;
+	margin-bottom: 2em;
 
 	.inline-paragraph-title {
 		margin-right: 0.5em;
@@ -432,7 +433,6 @@
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
-	// padding: 15px;
 	padding-bottom: 0;
 	background: darken($dark-gray, 7);
 	color: $white;
@@ -498,6 +498,7 @@
 	font-family: $alt-font-family;
 	font-weight: 900;
 	margin-bottom: 0;
+	margin-top: 0.5em;
 	padding: 15px;
 	padding-bottom: 0.3em;
 	text-align: center;
