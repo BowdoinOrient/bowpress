@@ -1,0 +1,568 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Maintenance Mode 2.0.9\n"
+"POT-Creation-Date: 2016-11-29 22:02+0200\n"
+"PO-Revision-Date: 2016-11-29 22:03+0200\n"
+"Last-Translator: Dennis Hunink <dennishunink@me.com>\n"
+"Language-Team: Designmodo <info@designmodo.com>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.8\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;"
+"esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: includes/classes\n"
+"X-Poedit-SearchPath-2: views\n"
+
+#: includes/classes/wp-maintenance-mode-admin.php:121
+#: includes/classes/wp-maintenance-mode-admin.php:159
+#: includes/classes/wp-maintenance-mode-admin.php:181
+msgid "You do not have access to this resource."
+msgstr ""
+
+#: includes/classes/wp-maintenance-mode-admin.php:165 views/settings.php:295
+#, php-format
+msgid "You have %d subscriber(s)"
+msgstr "Je hebt %d abonnee(s)"
+
+#: includes/classes/wp-maintenance-mode-admin.php:186
+msgid "The nonce field must not be empty."
+msgstr ""
+
+#: includes/classes/wp-maintenance-mode-admin.php:191
+msgid "The tab slug must not be empty."
+msgstr ""
+
+#: includes/classes/wp-maintenance-mode-admin.php:196
+#: includes/classes/wp-maintenance-mode-admin.php:250
+msgid "Security check."
+msgstr ""
+
+#: includes/classes/wp-maintenance-mode-admin.php:202
+msgid "The tab slug must exist."
+msgstr ""
+
+#: includes/classes/wp-maintenance-mode-admin.php:222
+msgid "WP Maintenance Mode"
+msgstr "WP Maintenance Mode"
+
+#: includes/classes/wp-maintenance-mode-admin.php:436
+msgid "Settings"
+msgstr "Instellingen"
+
+#: includes/classes/wp-maintenance-mode-admin.php:455
+#, php-format
+msgid ""
+"The Maintenance Mode is <strong>active</strong>. Please don't forget to <a "
+"href=\"%s\">deactivate</a> as soon as you are done."
+msgstr ""
+"De Onderhoudsmodus is <strong>actief</strong>. Vergeet niet om hem <a href="
+"\"%s\">uit te schakelen</a> wanneer je klaar bent."
+
+#: includes/classes/wp-maintenance-mode-admin.php:492
+msgid "Notice key cannot be empty."
+msgstr ""
+
+#: includes/classes/wp-maintenance-mode-admin.php:540
+#, php-format
+msgid ""
+"If you like <strong>WP Maintenance Mode</strong> please leave us a %s "
+"rating. A huge thank you from WP Maintenance Mode makers in advance!"
+msgstr ""
+
+#: includes/classes/wp-maintenance-mode.php:101
+#: includes/classes/wp-maintenance-mode.php:102
+msgid "Maintenance mode"
+msgstr "Onderhoudsmodus"
+
+#: includes/classes/wp-maintenance-mode.php:104
+msgid ""
+"<p>Sorry for the inconvenience.<br />Our website is currently undergoing "
+"scheduled maintenance.<br />Thank you for your understanding.</p>"
+msgstr ""
+"<p>Excuus voor het ongemak.<br />Onze website ondergaat op dit moment "
+"gepland onderhoud.<br/>Bedankt voor uw begrip.</p>"
+
+#: includes/classes/wp-maintenance-mode.php:122
+msgid "Notify me when it's ready"
+msgstr "Informeer mij wanneer het is afgerond"
+
+#: includes/classes/wp-maintenance-mode.php:261
+#, php-format
+msgid ""
+"WP Maintenance Mode plugin was relaunched and you MUST revise <a href=\"%s"
+"\">settings</a>."
+msgstr ""
+"De WP Maintenance Mode Plugin is opnieuw opgestart en je MOET de <a href=\"%s"
+"\">instellingen</a> opnieuw bekijken."
+
+#: includes/classes/wp-maintenance-mode.php:463
+#: includes/classes/wp-maintenance-mode.php:477
+msgid "Maintenance Mode"
+msgstr "Onderhousmodus"
+
+#: includes/classes/wp-maintenance-mode.php:730
+#: includes/classes/wp-maintenance-mode.php:764 views/maintenance.php:89
+msgid "Please enter a valid email address."
+msgstr "Voer een geldig e-mailadres in."
+
+#: includes/classes/wp-maintenance-mode.php:742
+msgid "You successfully subscribed. Thanks!"
+msgstr ""
+
+#: includes/classes/wp-maintenance-mode.php:760
+msgid "All fields required."
+msgstr "Alle velden zijn verplicht."
+
+#: includes/classes/wp-maintenance-mode.php:772
+msgid "Message via contact"
+msgstr "Bericht via contact"
+
+#: includes/classes/wp-maintenance-mode.php:786
+msgid "Your email was sent to the website administrator. Thanks!"
+msgstr "Je bericht is verstuurd naar de beheerder. Dankjewel!"
+
+#: views/contact.php:34
+#, php-format
+msgid "You have been contacted via %s."
+msgstr ""
+
+#: views/contact.php:52
+msgid "Name:"
+msgstr ""
+
+#: views/contact.php:64
+msgid "Email:"
+msgstr ""
+
+#: views/contact.php:79
+msgid "Content:"
+msgstr ""
+
+#: views/loginform.php:8
+msgid "Login"
+msgstr ""
+
+#: views/maintenance.php:44
+msgid "your e-mail..."
+msgstr "e-mailadres..."
+
+#: views/maintenance.php:45 views/settings.php:270
+msgid "Subscribe"
+msgstr "Aanmelden"
+
+#: views/maintenance.php:88 views/sidebar.php:7
+msgid "Name"
+msgstr "Naam"
+
+#: views/maintenance.php:88 views/maintenance.php:89 views/maintenance.php:94
+msgid "This field is required."
+msgstr ""
+
+#: views/maintenance.php:89
+msgid "E-mail"
+msgstr "E-mailadres"
+
+#: views/maintenance.php:94
+msgid "Your message"
+msgstr "Je bericht"
+
+#: views/maintenance.php:98
+msgid "Send"
+msgstr "Verstuur"
+
+#: views/maintenance.php:105
+msgid "Contact us"
+msgstr "Neem contact met ons op"
+
+#: views/maintenance.php:110
+msgid "Dashboard"
+msgstr ""
+
+#: views/promo-strictthemes.php:1
+msgid "Premium WordPress Themes from WP Maintenance Mode authors!"
+msgstr ""
+
+#: views/promo-strictthemes.php:4
+msgid ""
+"We hope you like the WP Maintenance Mode plugin! Now you can buy WordPress "
+"Themes directly from us on ThemeForest. We're StrictThemes and we create "
+"best designed and coded WordPress Themes."
+msgstr ""
+
+#: views/promo-strictthemes.php:8
+msgid "See our WordPress Themes!"
+msgstr ""
+
+#: views/settings.php:6
+msgid "Settings saved."
+msgstr "Instellingen opgeslagen"
+
+#: views/settings.php:13
+msgid "General"
+msgstr "Algemeen"
+
+#: views/settings.php:14
+msgid "Design"
+msgstr "Ontwerp"
+
+#: views/settings.php:15
+msgid "Modules"
+msgstr "Modules"
+
+#: views/settings.php:24
+msgid "Status"
+msgstr "Status"
+
+#: views/settings.php:26
+msgid "Activated"
+msgstr "Geactiveerd"
+
+#: views/settings.php:27
+msgid "Deactivated"
+msgstr "Gedeactiveerd"
+
+#: views/settings.php:31
+msgid "Bypass for Search Bots"
+msgstr "Omleiding voor zoekmachine robots"
+
+#: views/settings.php:34 views/settings.php:104 views/settings.php:114
+#: views/settings.php:242 views/settings.php:278 views/settings.php:316
+#: views/settings.php:384 views/settings.php:416
+msgid "Yes"
+msgstr "Ja"
+
+#: views/settings.php:35 views/settings.php:105 views/settings.php:115
+#: views/settings.php:243 views/settings.php:279 views/settings.php:317
+#: views/settings.php:385 views/settings.php:417
+msgid "No"
+msgstr "Nee"
+
+#: views/settings.php:37
+msgid "Allow Search Bots to bypass maintenance mode?"
+msgstr "Mogen zoekmachine robots de onderhoudsmodus omzeilen?"
+
+#: views/settings.php:41
+msgid "Backend Role"
+msgstr "Backend rol"
+
+#: views/settings.php:43 views/settings.php:59
+msgid "Select role(s)"
+msgstr ""
+
+#: views/settings.php:53
+msgid ""
+"Which user role is allowed to access the backend of this blog? "
+"Administrators will always have access."
+msgstr ""
+
+#: views/settings.php:57
+msgid "Frontend Role"
+msgstr "Frontend rol"
+
+#: views/settings.php:69
+msgid ""
+"Which user role is allowed to access the frontend of this blog? "
+"Administrators will always have access."
+msgstr ""
+
+#: views/settings.php:73
+msgid "Robots Meta Tag"
+msgstr "Robots Meta Tag"
+
+#: views/settings.php:79
+msgid ""
+"The robots meta tag lets you use a granular, page-specific approach to "
+"control how an individual page should be indexed and served to users in "
+"search results."
+msgstr ""
+"De Robots Meta Tag maakt het mogelijk om per pagina te bepalen hoe deze "
+"pagina's geïndexeerd en getoond moeten worden in zoekresultaten."
+
+#: views/settings.php:83
+msgid "Redirection"
+msgstr "Doorverwijzing"
+
+#: views/settings.php:86
+msgid ""
+"If you want to redirect a user (with no access to Dashboard/Backend) to a "
+"URL (different from WordPress Dashboard URL) after login, then define a URL "
+"(incl. http://)"
+msgstr ""
+
+#: views/settings.php:90
+msgid "Exclude"
+msgstr "Uitsluiten"
+
+#: views/settings.php:97
+msgid ""
+"Exclude feed, pages, archives or IPs from maintenance mode. Add one slug / "
+"IP per line!"
+msgstr ""
+"Sluit Feeds, pagina's, archieven of IP-adressen uit van de Onderhoudsmodus. "
+"Voer één slug of IP in per regel!"
+
+#: views/settings.php:101
+msgid "Notice"
+msgstr "Kennisgeving"
+
+#: views/settings.php:107
+msgid "Do you want to see notices when maintenance mode is activated?"
+msgstr "Wil je een bericht zien wanneer de onderhoudsmodus actief is?"
+
+#: views/settings.php:111
+msgid "Dashboard link"
+msgstr ""
+
+#: views/settings.php:117
+msgid ""
+"Do you want to add a link to the dashboard on your maintenance mode page?"
+msgstr ""
+
+#: views/settings.php:125 views/settings.php:228 views/settings.php:433
+msgid "Save settings"
+msgstr "Instellingen opslaan"
+
+#: views/settings.php:126 views/settings.php:229 views/settings.php:434
+msgid "Reset settings"
+msgstr "Instellingen herstellen"
+
+#: views/settings.php:131
+msgid "Content"
+msgstr "Inhoud"
+
+#: views/settings.php:136
+msgid "Title (HTML tag)"
+msgstr "Titel (HTML tag)"
+
+#: views/settings.php:142
+msgid "Heading"
+msgstr "Titel"
+
+#: views/settings.php:149 views/settings.php:284
+msgid "Text"
+msgstr "Tekst"
+
+#: views/settings.php:169
+msgid "Background"
+msgstr "Achtergrond"
+
+#: views/settings.php:174
+msgid "Choose type"
+msgstr "Kies type"
+
+#: views/settings.php:177
+msgid "Custom color"
+msgstr "Aangepaste kleur"
+
+#: views/settings.php:178
+msgid "Uploaded background"
+msgstr "Upload achtergrond"
+
+#: views/settings.php:179
+msgid "Predefined background"
+msgstr "Vooraf gedefineerde achtergrond"
+
+#: views/settings.php:184
+msgid "Choose color"
+msgstr "Kies kleur"
+
+#: views/settings.php:190
+msgid "Upload background"
+msgstr "Upload achtergrond"
+
+#: views/settings.php:194
+msgid "Backgrounds should have 1920x1280 px size."
+msgstr "Achtergronden moeten een afmeting van 1920x1280 px hebben."
+
+#: views/settings.php:199
+msgid "Choose background"
+msgstr "Kies achtergrond"
+
+#: views/settings.php:201
+#, php-format
+msgid "source <a href=\"%s\" target=\"_blank\">Free Photos</a>"
+msgstr ""
+
+#: views/settings.php:234
+msgid "Countdown"
+msgstr "Countdown"
+
+#: views/settings.php:239
+msgid "Show countdown?"
+msgstr "Countdown tonen?"
+
+#: views/settings.php:248
+msgid "Start date"
+msgstr "Start datum"
+
+#: views/settings.php:254
+msgid "Countdown (remaining time)"
+msgstr "Countdown (resterende tijd)"
+
+#: views/settings.php:256
+msgid "Days"
+msgstr "Dagen"
+
+#: views/settings.php:257
+msgid "Hours"
+msgstr "Uren"
+
+#: views/settings.php:258
+msgid "Minutes"
+msgstr "Minuten"
+
+#: views/settings.php:262
+msgid "Color"
+msgstr "Kleur"
+
+#: views/settings.php:275
+msgid "Show subscribe?"
+msgstr "Toon aanmelden e-mail?"
+
+#: views/settings.php:291
+msgid "Stats"
+msgstr "Statistieken"
+
+#: views/settings.php:300
+msgid "Export as CSV"
+msgstr "Exporteren als CSV"
+
+#: views/settings.php:301
+msgid "Empty subscribers list"
+msgstr ""
+
+#: views/settings.php:308
+msgid "Social Networks"
+msgstr "Sociale netwerken"
+
+#: views/settings.php:313
+msgid "Show social networks?"
+msgstr "Toon sociale netwerken?"
+
+#: views/settings.php:322
+msgid "Links target?"
+msgstr ""
+
+#: views/settings.php:325
+msgid "New page"
+msgstr ""
+
+#: views/settings.php:326
+msgid "Same page"
+msgstr ""
+
+#: views/settings.php:328
+msgid "Choose how the links will open."
+msgstr ""
+
+#: views/settings.php:376
+msgid "Contact"
+msgstr "Contact"
+
+#: views/settings.php:381
+msgid "Show contact?"
+msgstr "Toon contact?"
+
+#: views/settings.php:390
+msgid "Email address"
+msgstr "E-mailadres"
+
+#: views/settings.php:396
+msgid "Effects"
+msgstr "Effecten"
+
+#: views/settings.php:399
+msgid "Move top - Move bottom"
+msgstr "Naar top - Naar beneden"
+
+#: views/settings.php:400
+msgid "Zoom - Zoomed"
+msgstr "Zoom - Ingezoomd"
+
+#: views/settings.php:401
+msgid "Fold - Unfold"
+msgstr "Vouwen - Opvouwen"
+
+#: views/settings.php:408
+msgid "Google Analytics"
+msgstr ""
+
+#: views/settings.php:413
+msgid "Use Google Analytics?"
+msgstr ""
+
+#: views/settings.php:422
+msgid "Tracking code"
+msgstr ""
+
+#: views/settings.php:425
+msgid ""
+"Allowed formats: UA-XXXXXXXX, UA-XXXXXXXX-XXXX. Eg: UA-12345678-1 is valid"
+msgstr ""
+
+#: views/sidebar.php:3
+msgid "Plugin Info"
+msgstr "Plugin Info"
+
+#: views/sidebar.php:13
+msgid "Author"
+msgstr "Auteur"
+
+#: views/sidebar.php:14
+msgid "Website"
+msgstr "Website"
+
+#: views/sidebar.php:15
+msgid "Twitter"
+msgstr "Twitter"
+
+#: views/sidebar.php:16
+msgid "GitHub"
+msgstr "GitHub"
+
+#: views/sidebar.php:27
+msgid "Other products"
+msgstr ""
+
+#: views/sidebar.php:48
+msgid "Resources"
+msgstr "Ondersteuning"
+
+#~ msgid "You successfuly subscribed. Thanks!"
+#~ msgstr "Je bent succesvol aangemeld, dankjewel!"
+
+#~ msgid "Which user role is allowed to access the backend of this blog?"
+#~ msgstr "Welke gebruikersrollen mogen de backend van dit blog bereiken?"
+
+#~ msgid "Which user role is allowed to access the frontend of this blog?"
+#~ msgstr "Welke gebruikersrollen mogen de voorkant van dit blog bereiken?"
+
+#~ msgid ""
+#~ "If you want to redirect a user to a URL (which is not the WordPress "
+#~ "dashboard) after login, then define a URL (incl. http://)"
+#~ msgstr ""
+#~ "Als je gebruikers na het inloggen wilt doorverwijzen naar een URL (anders "
+#~ "dan het WordPress Dashboard), stel deze dan hier in (inclusief http://)."
+
+#~ msgid "source <a href=\"%\" target=\"_blank\">Free Photos</a>"
+#~ msgstr "bron <a href=\"%\" target=\"_blank\">Free Photos</a>"
+
+#~ msgid "Subscribe now for early access to new WordPress themes."
+#~ msgstr ""
+#~ "Meld je nu aan om eerder toegang te krijgen tot nieuw WordPress thema's."
+
+#~ msgid "Enter your email address"
+#~ msgstr "Voer je e-mailadres in"
+
+#~ msgid "News"
+#~ msgstr "Nieuws"
+
+#~ msgid "Developed by <a href=\"%s\">Designmodo</a>"
+#~ msgstr "Ontwikkeld door <a href=\"%s\">Designmodo</a>"
