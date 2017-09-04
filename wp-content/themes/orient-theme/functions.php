@@ -310,13 +310,4 @@ add_theme_support( 'post-thumbnails' );
 set_post_thumbnail_size( 640, 480, array('center', 'center'));
 add_image_size( 'module', 640, 480, array('center', 'center'));
 
-
-
-
-
-/**
- * Add custom visual composer blocks and modules
- */
-require_once('includes/visual_composer.php');
-
 flush_rewrite_rules();

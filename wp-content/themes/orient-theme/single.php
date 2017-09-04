@@ -87,6 +87,7 @@ if (have_posts()) {
 	</div>
 
 	<aside class="single__sidebar">
+		<?php echo home_render("A-square"); ?>
 		<h1 class="single__sidebar__heading">Share this article</h1>
 		<div class="single__share-box">
 			<a href="http://www.facebook.com/sharer.php?u=<?php echo "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"; ?>" target="_blank" class="social-link facebook-share" title="Share on Facebook">
@@ -134,16 +135,15 @@ if (have_posts()) {
 		?>
 		</div>
 
-		<?php echo home_render("A-square"); ?>
 	</aside>
 
 	<footer class="single__footer">
 
 		<div class="single__article-tags">
-
 			<?php the_tags('<span class="inline-paragraph-title">Read More</span>', ''); ?>
-
 		</div>
+
+		<?php echo home_render("A-banner"); ?>
 
 			<?php
 				$tag_ids = wp_get_post_tags( $post->ID, array( 'fields' => 'ids' ) );
@@ -229,7 +229,6 @@ if (have_posts()) {
 			<p class="callout__footer">We'll never use your email for anything other than this newsletter. Read our full <a href="/policies/">privacy policy</a> for more.</p>
 		</div>
 
-		<?php echo home_render("A-banner"); ?>
 	</footer>
 
 	<div class="article-comments">
