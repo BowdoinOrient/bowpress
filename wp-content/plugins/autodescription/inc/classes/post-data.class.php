@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -48,8 +48,8 @@ class Post_Data extends Detect {
 	 * @since 2.0.0
 	 * @staticvar array $field_cache
 	 *
-	 * @param string $field	Custom field key.
-	 * @param int $post_id	The post ID
+	 * @param string $field Custom field key.
+	 * @param int $post_id The post ID
 	 * @return string|boolean Return value or false on failure.
 	 */
 	public function get_custom_field( $field, $post_id = null ) {
@@ -83,6 +83,7 @@ class Post_Data extends Detect {
 	 * Some values get sanitized, the rest are pulled from identically named subkeys in the $_POST['autodescription'] array.
 	 *
 	 * @since 2.0.0
+	 * @since 2.9.3 : Added 'exclude_from_archive'.
 	 * @uses $this->save_custom_fields() : Perform security checks and saves post meta / custom field data to a post or page.
 	 *
 	 * @param integer $post_id  Post ID.
@@ -111,6 +112,7 @@ class Post_Data extends Detect {
 			'_genesis_nofollow'      => 0,
 			'_genesis_noarchive'     => 0,
 			'exclude_local_search'   => 0,
+			'exclude_from_archive'   => 0,
 		) );
 
 		foreach ( (array) $data as $key => $value ) :
@@ -147,6 +149,7 @@ class Post_Data extends Detect {
 				case '_genesis_nofollow' :
 				case '_genesis_noarchive' :
 				case 'exclude_local_search' :
+				case 'exclude_from_archive' :
 					$data[ $key ] = $this->s_one_zero( $value );
 					continue 2;
 
@@ -380,54 +383,32 @@ class Post_Data extends Detect {
 	 * Fetch latest public post ID.
 	 *
 	 * @since 2.4.3
-	 * @staticvar int $page_id
-	 * @global object $wpdb
-	 * @global int $blog_id
-	 *
-	 * @TODO use get_post() or WP_Query.
+	 * @since 2.9.3 : 1. Removed object caching.
+	 *              : 2. It now uses WP_Query, instead of wpdb.
+	 * @staticvar int $post_id
 	 *
 	 * @return int Latest Post ID.
 	 */
 	public function get_latest_post_id() {
-		global $wpdb, $blog_id;
 
-		static $page_id = null;
+		static $post_id = null;
 
-		if ( isset( $page_id ) )
-			return $page_id;
+		if ( null !== $post_id )
+			return $post_id;
 
-		$latest_posts_key = 'latest_post_id_' . $blog_id;
+		$query = new \WP_Query( array(
+			'posts_per_page'   => 1,
+			'post_type'        => array( 'post', 'page' ),
+			'orderby'          => 'date',
+			'order'            => 'DESC',
+			'post_status'      => array( 'publish', 'future', 'pending' ),
+			'fields'           => 'ids',
+			'cache_results'    => false,
+			'suppress_filters' => true,
+			'no_found_rows'    => true,
+		) );
 
-		//* @TODO consider transient.
-		$page_id = $this->object_cache_get( $latest_posts_key );
-		if ( false === $page_id ) {
-
-			//* Prepare array
-			$post_type = \esc_sql( array( 'post', 'page' ) );
-			$post_type_in_string = "'" . implode( "','", $post_type ) . "'";
-
-			//* Prepare array
-			$post_status = \esc_sql( array( 'publish', 'future', 'pending' ) );
-			$post_status_in_string = "'" . implode( "','", $post_status ) . "'";
-
-			$sql = $wpdb->prepare(
-				"SELECT ID
-				FROM $wpdb->posts
-				WHERE post_title <> %s
-				AND post_type IN ($post_type_in_string)
-				AND post_date < NOW()
-				AND post_status IN ($post_status_in_string)
-				ORDER BY post_date DESC
-				LIMIT %d",
-				'',
-				1
-			);
-
-			$page_id = (int) $wpdb->get_var( $sql );
-			$this->object_cache_set( $latest_posts_key, $page_id, DAY_IN_SECONDS );
-		}
-
-		return $page_id;
+		return $post_id = reset( $query->posts );
 	}
 
 	/**

@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -182,9 +182,21 @@ class Sanitize extends Admin_Pages {
 		);
 
 		$this->add_option_filter(
+			's_alter_query_type',
+			$this->settings_field,
+			array(
+				'alter_archive_query_type',
+				'alter_search_query_type',
+			)
+		);
+
+		$this->add_option_filter(
 			's_one_zero',
 			$this->settings_field,
 			array(
+				'alter_search_query',
+				'alter_archive_query',
+
 				'cache_meta_description',
 				'cache_meta_schema',
 				'cache_sitemap',
@@ -535,6 +547,7 @@ class Sanitize extends Admin_Pages {
 			's_title'                 => array( $this, 's_title' ),
 			's_title_raw'             => array( $this, 's_title_raw' ),
 			's_knowledge_type'        => array( $this, 's_knowledge_type' ),
+			's_alter_query_type'      => array( $this, 's_alter_query_type' ),
 			's_one_zero'              => array( $this, 's_one_zero' ),
 			's_no_html'               => array( $this, 's_no_html' ),
 			's_no_html_space'         => array( $this, 's_no_html_space' ),
@@ -702,6 +715,7 @@ class Sanitize extends Admin_Pages {
 	 * Removes duplicated spaces from the input value.
 	 *
 	 * @since 2.8.2
+	 * @since 2.9.4 Now no longer fails when first two characters are spaces.
 	 * @see $this->s_nsbp() For converting other spaces prior to using this method.
 	 *
 	 * @param string $new_value The input value with possible multispaces.
@@ -714,7 +728,7 @@ class Sanitize extends Admin_Pages {
 		do {
 			$new_value = str_replace( '  ', ' ', $new_value );
 			$i++;
-		} while ( $i <= 2 && strpos( $new_value, '  ' ) );
+		} while ( $i <= 2 && false !== strpos( $new_value, '  ' ) );
 
 		return $new_value;
 	}
@@ -899,6 +913,26 @@ class Sanitize extends Admin_Pages {
 			$previous = $this->get_default_option( 'home_title_location' );
 
 		return (string) $previous;
+	}
+
+	/**
+	 * Sanitizes alter query type.
+	 *
+	 * @since 2.9.4
+	 *
+	 * @param mixed $new_value Should ideally be a string 'in_query' or 'post_query' passed in.
+	 * @return string 'in_query' or 'post_query'
+	 */
+	public function s_alter_query_type( $new_value ) {
+
+		switch ( $new_value ) {
+			case 'in_query' :
+			case 'post_query' :
+				return (string) $new_value;
+
+			default :
+				return 'in_query';
+		}
 	}
 
 	/**
@@ -1202,8 +1236,6 @@ class Sanitize extends Admin_Pages {
 
 		if ( '' === $color )
 			return '';
-
-		$color = $color;
 
 		if ( preg_match( '|^([A-Fa-f0-9]{3}){1,2}$|', $color ) )
 			return $color;

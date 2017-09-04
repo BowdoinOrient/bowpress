@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -403,7 +403,7 @@ class Render extends Admin_Init {
 					if ( $id === $featured_id )
 						continue;
 
-					//* Parse 1500px url.
+					//* Parse 4096px url.
 					$img = $this->parse_og_image( $id, array(), true );
 
 					if ( $img ) {
@@ -450,14 +450,32 @@ class Render extends Admin_Init {
 	 * Renders Open Graph URL meta tag.
 	 *
 	 * @since 1.3.0
+	 * @since 2.9.3 Added filter
 	 * @uses $this->the_url_from_cache()
 	 *
 	 * @return string The Open Graph URL meta tag.
 	 */
 	public function og_url() {
 
-		if ( $this->use_og_tags() )
-			return '<meta property="og:url" content="' . $this->the_url_from_cache() . '" />' . "\r\n";
+		if ( $this->use_og_tags() ) {
+
+			/**
+			 * Applies filters 'the_seo_framework_ogurl_output' : string
+			 * Changes og:url output.
+			 *
+			 * @since 2.9.3
+			 *
+			 * @param string $url The canonical/Open Graph URL. Must be escaped.
+			 * @param int    $id  The current page or term ID.
+			 */
+			$url = (string) \apply_filters( 'the_seo_framework_ogurl_output', $this->the_url_from_cache(), $this->get_the_real_ID() );
+
+			/**
+			 * @since 2.7.0 Listens to the second filter.
+			 */
+			if ( $url )
+				return '<meta property="og:url" content="' . $url . '" />' . "\r\n";
+		}
 
 		return '';
 	}
@@ -514,9 +532,10 @@ class Render extends Admin_Init {
 
 	/**
 	 * Renders The Twitter Creator meta tag.
-	 * If no Twitter Site is found, it will render the Twitter Site ID meta tag.
 	 *
 	 * @since 2.2.2
+	 * @since 2.9.3 No longer has a fallback to twitter:site:id
+	 * @link https://dev.twitter.com/cards/getting-started
 	 *
 	 * @return string The Twitter Creator or Twitter Site ID meta tag.
 	 */
@@ -532,17 +551,8 @@ class Render extends Admin_Init {
 		 */
 		$creator = (string) \apply_filters( 'the_seo_framework_twittercreator_output', $this->get_option( 'twitter_creator' ), $this->get_the_real_ID() );
 
-		if ( $creator ) {
-			/**
-			 * Return site:id instead of creator is no twitter:site is found.
-			 * Per Twitter requirements.
-			 */
-			if ( $this->get_option( 'twitter_site' ) ) {
-				return '<meta name="twitter:site:id" content="' . \esc_attr( $creator ) . '" />' . "\r\n";
-			} else {
-				return '<meta name="twitter:creator" content="' . \esc_attr( $creator ) . '" />' . "\r\n";
-			}
-		}
+		if ( $creator )
+			return '<meta name="twitter:creator" content="' . \esc_attr( $creator ) . '" />' . "\r\n";
 
 		return '';
 	}
@@ -656,7 +666,7 @@ class Render extends Admin_Init {
 		$author = (string) \apply_filters( 'the_seo_framework_facebookauthor_output', $this->get_option( 'facebook_author' ), $this->get_the_real_ID() );
 
 		if ( $author )
-			return '<meta property="article:author" content="' . \esc_attr( \esc_url_raw( $author ) ) . '" />' . "\r\n";
+			return '<meta property="article:author" content="' . \esc_attr( \esc_url_raw( $author, array( 'http', 'https' ) ) ) . '" />' . "\r\n";
 
 		return '';
 	}
@@ -681,7 +691,7 @@ class Render extends Admin_Init {
 		$publisher = (string) \apply_filters( 'the_seo_framework_facebookpublisher_output', $this->get_option( 'facebook_publisher' ), $this->get_the_real_ID() );
 
 		if ( $publisher )
-			return '<meta property="article:publisher" content="' . \esc_attr( \esc_url_raw( $publisher ) ) . '" />' . "\r\n";
+			return '<meta property="article:publisher" content="' . \esc_attr( \esc_url_raw( $publisher, array( 'http', 'https' ) ) ) . '" />' . "\r\n";
 
 		return '';
 	}
@@ -828,14 +838,20 @@ class Render extends Admin_Init {
 		 * @deprecated
 		 * @since 2.7.0
 		 */
-		if ( true !== \apply_filters( 'the_seo_framework_output_canonical', true, $this->get_the_real_ID() ) ) {
+		if ( \has_filter( 'the_seo_framework_output_canonical' ) ) {
 			$this->_deprecated_filter( 'the_seo_framework_output_canonical', '2.7.0', "add_filter( 'the_seo_framework_rel_canonical_output', '__return_empty_string' );" );
-			return '';
+			if ( true !== \apply_filters( 'the_seo_framework_output_canonical', true, $this->get_the_real_ID() ) )
+				return '';
 		}
 
 		/**
-		 * Applies filters 'the_seo_framework_rel_canonical_output' : Change canonical URL output.
+		 * Applies filters 'the_seo_framework_rel_canonical_output' : string
+		 * Changes canonical URL output.
+		 *
 		 * @since 2.6.5
+		 *
+		 * @param string $url The canonical URL. Must be escaped.
+		 * @param int    $id  The current page or term ID.
 		 */
 		$url = (string) \apply_filters( 'the_seo_framework_rel_canonical_output', $this->the_url_from_cache(), $this->get_the_real_ID() );
 
@@ -864,7 +880,11 @@ class Render extends Admin_Init {
 
 		/**
 		 * Applies filters 'the_seo_framework_ldjson_scripts' : string
+		 *
 		 * @since 2.6.0
+		 *
+		 * @param string $json The JSON output. Must be escaped.
+		 * @param int    $id   The current page or term ID.
 		 */
 		$json = (string) \apply_filters( 'the_seo_framework_ldjson_scripts', $this->render_ld_json_scripts(), $this->get_the_real_ID() );
 
@@ -985,17 +1005,20 @@ class Render extends Admin_Init {
 	 * Renders Shortlink meta tag
 	 *
 	 * @since 2.2.2
+	 * @since 2.9.3 : Now work when home page is a blog.
 	 * @uses $this->get_shortlink()
 	 *
 	 * @return string The Shortlink meta tag.
 	 */
 	public function shortlink() {
 
+		$id = $this->get_the_real_ID();
+
 		/**
 		 * Applies filters 'the_seo_framework_shortlink_output' : string
 		 * @since 2.6.0
 		 */
-		$url = (string) \apply_filters( 'the_seo_framework_shortlink_output', $this->get_shortlink(), $this->get_the_real_ID() );
+		$url = (string) \apply_filters( 'the_seo_framework_shortlink_output', $this->get_shortlink( $id ), $this->get_the_real_ID( $id ) );
 
 		if ( $url )
 			return sprintf( '<link rel="shortlink" href="%s" />' . "\r\n", $url );
@@ -1036,6 +1059,80 @@ class Render extends Admin_Init {
 			$output .= sprintf( '<link rel="next" href="%s" />' . "\r\n", $next );
 
 		return $output;
+	}
+
+	/**
+	 * Returns the plugin hidden HTML indicators.
+	 *
+	 * @since 2.9.2
+	 *
+	 * @param string $where Determines the position of the indicator.
+	 *               Accepts 'before' for before, anything else for after.
+	 * @param int $timing Determines when the output started.
+	 * @return string The SEO Framework's HTML plugin indicator.
+	 */
+	public function get_plugin_indicator( $where = 'before', $timing = 0 ) {
+
+		static $run, $_cache = null;
+
+		if ( ! isset( $run ) ) {
+			/**
+			 * Applies filters 'the_seo_framework_indicator'
+			 *
+			 * @since 2.0.0
+			 *
+			 * @param bool $run Whether to run and show the indicator.
+			 */
+			$run = (bool) \apply_filters( 'the_seo_framework_indicator', true );
+		}
+
+		if ( false === $run )
+			return '';
+
+		if ( null === $_cache ) {
+
+			$_cache = array();
+
+			/**
+			 * Applies filters 'sybre_waaijer_<3'
+			 *
+			 * @since 2.4.0
+			 *
+			 * @param bool $sybre Whether to show the hidden author name in HTML.
+			 */
+			$sybre = (bool) \apply_filters( 'sybre_waaijer_<3', true );
+
+			// Plugin name can't be translated. Yay.
+			$tsf = 'The SEO Framework';
+
+			/**
+			 * Applies filters 'the_seo_framework_indicator_timing'
+			 *
+			 * @since 2.4.0
+			 *
+			 * @param bool $show_timer Whether to show the hidden generation time in HTML.
+			 */
+			$_cache['show_timer'] = (bool) \apply_filters( 'the_seo_framework_indicator_timing', true );
+
+			/* translators: %s = 'The SEO Framework' */
+			$_cache['start'] = sprintf( \esc_html__( 'Start %s', 'autodescription' ), $tsf );
+			/* translators: %s = 'The SEO Framework' */
+			$_cache['end'] = sprintf( \esc_html__( 'End %s', 'autodescription' ), $tsf );
+			$_cache['author'] = $sybre ? ' ' . \esc_html__( 'by Sybre Waaijer', 'autodescription' ) : '';
+		}
+
+		if ( 'before' === $where ) {
+			$output = $_cache['start'] . $_cache['author'];
+		} else {
+			if ( $_cache['show_timer'] && $timing ) {
+				$timer = ' | ' . number_format( microtime( true ) - $timing, 5 ) . 's';
+			} else {
+				$timer = '';
+			}
+			$output = $_cache['end'] . $_cache['author'] . $timer;
+		}
+
+		return sprintf( '<!-- %s -->', $output ) . PHP_EOL;
 	}
 
 	/**

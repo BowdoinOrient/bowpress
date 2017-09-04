@@ -1,14 +1,14 @@
 /**
- * This file holds The SEO Framework Extension Manager plugin's JS code externs
+ * This file holds The SEO Framework plugin's JS code externs
  * for Google's Closure Compiler.
  *
  * @author Sybre Waaijer https://cyberwire.nl/
- * @link https://wordpress.org/plugins/the-seo-framework-extension-manager/
+ * @link https://wordpress.org/plugins/the-seo-framework/
  */
 
 /**
- * The SEO Framework - Extension Manager plugin
- * Copyright (C) 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * The SEO Framework plugin
+ * Copyright (C) 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published

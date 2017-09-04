@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -93,10 +93,17 @@ class Admin_Pages extends Inpost {
 	 * Adds menu links under "settings" in the wp-admin dashboard
 	 *
 	 * @since 2.2.2
+	 * @since 2.9.2 Added static cache so the method can only run once.
+	 * @staticvar bool $run True if already run.
 	 *
-	 * @return void
+	 * @return void Early if method is already called.
 	 */
 	public function add_menu_link() {
+
+		static $run = false;
+
+		if ( $run )
+			return;
 
 		$menu = array(
 			'page_title' => \esc_html__( 'SEO Settings', 'autodescription' ),
@@ -137,6 +144,7 @@ class Admin_Pages extends Inpost {
 		//* Enqueue scripts
 		\add_action( 'admin_print_scripts-' . $this->seo_settings_page_hook, array( $this, 'enqueue_admin_javascript' ), 11 );
 
+		$run = true;
 	}
 
 	/**
@@ -395,7 +403,7 @@ class Admin_Pages extends Inpost {
 	 * Display notices on the save or reset of settings.
 	 *
 	 * @since 2.2.2
-	 * @todo convert the "request" into secure "error_notice" option. See TSF Extension Manager.
+	 * @todo convert the "get" into secure "error_notice" option. See TSF Extension Manager.
 	 *
 	 * @return void
 	 */
@@ -404,18 +412,18 @@ class Admin_Pages extends Inpost {
 		if ( false === $this->is_seo_settings_page( true ) )
 			return;
 
-		$request = isset( $_REQUEST ) ? $_REQUEST : null;
+		$get = empty( $_GET ) ? null : $_GET;
 
-		if ( null === $request )
+		if ( null === $get )
 			return;
 
-		if ( isset( $request['settings-updated'] ) && 'true' === $request['settings-updated'] ) :
+		if ( isset( $get['settings-updated'] ) && 'true' === $get['settings-updated'] ) :
 			$this->do_dismissible_notice( $this->page_defaults['saved_notice_text'], 'updated' );
-		elseif ( isset( $request['tsf-settings-reset'] ) && 'true' === $request['tsf-settings-reset'] ) :
+		elseif ( isset( $get['tsf-settings-reset'] ) && 'true' === $get['tsf-settings-reset'] ) :
 			$this->do_dismissible_notice( $this->page_defaults['reset_notice_text'], 'warning' );
-		elseif ( isset( $request['error'] ) && 'true' === $request['error'] ) :
+		elseif ( isset( $get['error'] ) && 'true' === $get['error'] ) :
 			$this->do_dismissible_notice( $this->page_defaults['error_notice_text'], 'error' );
-		elseif ( isset( $request['tsf-settings-updated'] ) && 'true' === $request['tsf-settings-updated'] ) :
+		elseif ( isset( $get['tsf-settings-updated'] ) && 'true' === $get['tsf-settings-updated'] ) :
 			$this->do_dismissible_notice( $this->page_defaults['plugin_update_text'], 'updated' );
 		endif;
 	}
@@ -621,7 +629,7 @@ class Admin_Pages extends Inpost {
 	public function make_info( $description = '', $link = '', $echo = true ) {
 
 		if ( $link ) {
-			$output = '<a href="' . \esc_url( $link ) . '" target="_blank" title="' . \esc_attr( $description ) . '">[?]</a>';
+			$output = '<a href="' . \esc_url( $link, array( 'http', 'https' ) ) . '" target="_blank" title="' . \esc_attr( $description ) . '">[?]</a>';
 		} else {
 			$output = '<span title="' . \esc_attr( $description ) . '">[?]</span>';
 		}

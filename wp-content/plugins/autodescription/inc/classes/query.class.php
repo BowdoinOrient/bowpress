@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -577,8 +577,9 @@ class Query extends Compat {
 	 * Returns true if on SEO settings page and when ID is 0.
 	 *
 	 * @since 2.9.0
+	 * @since 2.9.3 Now tests for archive and 404 before testing home page as blog.
 	 *
-	 * @param int The page ID, required.
+	 * @param int The page ID, required. Can be 0.
 	 * @return bool True if ID if for the home page.
 	 */
 	public function is_front_page_by_id( $id ) {
@@ -589,24 +590,30 @@ class Query extends Compat {
 			return $cache;
 
 		$is_front_page = false;
+		$sof = \get_option( 'show_on_front' );
 
 		//* Elegant Themes Support. Yay.
 		if ( 0 === $id && $this->is_home() ) {
-			$sof = \get_option( 'show_on_front' );
-
 			if ( 'page' !== $sof && 'posts' !== $sof )
 				$is_front_page = true;
 		}
 
 		//* Compare against $id
 		if ( false === $is_front_page ) {
-			$sof = \get_option( 'show_on_front' );
-
-			if ( 'page' === $sof && (int) \get_option( 'page_on_front' ) === $id )
-				$is_front_page = true;
-
-			if ( 'posts' === $sof && (int) \get_option( 'page_for_posts' ) === $id )
-				$is_front_page = true;
+			if ( 'page' === $sof ) {
+				if ( (int) \get_option( 'page_on_front' ) === $id ) {
+					$is_front_page = true;
+				}
+			} elseif ( 'posts' === $sof ) {
+				if ( 0 === $id ) {
+					//* 0 as ID causes a lot of issues. Just test for is_home().
+					if ( $this->is_home() ) {
+						$is_front_page = true;
+					}
+				} elseif ( (int) \get_option( 'page_for_posts' ) === $id ) {
+					$is_front_page = true;
+				}
+			}
 		}
 
 		if ( false === $is_front_page && 0 === $id && $this->is_seo_settings_page() )
@@ -706,19 +713,19 @@ class Query extends Compat {
 	}
 
 	/**
-	 * Detects preview.
+	 * Detects search.
 	 *
 	 * @since 2.6.0
-	 * @staticvar bool $cache
+	 * @since 2.9.4 Now always returns false in admin.
 	 *
 	 * @return bool
 	 */
 	public function is_search() {
-		return \is_search();
+		return \is_search() && ! is_admin();
 	}
 
 	/**
-	 * Detects posts.
+	 * Detects single post pages.
 	 * When $post is supplied, it will check against the current object. So it will not work in the admin screens.
 	 *
 	 * @since 2.6.0
@@ -1002,11 +1009,15 @@ class Query extends Compat {
 	 * @since 2.6.0
 	 * @since 2.7.0 Added secure parameter.
 	 * @since 2.9.0 If $secure is false, the cache is no longer used.
+	 * @see $this->is_menu_page() for security notification.
 	 *
 	 * @param bool $secure Whether to ignore the use of the second (insecure) parameter.
 	 * @return bool
 	 */
 	public function is_seo_settings_page( $secure = true ) {
+
+		if ( ! $this->is_admin() )
+			return false;
 
 		if ( ! $secure )
 			return $this->is_menu_page( $this->seo_settings_page_hook, $this->seo_settings_page_slug );
@@ -1027,13 +1038,23 @@ class Query extends Compat {
 	/**
 	 * Checks the screen base file through global $page_hook or $_GET.
 	 *
+	 * NOTE: Usage of $pageslug might be insecure. Check all variables and don't
+	 * perform lasting actions like saving to the database before `admin_init`!
+	 *
+	 * The second "insecure" parameter is actually secured by WordPress (read on...).
+	 * However, we can't verify its integrity, WordPress has to. It's also checked
+	 * against too late.
+	 * It's secure enough for loading files; nevertheless, it shouldn't be used
+	 * when passing sensitive data.
+	 *
 	 * @since 2.2.2
 	 * @since 2.7.0 Added pageslug parameter.
 	 * @global string $page_hook the current page hook.
-	 * @note Usage of $pageslug might be insecure. Check all variables!
 	 *
 	 * @param string $pagehook The menu pagehook to compare to.
+	 *               To be used after `admin_init`.
 	 * @param string $pageslug The menu page slug to compare to.
+	 *               To be used before `admin_init`.
 	 * @return bool true if screen match.
 	 */
 	public function is_menu_page( $pagehook = '', $pageslug = '' ) {
@@ -1151,6 +1172,28 @@ class Query extends Compat {
 		);
 
 		return $paged;
+	}
+
+	/**
+	 * Determines whether we're on The SEO Framework's sitemap or not.
+	 *
+	 * @since 2.9.2
+	 *
+	 * @return bool
+	 */
+	public function is_sitemap() {
+		return (bool) $this->doing_sitemap;
+	}
+
+	/**
+	 * Determines whether we're on the robots.txt file output.
+	 *
+	 * @since 2.9.2
+	 *
+	 * @return bool
+	 */
+	public function is_robots() {
+		return \is_robots();
 	}
 
 	/**

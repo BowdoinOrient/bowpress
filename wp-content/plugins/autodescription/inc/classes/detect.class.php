@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -56,6 +56,38 @@ class Detect extends Render {
 		null === $cache and $cache = defined( 'DOING_AJAX' ) && DOING_AJAX;
 
 		return $cache;
+	}
+
+	/**
+	 * Tests if input URL matches current domain.
+	 *
+	 * @since 2.9.4
+	 *
+	 * @param string $url The URL to test.
+	 * @return bool true on match, false otherwise.
+	 */
+	public function matches_this_domain( $url = '' ) {
+
+		if ( ! $url )
+			return false;
+
+		static $home_domain;
+
+		if ( ! $home_domain ) {
+			$home_domain = \esc_url_raw( \get_home_url(), array( 'http', 'https' ) );
+			//= Simply convert to HTTPS/HTTP based on is_ssl()
+			$home_domain = $this->set_url_scheme( $home_domain, null, false );
+		}
+
+		$url = \esc_url_raw( $url, array( 'http', 'https' ) );
+		//= Simply convert to HTTPS/HTTP based on is_ssl()
+		$url = $this->set_url_scheme( $url, null, false );
+
+		//= If they start with the same, we can assume it's the same domain.
+		if ( 0 === stripos( $url, $home_domain ) )
+			return true;
+
+		return false;
 	}
 
 	/**
@@ -173,7 +205,7 @@ class Detect extends Render {
 	 *
 	 * @since 1.3.0
 	 * @since 2.8.0 : 1. Can now check for globals.
-	 *                2. Switched order from FAST to SLOW.
+	 *                2. Switched detection order from FAST to SLOW.
 	 *
 	 * @param array $plugins Array of array for constants, classes and / or functions to check for plugin existence.
 	 * @return boolean True if plugin exists or false if plugin constant, class or function not detected.
@@ -231,7 +263,8 @@ class Detect extends Render {
 	 * @staticvar array $cache
 	 * @uses $this->detect_plugin_multi()
 	 *
-	 * @param array $plugins Array of array for constants, classes and / or functions to check for plugin existence.
+	 * @param array $plugins Array of array for globals, constants, classes
+	 *              and/or functions to check for plugin existence.
 	 * @param bool $use_cache Bypasses cache if false
 	 */
 	public function can_i_use( array $plugins = array(), $use_cache = true ) {
@@ -518,6 +551,8 @@ class Detect extends Render {
 	 * @since 2.6.0
 	 * @since 2.8.0 Added check_option parameter.
 	 * @since 2.9.0 Now also checks for subdirectory installations.
+	 * @since 2.9.2 Now also checks for permalinks.
+	 * @since 2.9.3 Now also checks for sitemap_robots option.
 	 *
 	 * @param bool $check_option Whether to check for sitemap option.
 	 * @return bool True when no conflicting plugins are detected or when The SEO Framework's Sitemaps are output.
@@ -534,11 +569,14 @@ class Detect extends Render {
 			return false;
 
 		if ( $check_option ) {
-			if ( ! $this->is_option_checked( 'sitemaps_output' ) )
+			if ( ! $this->is_option_checked( 'sitemaps_output' ) || ! $this->is_option_checked( 'sitemaps_robots' ) )
 				return false;
 		}
 
 		if ( $this->is_subdirectory_installation() )
+			return false;
+
+		if ( ! $this->pretty_permalinks )
 			return false;
 
 		return true;
@@ -909,16 +947,23 @@ class Detect extends Render {
 	}
 
 	/**
-	 * Checks (current) Post Type for if this plugin may use it.
+	 * Checks (current) Post Type for if this plugin may use it for customizable SEO.
 	 *
 	 * @since 2.6.0
-	 * @staticvar string $cache
+	 * @since 2.9.3 : Improved caching structure. i.e. it's faster now when no $post_type is supplied.
+	 * @staticvar array $cache
+	 * @global object $current_screen
 	 *
 	 * @param bool $public Whether to only get Public Post types.
 	 * @param string $post_type Optional. The post type to check.
 	 * @return bool|string The Allowed Post Type.
 	 */
 	public function get_supported_post_type( $public = true, $post_type = '' ) {
+
+		static $cache = array();
+
+		if ( isset( $cache[ $public ][ $post_type ] ) )
+			return $cache[ $public ][ $post_type ];
 
 		if ( empty( $post_type ) ) {
 			global $current_screen;
@@ -931,11 +976,6 @@ class Detect extends Render {
 		}
 
 		$post_type_evaluated = $post_type;
-
-		static $cache = array();
-
-		if ( isset( $cache[ $public ][ $post_type ] ) )
-			return $cache[ $public ][ $post_type ];
 
 		$object = \get_post_type_object( $post_type );
 
@@ -963,6 +1003,39 @@ class Detect extends Render {
 			return $cache[ $public ][ $post_type ] = false;
 
 		return $cache[ $public ][ $post_type ] = $post_type;
+	}
+
+	/**
+	 * Checks (current) Post Type for taxonomical archives.
+	 *
+	 * @since 2.9.3
+	 * @staticvar array $cache
+	 * @global object $current_screen
+	 *
+	 * @param string $post_type Optional. The post type to check.
+	 * @return bool True when the post type has taxonomies.
+	 */
+	public function post_type_supports_taxonomies( $post_type = '' ) {
+
+		static $cache = array();
+
+		if ( isset( $cache[ $post_type ] ) )
+			return $cache[ $post_type ];
+
+		if ( empty( $post_type ) ) {
+			global $current_screen;
+
+			if ( isset( $current_screen->post_type ) ) {
+				$post_type = $current_screen->post_type;
+			} else {
+				return false;
+			}
+		}
+
+		if ( \get_object_taxonomies( $post_type, 'names' ) )
+			return $cache[ $post_type ] = true;
+
+		return $cache[ $post_type ] = false;
 	}
 
 	/**

@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2016 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -137,7 +137,7 @@ class Core {
 	 *
 	 * @return bool True on clear. False otherwise.
 	 */
-	protected function clean_reponse_header() {
+	protected function clean_response_header() {
 
 		if ( $level = ob_get_level() ) {
 			while ( $level ) {
@@ -223,7 +223,7 @@ class Core {
 			'jetpack-portfolio',
 		);
 
-		/*
+		/**
 		 * Applies filters the_seo_framework_supported_post_types : Array The supported post types.
 		 * @since 2.3.1
 		 */
@@ -231,17 +231,19 @@ class Core {
 
 		$types = \wp_parse_args( $defaults, $post_types );
 
-		foreach ( $types as $type )
+		foreach ( $types as $type ) {
 			\add_post_type_support( $type, array( 'autodescription-meta' ) );
-
+		}
 	}
 
 	/**
 	 * Adds link from plugins page to SEO Settings page.
 	 *
-	 * @param array $links The current links.
-	 *
 	 * @since 2.2.8
+	 * @since 2.9.2 : Added TSFEM link.
+	 *
+	 * @param array $links The current links.
+	 * @return array The plugin links.
 	 */
 	public function plugin_action_links( $links = array() ) {
 
@@ -250,7 +252,17 @@ class Core {
 		if ( $this->load_options )
 			$tsf_links['settings'] = '<a href="' . \esc_url( \admin_url( 'admin.php?page=' . $this->seo_settings_page_slug ) ) . '">' . \esc_html__( 'SEO Settings', 'autodescription' ) . '</a>';
 
-		$tsf_links['home'] = '<a href="' . \esc_url( 'https://theseoframework.com/' ) . '" target="_blank">' . \esc_html_x( 'Plugin Home', 'As in: The Plugin Home Page', 'autodescription' ) . '</a>';
+		$tsf_links['home'] = '<a href="' . \esc_url( 'https://theseoframework.com/' ) . '" rel="noopener" target="_blank">' . \esc_html_x( 'Plugin Home', 'As in: The Plugin Home Page', 'autodescription' ) . '</a>';
+
+		/**
+		 * These are weak checks.
+		 * But it has minimum to no UX/performance impact on failure.
+		 */
+		if ( ! defined( 'TSF_EXTENSION_MANAGER_VERSION' ) ) {
+			$tsfem = \get_plugins( '/the-seo-framework-extension-manager' );
+			if ( empty( $tsfem ) )
+				$tsf_links['tsfem'] = '<a href="' . \esc_url( \__( 'https://wordpress.org/plugins/the-seo-framework-extension-manager/', 'autodescription' ) ) . '" rel="noopener" target="_blank">' . \esc_html_x( 'Extensions', 'Plugin extensions', 'autodescription' ) . '</a>';
+		}
 
 		return array_merge( $tsf_links, $links );
 	}
@@ -301,7 +313,7 @@ class Core {
 		$a11y = $a11y ? 'tsf-show-icon' : '';
 
 		$notice = '<div class="notice ' . \esc_attr( $type ) . ' tsf-notice ' . $a11y . '"><p>';
-		$notice .= '<a class="hide-if-no-js tsf-dismiss" title="' . \esc_attr__( 'Dismiss', 'AutoDescription' ) . '"></a>';
+		$notice .= '<a class="hide-if-no-js tsf-dismiss" title="' . \esc_attr__( 'Dismiss', 'autodescription' ) . '"></a>';
 		$notice .= '<strong>' . $message . '</strong>';
 		$notice .= '</p></div>';
 
@@ -320,6 +332,52 @@ class Core {
 	 */
 	public function do_dismissible_notice( $message = '', $type = 'updated', $a11y = true, $escape = true ) {
 		echo $this->generate_dismissible_notice( $message, $type, (bool) $a11y, (bool) $escape );
+	}
+
+	/**
+	 * Generates dismissible notice that stick until the user dismisses it.
+	 * Also loads scripts and styles if out of The SEO Framework's context.
+	 *
+	 * @since 2.9.3
+	 * @see $this->do_dismissible_sticky_notice()
+	 * @uses THE_SEO_FRAMEWORK_UPDATES_CACHE
+	 * @todo make this do something.
+	 * NOTE: This method is a placeholder.
+	 *
+	 * @param string $message The notice message. Expected to be escaped if $escape is false.
+	 * @param string $key     The notice key. Must be unique and tied to the stored updates cache option.
+	 * @param array $args : {
+	 *    'type'   => string Optional. The notification type. Default 'updated'.
+	 *    'a11y'   => bool   Optional. Whether to enable accessibility. Default true.
+	 *    'escape' => bool   Optional. Whether to escape the $message. Default true.
+	 *    'color'  => string Optional. If filled in, it will output the selected color. Default ''.
+	 *    'icon'   => string Optional. If filled in, it will output the selected icon. Default ''.
+	 * }
+	 * @return string The dismissible error notice.
+	 */
+	public function generate_dismissible_sticky_notice( $message, $key, $args = array() ) {
+		return '';
+	}
+
+	/**
+	 * Echos generated dismissible sticky notice.
+	 *
+	 * @since 2.9.3
+	 * @uses $this->generate_dismissible_sticky_notice()
+	 *
+	 * @param string $message The notice message. Expected to be escaped if $escape is false.
+	 * @param string $key     The notice key. Must be unique and tied to the stored updates cache option.
+	 * @param array $args : {
+	 *    'type'   => string Optional. The notification type. Default 'updated'.
+	 *    'a11y'   => bool   Optional. Whether to enable accessibility. Default true.
+	 *    'escape' => bool   Optional. Whether to escape the $message. Default true.
+	 *    'color'  => string Optional. If filled in, it will output the selected color. Default ''.
+	 *    'icon'   => string Optional. If filled in, it will output the selected icon. Default ''.
+	 * }
+	 * @return string The dismissible error notice.
+	 */
+	public function do_dismissible_sticky_notice( $message, $key, $args = array() ) {
+		echo $this->generate_dismissible_sticky_notice( $message, $key, $args );
 	}
 
 	/**
@@ -450,13 +508,7 @@ class Core {
 	 * @return bool Option is checked.
 	 */
 	public function is_option_checked( $option ) {
-
-		$option = $this->get_option( $option );
-
-		if ( $this->is_checked( $option ) )
-			return true;
-
-		return false;
+		return $this->is_checked( $this->get_option( $option ) );
 	}
 
 	/**
@@ -546,7 +598,7 @@ class Core {
 
 			$url = html_entity_decode( \menu_page_url( $this->seo_settings_page_slug, false ) );
 
-			return \esc_url( $url );
+			return \esc_url( $url, array( 'http', 'https' ) );
 		}
 
 		return '';
@@ -592,7 +644,7 @@ class Core {
 		//* Try Daylight savings.
 		$tzstring = timezone_name_from_abbr( '', $seconds, 1 );
 		/**
-		 * PHP bug workaround.
+		 * PHP bug workaround. Disable the DST check.
 		 * @link https://bugs.php.net/bug.php?id=44780
 		 */
 		if ( false === $tzstring )
@@ -665,9 +717,14 @@ class Core {
 	 * @since 2.7.0
 	 *
 	 * @param string $string Required. The string to count words in.
-	 * @param int $amount Minimum amount of words to encounter in the string. Set to 0 to count all words longer than $bother_length.
-	 * @param int $amount_bother Minimum amount of words to encounter in the string that fall under the $bother_length. Set to 0 to count all words shorter than $bother_length.
-	 * @param int $bother_length The maximum string length of a word to pass for $amount_bother instead of $amount. Set to 0 to pass all words through $amount_bother
+	 * @param int $amount Minimum amount of words to encounter in the string.
+	 *            Set to 0 to count all words longer than $bother_length.
+	 * @param int $amount_bother Minimum amount of words to encounter in the string
+	 *            that fall under the $bother_length. Set to 0 to count all words
+	 *            shorter than $bother_length.
+	 * @param int $bother_length The maximum string length of a word to pass for
+	 *            $amount_bother instead of $amount. Set to 0 to pass all words
+	 *            through $amount_bother
 	 * @return array Containing arrays of words with their count.
 	 */
 	public function get_word_count( $string, $amount = 3, $amount_bother = 5, $bother_length = 3 ) {
@@ -725,11 +782,12 @@ class Core {
 	 *
 	 * @since 2.8.0
 	 * @since 2.9.0 Now adds a little more relative softness based on rel_lum.
+	 * @since 2.9.2 (Typo): Renamed from 'get_relatitve_fontcolor' to 'get_relative_fontcolor'.
 	 *
 	 * @param string $hex The 3 to 6 character RGB hex. '#' prefix is supported.
 	 * @return string The hexadecimal RGB relative font color, without '#' prefix.
 	 */
-	public function get_relatitve_fontcolor( $hex = '' ) {
+	public function get_relative_fontcolor( $hex = '' ) {
 
 		$hex = ltrim( $hex, '#' );
 
@@ -793,14 +851,17 @@ class Core {
 	 * @since 2.9.0 : 1. Removed word boundary requirement for strong.
 	 *                2. Now accepts regex count their numeric values in string.
 	 *                3. Fixed header 1~6 calculation.
+	 * @since 2.9.3 : 1. Added $args parameter.
+	 *                2. TODO It now uses substr_replace instead of str_replace to prevent duplicated replacements.
 	 * @link https://wordpress.org/plugins/about/readme.txt
 	 *
 	 * @param string $text The text that might contain markdown. Expected to be escaped.
 	 * @param array $convert The markdown style types wished to be converted.
-	 * 				If left empty, it will convert all.
+	 *              If left empty, it will convert all.
+	 * @param array $args The function arguments.
 	 * @return string The markdown converted text.
 	 */
-	public function convert_markdown( $text, $convert = array() ) {
+	public function convert_markdown( $text, $convert = array(), $args = array() ) {
 
 		preprocess : {
 			$text = str_replace( "\r\n", "\n", $text );
@@ -810,6 +871,11 @@ class Core {
 
 		if ( '' === $text )
 			return '';
+
+		$defaults = array(
+			'a_internal' => false,
+		);
+		$args = array_merge( $defaults, $args );
 
 		/**
 		 * The conversion list's keys are per reference only.
@@ -890,10 +956,12 @@ class Core {
 				case 'a' :
 					$count = preg_match_all( '/(?:(?:\[{1})([^\]{1}]+)(?:\]{1})(?:\({1})([^\)\(]+)(?:\){1}))/', $text, $matches, PREG_PATTERN_ORDER );
 
+					$_string = $args['a_internal'] ? '<a href="%s">%s</a>' : '<a href="%s" target="_blank" rel="nofollow noreferrer noopener">%s</a>';
+
 					for ( $i = 0; $i < $count; $i++ ) {
 						$text = str_replace(
 							$matches[0][ $i ],
-							sprintf( '<a href="%s" rel="nofollow">%s</a>', \esc_url( $matches[2][ $i ] ), \esc_html( $matches[1][ $i ] ) ),
+							sprintf( $_string, \esc_url( $matches[2][ $i ], array( 'http', 'https' ) ), \esc_html( $matches[1][ $i ] ) ),
 							$text
 						);
 					}

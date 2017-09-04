@@ -14,15 +14,15 @@ switch ( $instance ) :
 		//		'callback' => array( $this, 'general_metabox_general_tab' ),
 		//		'dashicon' => 'admin-generic',
 		//	),
-			'performance' => array(
-				'name'     => __( 'Performance', 'autodescription' ),
-				'callback' => array( $this, 'general_metabox_performance_tab' ),
-				'dashicon' => 'performance',
-			),
 			'layout' => array(
 				'name'     => __( 'Layout', 'autodescription' ),
 				'callback' => array( $this, 'general_metabox_layout_tab' ),
 				'dashicon' => 'screenoptions',
+			),
+			'performance' => array(
+				'name'     => __( 'Performance', 'autodescription' ),
+				'callback' => array( $this, 'general_metabox_performance_tab' ),
+				'dashicon' => 'performance',
 			),
 			'canonical' => array(
 				'name'     => __( 'Canonical', 'autodescription' ),
@@ -45,64 +45,6 @@ switch ( $instance ) :
 
 	case 'the_seo_framework_general_metabox_general' :
 		echo 'Nothing to see here yet.';
-		break;
-
-	case 'the_seo_framework_general_metabox_performance' :
-
-		?><h4><?php esc_html_e( 'Performance Settings', 'autodescription' ); ?></h4><?php
-		$this->description( __( 'In order to improve performance, generated SEO output can be stored in the database as transient cache.', 'autodescription' ) );
-		$this->description( __( 'If your website has thousands of pages, or if other forms of caching are used, you might wish to adjust these options.', 'autodescription' ) );
-
-		?>
-		<hr>
-
-		<h4><?php esc_html_e( 'Transient Cache Settings', 'autodescription' ); ?></h4>
-		<?php
-		$this->wrap_fields(
-			array(
-				$this->make_checkbox(
-					'cache_meta_description',
-					esc_html__( 'Enable automated description output cache?', 'autodescription' )
-					. ' ' . $this->make_info( __( 'Description generation can use a lot of server resources when it reads the page content.', 'autodescription' ), '', false ),
-					'',
-					false
-				),
-				$this->make_checkbox(
-					'cache_meta_schema',
-					esc_html__( 'Enable automated Schema output cache?', 'autodescription' )
-					. ' ' . $this->make_info( __( 'Schema.org output generally makes multiple calls to the database.', 'autodescription' ), '', false ),
-					'',
-					false
-				),
-				$this->make_checkbox(
-					'cache_sitemap',
-					esc_html__( 'Enable sitemap generation cache?', 'autodescription' )
-					. ' ' . $this->make_info( __( 'Generating the sitemap can use a lot of server resources.', 'autodescription' ), '', false ),
-					'',
-					false
-				),
-			),
-			true
-		);
-
-		if ( wp_using_ext_object_cache() ) :
-			?>
-			<hr>
-
-			<h4><?php esc_html_e( 'Object Cache Settings', 'autodescription' ); ?></h4>
-			<?php
-
-			$this->wrap_fields(
-				$this->make_checkbox(
-					'cache_object',
-					esc_html__( 'Enable object cache?', 'autodescription' )
-					. ' ' . $this->make_info( __( 'Object cache generally works faster than transient cache', 'autodescription' ), '', false ),
-					esc_html__( 'An object cache handler has been detected. If you enable this option, you might wish to disable description and Schema transient caching.', 'autodescription' ),
-					false
-				),
-				true
-			);
-		endif;
 		break;
 
 	case 'the_seo_framework_general_metabox_layout' :
@@ -133,12 +75,171 @@ switch ( $instance ) :
 		);
 		break;
 
+	case 'the_seo_framework_general_metabox_performance' :
+
+		?><h4><?php esc_html_e( 'Performance Settings', 'autodescription' ); ?></h4><?php
+		$this->description( __( "Depending on your server's configuration, adjusting these settings can affect performance.", 'autodescription' ) );
+
+		?>
+		<hr>
+
+		<h4><?php esc_html_e( 'Query alteration Settings', 'autodescription' ); ?></h4>
+		<?php
+		$this->description_noesc(
+			esc_html__( "Altering the query allows for more control of the site's hierarchy.", 'autodescription' )
+			. '<br>' .
+			esc_html__( 'If your website has thousands of pages, these options can greatly affect database performance.', 'autodescription' )
+		);
+
+		$this->description_noesc(
+			esc_html__( 'Altering the query in the database is more accurate, but can increase database query time.', 'autodescription' )
+			. '<br>' .
+			esc_html__( 'Altering the query on the site is much faster, but can lead to inconsistent pagination. It can also lead to 404 error messages if all queried pages have been excluded.', 'autodescription' )
+		);
+
+		$query_types = (array) apply_filters(
+			'the_seo_framework_query_alteration_types',
+			array(
+				'in_query'   => _x( 'In the database', 'Perform query alteration...', 'autodescription' ),
+				'post_query' => _x( 'On the site', 'Perform query alteration...', 'autodescription' ),
+			)
+		);
+
+		$search_query_select_options = '';
+		$_current = $this->get_field_value( 'alter_search_query_type' );
+		foreach ( $query_types as $value => $name ) {
+			$search_query_select_options .= vsprintf(
+				'<option value="%s" %s>%s</option>',
+				array(
+					esc_attr( $value ),
+					selected( $_current, esc_attr( $value ), false ),
+					esc_html( $name ),
+				)
+			);
+		}
+		$archive_query_select_options = '';
+		$_current = $this->get_field_value( 'alter_archive_query_type' );
+		foreach ( $query_types as $value => $name ) {
+			$archive_query_select_options .= vsprintf(
+				'<option value="%s" %s>%s</option>',
+				array(
+					esc_attr( $value ),
+					selected( $_current, esc_attr( $value ), false ),
+					esc_html( $name ),
+				)
+			);
+		}
+		$perform_alteration_i18n = esc_html__( 'Perform alteration:', 'autodescription' );
+
+		$search_query_select_field = vsprintf(
+			'<label for="%1$s">%2$s</label>
+			<select name="%3$s" id="%1$s">%4$s</select>',
+			array(
+				$this->get_field_id( 'alter_search_query_type' ),
+				$perform_alteration_i18n,
+				$this->get_field_name( 'alter_search_query_type' ),
+				$search_query_select_options,
+			)
+		);
+		$archive_query_select_field = vsprintf(
+			'<label for="%1$s">%2$s</label>
+			<select name="%3$s" id="%1$s">%4$s</select>',
+			array(
+				$this->get_field_id( 'alter_archive_query_type' ),
+				$perform_alteration_i18n,
+				$this->get_field_name( 'alter_archive_query_type' ),
+				$archive_query_select_options,
+			)
+		);
+
+		$this->wrap_fields(
+			array(
+				$this->make_checkbox(
+					'alter_search_query',
+					esc_html__( 'Enable search query alteration?', 'autodescription' )
+					. ' ' . $this->make_info( __( 'This allows you to exclude pages from on-site search results', 'autodescription' ), '', false ),
+					'',
+					false
+				),
+				$search_query_select_field,
+			),
+			true
+		);
+
+		$this->wrap_fields(
+			array(
+				$this->make_checkbox(
+					'alter_archive_query',
+					esc_html__( 'Enable archive query alteration?', 'autodescription' )
+					. ' ' . $this->make_info( __( 'This allows you to exclude pages from on-site archive listings', 'autodescription' ), '', false ),
+					'',
+					false
+				),
+				$archive_query_select_field,
+			),
+			true
+		);
+		?>
+		<hr>
+
+		<h4><?php esc_html_e( 'Transient Cache Settings', 'autodescription' ); ?></h4>
+		<?php
+		$this->description( __( 'To improve performance, generated SEO output can be stored in the database as transient cache.', 'autodescription' ) );
+		$this->description( __( 'If your website has thousands of pages, or if other forms of caching are used, you might wish to adjust these options.', 'autodescription' ) );
+
+		$this->wrap_fields(
+			array(
+				$this->make_checkbox(
+					'cache_meta_description',
+					esc_html__( 'Enable automated description output cache?', 'autodescription' )
+					. ' ' . $this->make_info( __( 'Description generation can use a lot of server resources when it reads the page content', 'autodescription' ), '', false ),
+					'',
+					false
+				),
+				$this->make_checkbox(
+					'cache_meta_schema',
+					esc_html__( 'Enable automated Schema output cache?', 'autodescription' )
+					. ' ' . $this->make_info( __( 'Schema.org output generally makes multiple calls to the database', 'autodescription' ), '', false ),
+					'',
+					false
+				),
+				$this->make_checkbox(
+					'cache_sitemap',
+					esc_html__( 'Enable sitemap generation cache?', 'autodescription' )
+					. ' ' . $this->make_info( __( 'Generating the sitemap can use a lot of server resources', 'autodescription' ), '', false ),
+					'',
+					false
+				),
+			),
+			true
+		);
+
+		if ( wp_using_ext_object_cache() ) :
+			?>
+			<hr>
+
+			<h4><?php esc_html_e( 'Object Cache Settings', 'autodescription' ); ?></h4>
+			<?php
+
+			$this->wrap_fields(
+				$this->make_checkbox(
+					'cache_object',
+					esc_html__( 'Enable object cache?', 'autodescription' )
+					. ' ' . $this->make_info( __( 'Object cache generally works faster than transient cache', 'autodescription' ), '', false ),
+					esc_html__( 'An object cache handler has been detected. If you enable this option, you might wish to disable description and Schema transient caching.', 'autodescription' ),
+					false
+				),
+				true
+			);
+		endif;
+		break;
+
 	case 'the_seo_framework_general_metabox_canonical' :
 
 		?><h4><?php esc_html_e( 'Canonical URL Settings', 'autodescription' ); ?></h4><?php
 		$this->description( __( 'The canonical URL meta tag urges Search Engines to go to the outputted URL.', 'autodescription' ) );
 		$this->description( __( 'If the canonical URL meta tag represents the visited page, then the Search Engine will crawl the visited page. Otherwise, the Search Engine might go to the outputted URL.', 'autodescription' ) );
-		$this->description( __( 'Only adjust these options if you are aware of its SEO effects.', 'autodescription' ) );
+		$this->description( __( 'Only adjust these options if you are aware of their SEO effects.', 'autodescription' ) );
 		?>
 		<hr>
 
