@@ -20,7 +20,8 @@ if ( $query->have_posts() ) {
 		echo "<a href=\"";
 		the_field('url');
 		echo "\">";
-		echo "<img src=\"" . get_field('ad_image')['url'] . "\">";
+		$image = get_field('ad_image');
+		echo "<img src=\"" . $image['url'] . "\">";
 		echo "</a>";
 	}
 } else {

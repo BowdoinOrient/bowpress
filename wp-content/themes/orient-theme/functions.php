@@ -5,8 +5,8 @@
  * first. These two lines show code errors and warnings. If they're commented
  * out, uncomment them (not in production!!) to see what's gone wrong.
  */
- //error_reporting(E_ALL);
- //ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 
 
@@ -306,5 +306,6 @@ set_post_thumbnail_size( 640, 480, array('center', 'center'));
 add_image_size( 'module', 640, 480, array('center', 'center'));
 
 include 'housing-svg-shortcode.php';
+include 'custom-fields.php';
 
 flush_rewrite_rules();

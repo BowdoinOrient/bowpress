@@ -60,10 +60,10 @@ function echo_home_page_list($filename) {
 		if (substr($file, -4) == ".php") {
 			$fullpath = $homepages_dir . $file;
 			$contents = file_get_contents($fullpath);
-			$comment = explode("*/", $contents, 2)[0];
-			$keyvalpairs = explode("/*", $comment, 2)[1];
+			list($comment, $nothing) = explode("*/", $contents, 2);
+			list($nothing, $keyvalpairs) = explode("/*", $comment, 2);
 			$keyvalstrs = array_filter(explode("\n * ", $keyvalpairs));
-			$keyvals = [];
+			$keyvals = array();
 
 			foreach($keyvalstrs as $kvstring) {
 				$kvarray = explode(": ", $kvstring);
