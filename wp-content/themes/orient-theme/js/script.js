@@ -75,7 +75,7 @@ jQuery('.home-nav__section-links a').on('mouseover', (function(e) {
 
 	jQuery('.section-menu__content').addClass('js-hidden');
 	jQuery('[data-section="' + jQuery(this).attr('data-section') + '"]').removeClass('js-hidden')
-	
+
 	var hoverArea = jQuery('.section-menu').find('.hover-area');
 	hoverArea.show();
 	mouseoutCoords.top    = hoverArea.offset().top;
@@ -98,6 +98,22 @@ function unHoverSectionMenu(e) {
 		}
 	});
 }
+
+var stickySidebar = jQuery('.content aside').offset().top;
+
+jQuery(window).scroll(function() {
+    if (jQuery(window).scrollTop() > stickySidebar) {
+		var aside = jQuery('.content aside');
+		if(!aside.hasClass("affix")) {
+			jQuery('.content aside').css('width', aside.width());
+			aside.css('left', aside.offset().left);
+			jQuery('.content aside').addClass('affix');
+		}
+    }
+    else {
+        jQuery('.content aside').removeClass('affix');
+    }
+});
 
 // jQuery('.home-nav__section-links .news').mouseover(function() {
 // 	jQuery('.section-menu__content--news').removeClass('js-hidden');
