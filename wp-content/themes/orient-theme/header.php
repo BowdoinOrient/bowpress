@@ -68,7 +68,7 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 
 <div class="mobile-drawer">
 	<a href="#visual-jump" class="visually-hidden">Go to content, skip over navigation</a>
-	<form class="mobile-drawer__search-form" action="/search.php" method="get">
+	<form class="mobile-drawer__search-form" action="/" method="get">
 		<input type="search" name="s" id="drawerSearchInput" placeholder="Search the Orient...">
 		<label for="s">Press enter to search</label>
 	</form>
