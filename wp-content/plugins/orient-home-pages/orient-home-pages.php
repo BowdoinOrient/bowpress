@@ -27,12 +27,23 @@ function setup_home_page_menu() {
 }
 
 function home_page_init() {
+	date_default_timezone_set("America/New_York");
 	if(isset($_POST['file'])) {
 		$filename = filter_var ( $_POST['file'], FILTER_SANITIZE_URL);
+		$articlelist = implode($_POST['page_id'], ',');
+
 		update_option('orient_homepage_filename', $filename);
 
-		$articlelist = implode($_POST['page_id'], ',');
-		update_option('orient_homepage_articles', $articlelist);
+		if(isset($_POST['later']) && $_POST['later'] == true) {
+			update_option('orient_homepage_articles_later', $articlelist);
+			if (date('H') < 13) {
+				update_option('orient_homepage_articles_later_time', date('U', strtotime("7AM")));
+			} else {
+				update_option('orient_homepage_articles_later_time', date('U', strtotime("tomorrow 7AM")));
+			}
+		} else {
+			update_option('orient_homepage_articles', $articlelist);
+		}
 	}
 
 	$filename = get_option('orient_homepage_filename');
@@ -45,6 +56,11 @@ function home_page_init() {
 	echo "<br><br><img src=\"\" style=\"max-width: 400px; float: left; margin: 10px;\" id=\"orient_homepage_image\">";
 
 	echo "<h2>Pick the Articles</h2>";
+
+	if (get_option('orient_homepage_articles_later') != "" && get_option('orient_homepage_articles_later') != get_option('orient_homepage_articles')) {
+		echo "<p><b>Note: </b> There is another configuration that will take effect at 7:00 A.M.";
+	}
+
 	echo "<div id=\"article-selects\">...</div>";
 	echo "<p><input type=\"checkbox\" name=\"later\" id=\"later\"><label for=\"later\">Update at 7:00 AM?</label>";
 	echo "<p><button class=\"button button-primary\" type=\"submit\">Update Home Page</button></p>";
@@ -134,6 +150,14 @@ function home_page_activate() {
 add_shortcode('orient_homepage', 'do_orient_homepage_shortcode');
 
 function do_orient_homepage_shortcode() {
+
+	if (get_option('orient_homepage_articles_later') != "" &&
+		date('U') > get_option('orient_homepage_articles_later_time')) {
+
+			update_option('orient_homepage_articles', get_option('orient_homepage_articles_later'));
+			update_option('orient_homepage_articles_later', '');
+	}
+
     $homepages_dir = get_stylesheet_directory() . '/homepages/';
 	$file = $homepages_dir . get_option('orient_homepage_filename');
 	ob_start();
@@ -144,7 +168,9 @@ function do_orient_homepage_shortcode() {
 }
 
 function home_render($module_name, $article_index = NULL) {
+	date_default_timezone_set("America/New_York");
 	$homemodules_dir = get_stylesheet_directory() . '/homemodules/';
+
 	$ids = explode(',', get_option('orient_homepage_articles'));
 	$article_index = $article_index - 1;
 
