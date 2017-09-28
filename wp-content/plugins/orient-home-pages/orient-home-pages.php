@@ -42,12 +42,17 @@ function home_page_init() {
 	echo "<form id=\"page\" name=\"page\" method=\"POST\">";
 	echo_home_page_list($filename);
 
+	echo "<br><br><img src=\"\" style=\"max-width: 400px; float: left; margin: 10px;\" id=\"orient_homepage_image\">";
+
 	echo "<h2>Pick the Articles</h2>";
 	echo "<div id=\"article-selects\">...</div>";
+	echo "<p><input type=\"checkbox\" name=\"later\" id=\"later\"><label for=\"later\">Update at 7:00 AM?</label>";
 	echo "<p><button class=\"button button-primary\" type=\"submit\">Update Home Page</button></p>";
 	echo "</form>";
 	echo "<div id=\"input-template\" style=\"display: none\">";
 	echo_article_select_input($articlelist);
+	// echo "or enter an ID: ";
+	// echo "<input type=\"text\" name=\"article_id\" placeholder=\"1885\"></input>";
 	echo "</div>";
 	echo "<script type=\"text/javascript\">var articleIds = " . json_encode($articlelist)  . ";</script>";
 }
@@ -80,14 +85,33 @@ function echo_home_page_list($filename) {
 function echo_article_select_input($articlelist) {
 	echo "<select name=\"page_id[]\" id=\"page_id\">";
 	echo "<option value=\"\" disabled>Select an article...</option>";
-	$args = array( 'numberposts' => 100);
+	$args = array( 'numberposts' => wp_count_posts()->publish, 'orderby' => 'date', 'order' => 'DESC', 'date_query' => array(
+        array(
+            'after' => '1 week ago'
+        )
+    ));
+
 	$posts = get_posts($args);
 
 	echo "<option value=\"\">No article (module should disappear)</option>";
 
 	foreach($posts as $post) {
 		setup_postdata($post);
-		echo "<option value=\"" . $post->ID . "\">" . substr($post->post_title, 0, 100) . "</option>";
+		echo "<option value=\"" . $post->ID . "\">* " . trim(substr($post->post_title, 0, 50)) . ((strlen($post->post_title)>50)?'...':'') . "</option>";
+	}
+
+	$args = array( 'numberposts' => wp_count_posts()->publish, 'orderby' => 'date', 'order' => 'DESC', 'date_query' => array(
+        array(
+            'before' => '1 week ago',
+            'inclusive' => true,
+        )
+    ));
+
+	$posts = get_posts($args);
+
+	foreach($posts as $post) {
+		setup_postdata($post);
+		echo "<option value=\"" . $post->ID . "\">" . date_format(date_create($post->post_date), 'n/j/y') . ' ' . trim(substr($post->post_title, 0, 50)) . ((strlen($post->post_title)>50)?'...':'') . "</option>";
 	}
 
 	echo "</select>";
