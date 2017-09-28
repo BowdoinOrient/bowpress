@@ -2,7 +2,7 @@ jQuery(document).ready(function() {
 	generateSelects();
 	updateImage();
 
-	jQuery('input').change(function() {
+	jQuery('input[name=file]').change(function() {
 		generateSelects();
 		updateImage();
 	});
