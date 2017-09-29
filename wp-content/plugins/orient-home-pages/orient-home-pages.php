@@ -32,17 +32,17 @@ function home_page_init() {
 		$filename = filter_var ( $_POST['file'], FILTER_SANITIZE_URL);
 		$articlelist = implode($_POST['page_id'], ',');
 
-		update_option('orient_homepage_filename', $filename);
-
 		if(isset($_POST['later']) && $_POST['later'] == true) {
 			update_option('orient_homepage_articles_later', $articlelist);
-			if (date('H') < 13) {
+			update_option('orient_homepage_filename_later', $filename);
+			if (date('H') < 7) {
 				update_option('orient_homepage_articles_later_time', date('U', strtotime("7AM")));
 			} else {
 				update_option('orient_homepage_articles_later_time', date('U', strtotime("tomorrow 7AM")));
 			}
 		} else {
 			update_option('orient_homepage_articles', $articlelist);
+			update_option('orient_homepage_filename', $filename);
 		}
 	}
 
@@ -101,6 +101,18 @@ function echo_home_page_list($filename) {
 function echo_article_select_input($articlelist) {
 	echo "<select name=\"page_id[]\" id=\"page_id\">";
 	echo "<option value=\"\" disabled>Select an article...</option>";
+	echo "<option value=\"\">No article (module should disappear)</option>";
+	
+	// Start with the drafts
+	$args = array( 'numberposts' => wp_count_posts()->draft, 'orderby' => 'date', 'order' => 'DESC', 'post_status' => 'draft');
+
+	$posts = get_posts($args);
+
+	foreach($posts as $post) {
+		setup_postdata($post);
+		echo "<option value=\"" . $post->ID . "\">( " . trim(substr($post->post_title, 0, 50)) . ((strlen($post->post_title)>50)?'...':'') . " )</option>";
+	}
+
 	$args = array( 'numberposts' => wp_count_posts()->publish, 'orderby' => 'date', 'order' => 'DESC', 'date_query' => array(
         array(
             'after' => '1 week ago'
@@ -108,8 +120,6 @@ function echo_article_select_input($articlelist) {
     ));
 
 	$posts = get_posts($args);
-
-	echo "<option value=\"\">No article (module should disappear)</option>";
 
 	foreach($posts as $post) {
 		setup_postdata($post);
@@ -156,10 +166,19 @@ function do_orient_homepage_shortcode() {
 
 			update_option('orient_homepage_articles', get_option('orient_homepage_articles_later'));
 			update_option('orient_homepage_articles_later', '');
+
+			update_option('orient_homepage_filename', get_option('orient_homepage_filename_later'));
+			update_option('orient_homepage_filename_later', '');
 	}
 
     $homepages_dir = get_stylesheet_directory() . '/homepages/';
 	$file = $homepages_dir . get_option('orient_homepage_filename');
+
+	if (is_user_logged_in() && get_option('orient_homepage_filename_later') != "") {
+		$file = $homepages_dir . get_option('orient_homepage_filename_later');
+		echo "<div class=\"alert alert-red\"<h1>This is the home page that will be published at 7:00 A.M.</h1><p>Log out of WordPress to see the current home page.</div>";
+	}
+
 	ob_start();
 	include($file);
     $output = ob_get_contents();
@@ -172,6 +191,11 @@ function home_render($module_name, $article_index = NULL) {
 	$homemodules_dir = get_stylesheet_directory() . '/homemodules/';
 
 	$ids = explode(',', get_option('orient_homepage_articles'));
+
+	if (is_user_logged_in() && get_option('orient_homepage_articles_later') != "") {
+		$ids = explode(',', get_option('orient_homepage_articles_later'));
+	}
+
 	$article_index = $article_index - 1;
 
 	if (isset($ids[$article_index]) && $ids[$article_index] === "") {

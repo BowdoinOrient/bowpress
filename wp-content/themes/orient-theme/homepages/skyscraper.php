@@ -3,14 +3,20 @@
 /*
  * Page Name: Skyscraper
  * Article Count: 32
- * Version: 1.1
+ * Version: 1.1.1
  */
 
 ?>
+
+<!-- Home Template: Skyscraper -->
+
 <div class="container-fluid">
 	<div class="row">
-		<div class="col col-xs-12">
+		<div class="col col-xs-12 border-bottom">
 			<?php echo home_render("M7", 11); ?>
+		</div>
+	</div>
+
 	<div class="row">
 		<div class="col col-md-6 col-sm-8 col-xs-12 col-md-push-2 border-left border-right">
 			<?php echo home_render("M1", 1); ?>

@@ -8,6 +8,10 @@
     border-bottom: 1px solid $light-gray !important; /* 1 */
     background: #FFF;
 
+    &:last-child {
+    	padding-bottom: 10px !important;
+    }
+
     /**
      * 1: Overrides the property on .module:last-of-type that says
      * that the last module in a list doesn't have a bottom border.
