@@ -6,7 +6,7 @@
 		<a href="/"><img src="<?php echo get_template_directory_uri() ?>/img/nameplate.svg" alt=""></a>
 	</div>
 	<div class="page-foot__contact">
-		<a href="mailto:orient@bowdoin.edu">orient@bowdoin.edu</a> &bullet; (207) 725-3300 &bullet; 6200 College Station, Brunswick, Maine 04011
+		<a href="mailto:orient@bowdoin.edu">orient@bowdoin.edu</a> &bullet; 6200 College Station, Brunswick, Maine 04011
 	</div>
 	<div class="page-foot__social">
 		<a href="https://www.facebook.com/bowdoinorient" class="facebook-icon">
