@@ -51,7 +51,7 @@
 
 	<div class="row">
 		<div class="col col-md-12">
-			<h1 class="block-title">Recently in &lsquo;Talk of the Quad&rsquo;</h1>
+			<h1 class="block-title"><a href="/series/talk-of-the-quad/">Recently in &lsquo;Talk of the Quad&rsquo;</a></h1>
 			<?php echo home_render("M5", 9); ?>
 			<?php echo home_render("M5", 10); ?>
 		</div>

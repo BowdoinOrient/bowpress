@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="col-md-6 border-right">
-		<h1 class="block-title">News</h1>
+		<h1 class="block-title"><a href="/section/news">News</a></h1>
 
 <?php
 $args = array(
@@ -28,7 +28,7 @@ if ( $the_query->have_posts() ) {
 	</div>
 
 	<div class="col-md-6">
-		<h1 class="block-title">Features</h1>
+		<h1 class="block-title"><a href="/section/features">Features</a></h1>
 
 <?php
 $args = array(
@@ -60,7 +60,7 @@ if ( $the_query->have_posts() ) {
 
 <div class="row">
 	<div class="col-md-4 border-right">
-		<h1 class="block-title">Arts &amp; Entertainment</h1>
+		<h1 class="block-title"><a href="/section/arts-entertainment">Arts &amp; Entertainment</a></h1>
 <?php
 $args = array(
 	'post-type' => 'post',
@@ -87,7 +87,7 @@ if ( $the_query->have_posts() ) {
 	</div>
 
 	<div class="col-md-4 border-right">
-		<h1 class="block-title">Sports</h1>
+		<h1 class="block-title"><a href="/section/sports">Sports</a></h1>
 <?php
 $args = array(
 	'post-type' => 'post',
@@ -114,7 +114,7 @@ if ( $the_query->have_posts() ) {
 	</div>
 
 	<div class="col-md-4">
-		<div class="block-title">Opinion</div>
+		<h1 class="block-title"><a href="/section/opinion">Opinion</a></h1>
 <?php
 $args = array(
 	'post-type' => 'post',
