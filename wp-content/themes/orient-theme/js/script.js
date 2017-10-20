@@ -99,6 +99,15 @@ function unHoverSectionMenu(e) {
 	});
 }
 
+console.log("LET'S FUCKING GO");
+
+jQuery(document).ready(function() {
+    jQuery('.carousel').slick({
+      dots: true,
+      adaptiveHeight: true,
+    });
+});
+
 var stickySidebar = jQuery('.content aside').offset().top;
 
 jQuery(window).scroll(function() {
@@ -138,12 +147,6 @@ jQuery(window).scroll(function() {
 /**
  * Make anything with the carousel class a carousel.
  */
-jQuery(document).ready(function() {
-    jQuery('.carousel').slick({
-      dots: true,
-      adaptiveHeight: true,
-    });
-  });
 
 
 setTimeout(function() {
