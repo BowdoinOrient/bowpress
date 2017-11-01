@@ -516,7 +516,6 @@
 	font-size: 0.8em;
 	width: 100%;
 	border: 1px solid $light-gray;
-	border-radius: 5px;
 	padding: 10px;
 }
 
@@ -535,6 +534,7 @@
 	padding-bottom: 0.5em;
 	margin-bottom: 0.5em;
 	border-bottom: 1px solid $light-gray;
+	line-height: 1.2;
 }
 
 .article-packaging__list {
