@@ -83,49 +83,6 @@ if (have_posts()) {
 	<div class="single__content">
 
 		<!-- If there's a package for the article, it gets included here. -->
-		<?php
-			$packages = get_posts(array(
-				'post_type' => 'packaging',
-				'post_status' => 'publish',
-				'limit' => 1,
-				'meta_query' => array(
-					array(
-						'key' => 'articles',
-						'value' => '"' . get_the_ID() . '"',
-						'compare' => 'LIKE'
-					)
-				)
-			));
-
-
-		?>
-
-		<?php if(isset($packages[0])): ?>
-<?php
-			$package = $packages[0];
-			$package_articles = get_field('articles', $package->ID, false);
-			$args = array(
-				'post__in' => $package_articles,
-				'orderby' => 'post_date',
-			);
-
-			$post_objects = get_posts( $args );
-?>
-			<div class="article-packaging">
-				<h1 class="article-packaging__header"><?php echo $package->post_title; ?></h1>
-				<p class="article-packaging__blurb"><?php echo $package->post_content; ?></p>
-				<div class="article-packaging__list">
-					<?php foreach($post_objects as $packaging_article): ?>
-						<?php $curr = false; if($packaging_article->ID == get_the_ID()) {$curr = true;} ?>
-						<a href="<?php echo get_permalink($packaging_article->ID); ?>"
-						   class="<?php echo $curr ? "current" : ""; ?>">
-							<!--<img src="<?php echo wp_get_attachment_url( get_post_thumbnail_id($packaging_article->ID)); ?>">-->
-							<?php echo $packaging_article->post_title; ?> <span class="article-packaging__date"><?php echo get_the_date( 'F j, Y', $packaging_article->ID); ?></span>
-						</a>
-					<?php endforeach; ?>
-				</div>
-			</div>
-		<?php endif; ?>
 
 		<?php the_content() ?>
 

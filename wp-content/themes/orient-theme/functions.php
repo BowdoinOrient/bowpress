@@ -290,6 +290,54 @@ function author_and_date($echo = true, $id = null) {
 
 
 
+function packaging_shortcode( $atts ){
+	$packages = get_posts(array(
+		'post_type' => 'packaging',
+		'post_status' => 'publish',
+		'limit' => 1,
+		'meta_query' => array(
+			array(
+				'key' => 'articles',
+				'value' => '"' . get_the_ID() . '"',
+				'compare' => 'LIKE'
+			)
+		)
+	));
+
+	if(isset($packages[0])) {
+		$package = $packages[0];
+		$package_articles = get_field('articles', $package->ID, false);
+		$packaging_args = array(
+			'post__in' => $package_articles,
+			'orderby' => 'post_date',
+		);
+
+		$post_objects = get_posts( $packaging_args );
+		$output = '<div class="article-packaging">
+				<h1 class="article-packaging__header">' . $package->post_title . '</h1>
+				<p class="article-packaging__blurb">' . $package->post_content . '</p>
+				<div class="article-packaging__list">';
+		foreach($post_objects as $packaging_article) {
+			$curr = false;
+			if($packaging_article->ID == get_the_ID()) {
+				$curr = true;
+			}
+
+			$output .= '<a href="' . get_permalink($packaging_article->ID) . '"
+				class="' . ($curr ? "current" : "") . '">';
+			$output .= $packaging_article->post_title;
+			$output .= '<span class="article-packaging__date">' . get_the_date( 'F j, Y', $packaging_article->ID) . '</span></a>';
+		}
+
+		$output .= '</div></div>';
+		return $output;
+	}
+}
+
+add_shortcode( 'packaging', 'packaging_shortcode' );
+
+
+
 add_theme_support( 'post-thumbnails' );
 set_post_thumbnail_size( 640, 480, array('center', 'center'));
 add_image_size( 'module', 640, 480, array('center', 'center'));

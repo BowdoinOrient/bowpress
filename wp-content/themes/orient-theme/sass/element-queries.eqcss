@@ -90,14 +90,23 @@
 }
 
 @element '.article-packaging' and (max-width: 600px) {
+
 	$this .article-packaging__list {
 		display: block;
+	}
+
+	$this .article-packaging__blurb {
+		border-bottom-width: 2px;
 	}
 
 	$this .article-packaging__list a {
 		border-right: none;
 		border-bottom: 1px solid rgb(128, 128, 128);
-		padding: 5px 0;
+		padding: 12px 0;
+	}
+
+	$this.article-packaging__list a:last-of-type {
+		border-bottom: none;
 	}
 
 	$this .article-packaging__date {
