@@ -322,5 +322,44 @@ if(function_exists("register_field_group"))
 		),
 		'menu_order' => 0,
 	));
+
+register_field_group(array (
+		'id' => 'acf_packaging',
+		'title' => 'Packaging',
+		'fields' => array (
+			array (
+				'key' => 'field_59f9e2ff498ff',
+				'label' => 'Articles',
+				'name' => 'articles',
+				'type' => 'post_object',
+				'post_type' => array (
+					0 => 'post',
+				),
+				'taxonomy' => array (
+					0 => 'all',
+				),
+				'allow_null' => 0,
+				'multiple' => 1,
+			),
+		),
+		'location' => array (
+			array (
+				array (
+					'param' => 'post_type',
+					'operator' => '==',
+					'value' => 'packaging',
+					'order_no' => 0,
+					'group_no' => 0,
+				),
+			),
+		),
+		'options' => array (
+			'position' => 'acf_after_title',
+			'layout' => 'default',
+			'hide_on_screen' => array (
+			),
+		),
+		'menu_order' => 0,
+	));
 }
 

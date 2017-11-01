@@ -17,6 +17,22 @@ defined( 'ABSPATH' ) or die;
 
 /* Alert post type */
 
+add_action( 'init', 'create_packaging_post_type' );
+
+function create_packaging_post_type() {
+	register_post_type( 'packaging',
+		array(
+			'labels' => array(
+				'name' => 'Packaging',
+				'singular_name' => 'Package'
+			),
+			'public' => true,
+			'has_archive' => false,
+			'menu_icon'   => 'dashicons-list-view',
+		)
+	);
+}
+
 add_action( 'init', 'create_alert_post_type' );
 
 function create_alert_post_type() {
@@ -32,7 +48,6 @@ function create_alert_post_type() {
 		)
 	);
 }
-
 
 add_action( 'init', 'create_ad_post_type' );
 

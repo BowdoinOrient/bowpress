@@ -5,8 +5,8 @@
  * first. These two lines show code errors and warnings. If they're commented
  * out, uncomment them (not in production!!) to see what's gone wrong.
  */
- // error_reporting(E_ALL);
- // ini_set('display_errors', 1);
+  //error_reporting(E_ALL);
+  //ini_set('display_errors', 1);
 
 
 
@@ -25,8 +25,8 @@ function orient_theme_plugin_check() {
 		!is_plugin_active( 'just-wp-variables/just-variables.php' ) ||
 		!is_plugin_active( 'wordpress-popular-posts/wordpress-popular-posts.php' ) ||
 		!is_plugin_active( 'orient-image-handling/orient-image-handling.php' ) ||
-		!is_plugin_active( 'orient-taxonomies/orient-taxonomies.php' ) || 
-		!is_plugin_active( 'orient-home-pages/orient-home-pages.php' ) 
+		!is_plugin_active( 'orient-taxonomies/orient-taxonomies.php' ) ||
+		!is_plugin_active( 'orient-home-pages/orient-home-pages.php' )
 	  )
 	) {
 		add_action( 'admin_notices', 'plugin_notice' );
@@ -101,15 +101,6 @@ function change_paste_as_text($mceInit, $editor_id){
 }
 add_filter('tiny_mce_before_init', 'change_paste_as_text', 1, 2);
 
-/**
- * We don't really want an "Edit with Visual Composer" button in the admin
- * bar because by default, people should be editing with visual composer.
- */
-
-function vc_remove_wp_admin_bar_button() {
-	remove_action( 'admin_bar_menu', array( vc_frontend_editor(), 'adminBarEditLink' ), 1000 );
-}
-add_action( 'vc_after_init', 'vc_remove_wp_admin_bar_button' );
 
 /**
  * Redefines the HTML structure for the Popular Posts plugin
