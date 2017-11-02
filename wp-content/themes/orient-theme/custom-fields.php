@@ -297,6 +297,7 @@ if(function_exists("register_field_group"))
 				'type' => 'select',
 				'choices' => array (
 					'regular' => 'Regular',
+					'big-art' => 'Big Art',
 				),
 				'default_value' => 'regular',
 				'allow_null' => 0,

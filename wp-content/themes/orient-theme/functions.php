@@ -39,22 +39,6 @@ function plugin_notice() {
 
 add_filter('xmlrpc_enabled', '__return_false');
 
-
-
-
-
-/**
- * Wordpress wants you to be able to embed nearly anything from nearly any part
- * of the internet. We're smarter than that. We can get rid of a pretty large
- * javascript file if we decide to embed things ourselves. This is a heavy
- * assumption -- if the EICs or the web editors want to change this they can.
- */
-/* function my_deregister_scripts(){
-  wp_deregister_script( 'wp-embed' );
-}*/
-
-add_action( 'wp_footer', 'my_deregister_scripts' );
-
 /**
  * Get some JQuery up in here
  */

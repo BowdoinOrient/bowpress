@@ -99,8 +99,6 @@ function unHoverSectionMenu(e) {
 	});
 }
 
-console.log("LET'S FUCKING GO");
-
 jQuery(document).ready(function() {
     jQuery('.carousel').slick({
       dots: true,
@@ -108,46 +106,27 @@ jQuery(document).ready(function() {
     });
 });
 
-var stickySidebar = jQuery('.content aside').offset().top;
+if(jQuery('.content aside').length) {
+	var stickySidebar = jQuery('.content aside').offset().top;
 
-jQuery(window).scroll(function() {
-    if (jQuery(window).scrollTop() > stickySidebar) {
-		var aside = jQuery('.content aside');
-		if(!aside.hasClass("affix")) {
-			jQuery('.content aside').css('width', aside.width());
-			aside.css('left', aside.offset().left);
-			jQuery('.content aside').addClass('affix');
+	jQuery(window).scroll(function() {
+		if (jQuery(window).scrollTop() > stickySidebar) {
+			var aside = jQuery('.content aside');
+			if(!aside.hasClass("affix")) {
+				jQuery('.content aside').css('width', aside.width());
+				aside.css('left', aside.offset().left);
+				jQuery('.content aside').addClass('affix');
+			}
 		}
-    }
-    else {
-        jQuery('.content aside').removeClass('affix');
-    }
-});
-
-// jQuery('.home-nav__section-links .news').mouseover(function() {
-// 	jQuery('.section-menu__content--news').removeClass('js-hidden');
-// });
-
-// jQuery('.home-nav__section-links .features').mouseover(function() {
-// 	jQuery('.section-menu__content--features').removeClass('js-hidden');
-// });
-
-// jQuery('.home-nav__section-links .arts-entertainment').mouseover(function() {
-// 	jQuery('.section-menu__content--arts-entertainment').removeClass('js-hidden');
-// });
-
-// jQuery('.home-nav__section-links .sports').mouseover(function() {
-// 	jQuery('.section-menu__content--sports').removeClass('js-hidden');
-// });
-
-// jQuery('.home-nav__section-links .opinion').mouseover(function() {
-// 	jQuery('.section-menu__content--opinion').removeClass('js-hidden');
-// });
+		else {
+			jQuery('.content aside').removeClass('affix');
+		}
+	});
+}
 
 /**
  * Make anything with the carousel class a carousel.
  */
-
 
 setTimeout(function() {
 	jQuery('.random-box').fadeOut();
