@@ -97,6 +97,7 @@ if(function_exists("register_field_group"))
 				'allow_null' => 0,
 				'multiple' => 0,
 			),
+/*
 			array (
 				'key' => 'field_584b63f3f495d',
 				'label' => 'Start Date',
@@ -117,6 +118,7 @@ if(function_exists("register_field_group"))
 				'display_format' => 'dd/mm/yy',
 				'first_day' => 0,
 			),
+*/
 		),
 		'location' => array (
 			array (

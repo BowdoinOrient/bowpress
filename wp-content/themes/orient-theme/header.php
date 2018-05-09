@@ -13,7 +13,7 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<!-- Links -->
-	<link rel="stylesheet" href="<?php echo get_stylesheet_uri(); ?>">
+	<link rel="stylesheet" href="<?php echo get_stylesheet_uri(); ?>?11022017">
 	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
 	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>
 	<script type="text/eqcss" src="<?php echo get_stylesheet_directory_uri(); ?>/sass/element-queries.eqcss"></script>
@@ -24,22 +24,34 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 	</style>
 
 	<!-- Font loading -->
-	<script type="text/javascript" src="http://use.typekit.com/rmt0nbm.js"></script>
+	<script type="text/javascript" src="https://use.typekit.com/rmt0nbm.js"></script>
 	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 	<!-- <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/7613576/7415972/css/fonts.css" /> -->
 
 	<link rel="author" href="/humans.txt">
 
 	<!-- Icons, etc. -->
-	<!--
-	<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png?v=2">
-	<link rel="icon" type="image/png" href="/icons/favicon-32x32.png?v=2" sizes="32x32">
-	<link rel="icon" type="image/png" href="/icons/favicon-16x16.png?v=2" sizes="16x16">
-	<link rel="manifest" href="/icons/manifest.json?v=2">
-	<link rel="mask-icon" href="/icons/safari-pinned-tab.svg?v=2" color="#000000">
-	<link rel="shortcut icon" href="/icons/favicon.ico?v=2">
-	<meta name="theme-color" content="#ffffff">
-	-->
+	<link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="60x60" href="apple-touch-icon-60x60.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152.png" />
+	<link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196" />
+	<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+	<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+	<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+	<link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128" />
+	<meta name="application-name" content="&nbsp;"/>
+	<meta name="msapplication-TileColor" content="#FFFFFF" />
+	<meta name="msapplication-TileImage" content="mstile-144x144.png" />
+	<meta name="msapplication-square70x70logo" content="mstile-70x70.png" />
+	<meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
+	<meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
+	<meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
+
 
 	<!-- Meta Description for Search Engines -->
 	<meta name="description" content="The Bowdoin Orient is the student-run newspaper of Bowdoin College in Brunswick, Maine. It is the oldest continuously running weekly student newspaper in the United States.">

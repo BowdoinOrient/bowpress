@@ -51,6 +51,7 @@ function home_page_init() {
 
 	echo "<h2>Pick a Template</h2>";
 	echo "<form id=\"page\" name=\"page\" method=\"POST\">";
+	echo "<p><i>Note: I got rid of the other home pages because they don't look good. If you want to design a better looking home page be my guest.</i></p>";
 	echo_home_page_list($filename);
 
 	echo "<br><br><img src=\"\" style=\"max-width: 400px; float: left; margin: 10px;\" id=\"orient_homepage_image\">";

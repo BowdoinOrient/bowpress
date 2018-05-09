@@ -130,6 +130,7 @@ function remove_some_nodes_from_admin_top_bar_menu( $wp_admin_bar ) {
 }
 
 add_action('admin_menu', 'dont_let_editors_do_some_stuff', 999);
+add_action('wp_before_admin_bar_render', 'dont_let_editors_do_other_stuff', 999);
 function dont_let_editors_do_some_stuff() {
 	if(in_array("editor", wp_get_current_user()->roles)) {
 		remove_menu_page( 'edit-comments.php' ); // Page for editing comments
@@ -137,6 +138,18 @@ function dont_let_editors_do_some_stuff() {
 		remove_menu_page('edit.php?post_type=alert'); // Alert custom post type
 		remove_menu_page('tools.php'); // Tools -- this encompasses a bunch
 		remove_menu_page('vc-welcome'); // Visual composer options
+		remove_menu_page('options-general.php');
+		remove_menu_page('edit.php?post_type=acf'); // Alert custom post type
+		remove_menu_page('theseoframework-settings'); // Alert custom post type
+		remove_menu_page('home-pages'); // Alert custom post type
+		remove_menu_page('WP-Optimize'); // Alert custom post type
+	}
+}
+
+function dont_let_editors_do_other_stuff() {
+	if(in_array("editor", wp_get_current_user()->roles)) {
+		global $wp_admin_bar;
+	    	$wp_admin_bar->remove_menu('comments');
 	}
 }
 
@@ -146,6 +159,7 @@ function dont_let_editors_do_some_stuff() {
 
 $role_object = get_role( 'editor' );
 $role_object->add_cap( 'edit_theme_options' );
+$role_object->add_cap( 'manage_options' );
 $role_object->remove_cap('moderate_comments');
 
 /**
