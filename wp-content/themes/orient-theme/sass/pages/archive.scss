@@ -14,15 +14,15 @@
 	font-family: $alt-font-family;
 	font-weight: 900;
 	// text-transform: uppercase;
-	
+
 	position: absolute;
 	width: 100%;
 	bottom: 0;
-	
+
 	margin: 0;
 	margin-bottom: 0.2em;
 	margin-left: 0.3em;
-	
+
 	color: white;
 	text-shadow: 0px 0px 8px hsla(0, 0%, 0%, 1);
 }
@@ -42,31 +42,31 @@
 }
 
 .category-news .archive-header {
-	background-image: 
+	background-image:
 		linear-gradient(to bottom, hsla(0, 0%, 0%, 0), hsla(0, 0%, 0%, 0) 60%, hsla(0, 0%, 0%, 0.7)),
 		url('/wp-content/themes/orient-theme/img/news-header.jpg');
 }
 
 .category-features .archive-header {
-	background-image: 
+	background-image:
 		linear-gradient(to bottom, hsla(0, 0%, 0%, 0), hsla(0, 0%, 0%, 0) 60%, hsla(0, 0%, 0%, 0.7)),
 		url('/wp-content/themes/orient-theme/img/features-header.jpg');
 }
 
 .category-arts-entertainment .archive-header {
-	background-image: 
+	background-image:
 		linear-gradient(to bottom, hsla(0, 0%, 0%, 0), hsla(0, 0%, 0%, 0) 60%, hsla(0, 0%, 0%, 0.7)),
 		url('/wp-content/themes/orient-theme/img/arts-header.jpg');
 }
 
 .category-sports .archive-header {
-	background-image: 
+	background-image:
 		linear-gradient(to bottom, hsla(0, 0%, 0%, 0), hsla(0, 0%, 0%, 0) 60%, hsla(0, 0%, 0%, 0.7)),
 		url('/wp-content/themes/orient-theme/img/sports-header.jpg');
 }
 
 .category-opinion .archive-header {
-	background-image: 
+	background-image:
 		linear-gradient(to bottom, hsla(0, 0%, 0%, 0), hsla(0, 0%, 0%, 0) 60%, hsla(0, 0%, 0%, 0.7)),
 		url('/wp-content/themes/orient-theme/img/opinion-header.jpg');
 }
@@ -120,6 +120,15 @@
 
 // Tag
 
+.tag-archive-header-special-title {
+	font-family: $headline-font-family;
+	font-weight: 900;
+	font-style: italic;
+	font-size: 3.5rem;
+
+	margin-bottom: 0.2em;
+}
+
 .tag-archive-header-title {
 	font-family: $alt-font-family;
 	font-weight: 300;
@@ -129,7 +138,7 @@
 	color: $white;
 	padding: 0.3em 0.7em;
 	border-radius: 50px;
-	
+
 	margin-bottom: 0.2em;
 }
 

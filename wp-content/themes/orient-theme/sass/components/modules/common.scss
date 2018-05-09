@@ -196,3 +196,38 @@
 	border-top: 1px solid $black;
 	border-bottom: 2px solid $black;
 }
+
+.special-block {
+    background-color: #ccc;
+	padding: 12px;
+	margin-bottom: $vertical-rhythm;
+
+	.row {
+		margin-bottom: 0;
+	}
+
+	.module {
+		margin-bottom: 0.5em;
+	}
+}
+
+.special-block--header {
+	text-align: center;
+	margin-bottom: 1.5rem;
+
+	h1 {
+		margin-bottom: 0.2em;
+		font-size: 3rem;
+		font-style: italic;
+	}
+
+	h2 {
+		font-family: $alt-font-family;
+		margin-top: 0;
+		font-size: 1.3rem;
+
+		a {
+			text-decoration: underline;
+		}
+	}
+}

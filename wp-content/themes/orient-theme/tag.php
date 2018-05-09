@@ -7,13 +7,12 @@ get_header(); ?>
 	<?php if ( have_posts() ) : ?>
 
 		<header class="archive-header tag-archive-header">
-			<h1 class="tag-archive-header-title"><?php single_cat_title() ?></h1>
-
-			<?php if(have_posts()): ?>
-				<p><strong>Number of articles: </strong> <?php print_r(count($wp_query->posts)); ?></p>
-				<!-- <p><strong>First Article: </strong><?php echo get_the_date('F j, Y', $wp_query->posts[count($wp_query->posts) - 1]->ID); ?></p>
-				<p><strong>Latest Article: </strong><?php echo get_the_date('F j, Y', $wp_query->posts[0]->ID); ?></p> -->
+			<?php if(single_cat_title("", false) == "andross"): ?>
+				<h1 class="tag-archive-header-special-title">Finding Fort Andross: A closer look inside Brunswick’s former textile mill</h1>
+			<?php else: ?>
+				<h1 class="tag-archive-header-title"><?php single_cat_title() ?></h1>
 			<?php endif; ?>
+			<?php if(tag_description()): ?><?php echo tag_description(); ?><?php endif; ?>
 		</header><!-- .archive-header -->
 
 		<div class="articles">
