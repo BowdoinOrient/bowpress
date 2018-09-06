@@ -6,31 +6,52 @@ class WP_Optimization_trackbacks extends WP_Optimization {
 
 	public $ui_sort_order = 7000;
 
-	public function optimize() {
+	/**
+	 * Do actions after optimize() function.
+	 */
+	public function after_optimize() {
+		$message = sprintf(_n('%s trackback deleted', '%s trackbacks deleted', $this->processed_count, 'wp-optimize'), number_format_i18n($this->processed_count));
 
-		$clean = "DELETE FROM `".$this->wpdb->comments."` WHERE comment_type = 'trackback';";
+		if ($this->is_multisite_mode()) {
+			$message .= ' '. sprintf(_n('across %s site', 'across %s sites', count($this->blogs_ids), 'wp-optimize'), count($this->blogs_ids));
+		}
+
+		$this->logger->info($message);
+		$this->register_output($message);
+	}
+
+	/**
+	 * Do optimization.
+	 */
+	public function optimize() {
+		$clean = "DELETE c, cm FROM `" . $this->wpdb->comments . "` c LEFT JOIN `" . $this->wpdb->commentmeta . "` cm ON c.comment_ID = cm.comment_id WHERE comment_type = 'trackback';";
 
 		$comments = $this->query($clean);
-
-        $info_message = sprintf(_n('%d trackback deleted', '%d trackbacks deleted', $comments, 'wp-optimize'), number_format_i18n($comments));
-
-        $this->logger->info($info_message);
-		$this->register_output( $info_message );
+		$this->processed_count += $comments;
 	}
-	
-	public function get_info() {
-		
-		$sql = "SELECT COUNT(*) FROM `".$this->wpdb->comments."` WHERE comment_type='trackback';";
 
-		$comments = $this->wpdb->get_var($sql);
-		
-		if(!$comments == NULL || !$comments == 0){
-			$message = sprintf(_n('%d Trackback found', '%d Trackbacks found', $comments, 'wp-optimize'), number_format_i18n($comments));
+	/**
+	 * Do actions after get_info() function.
+	 */
+	public function after_get_info() {
+		if ($this->found_count) {
+			$message = sprintf(_n('%s Trackback found', '%s Trackbacks found', $this->found_count, 'wp-optimize'), number_format_i18n($this->found_count));
 		} else {
 			$message = __('No trackbacks found', 'wp-optimize');
 		}
-		
+
+		if ($this->is_multisite_mode()) {
+			$message .= ' ' . sprintf(_n('across %s site', 'across %s sites', count($this->blogs_ids), 'wp-optimize'), count($this->blogs_ids));
+		}
+
 		$this->register_output($message);
+	}
+
+	public function get_info() {
+		$sql = "SELECT COUNT(*) FROM `" . $this->wpdb->comments . "` WHERE comment_type='trackback';";
+
+		$comments = $this->wpdb->get_var($sql);
+		$this->found_count += $comments;
 	}
 
 	public function settings_label() {

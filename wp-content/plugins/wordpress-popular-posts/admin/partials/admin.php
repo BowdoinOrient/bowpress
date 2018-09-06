@@ -2,8 +2,15 @@
 if ( basename($_SERVER['SCRIPT_NAME']) == basename(__FILE__) )
     exit( 'Please do not load this page directly' );
 
+$tabs = array(
+    'stats' => __( 'Stats', 'wordpress-popular-posts' ),
+    'tools' => __( 'Tools', 'wordpress-popular-posts' ),
+    'params' => __( 'Parameters', 'wordpress-popular-posts' ),
+    'debug' => 'Debug'
+);
+
 // Set active tab
-if ( isset( $_GET['tab'] ) )
+if ( isset( $_GET['tab'] ) && isset( $tabs[$_GET['tab']] ) )
     $current = $_GET['tab'];
 else
     $current = 'stats';
@@ -22,8 +29,8 @@ if ( isset($_POST['section']) ) {
             $this->options['stats']['post_type'] = empty( $_POST['stats_type'] ) ? "post,page" : $_POST['stats_type'];
             $this->options['stats']['freshness'] = empty( $_POST['stats_freshness'] ) ? false : $_POST['stats_freshness'];
 
-            update_site_option( 'wpp_settings_config', $this->options );
-            echo "<div class=\"updated\"><p><strong>" . __( 'Settings saved.', 'wordpress-popular-posts' ) . "</strong></p></div>";
+            update_option( 'wpp_settings_config', $this->options );
+            echo "<div class=\"notice notice-success is-dismissible\"><p><strong>" . __( 'Settings saved.', 'wordpress-popular-posts' ) . "</strong></p></div>";
 
         }
 
@@ -37,8 +44,8 @@ if ( isset($_POST['section']) ) {
             $this->options['tools']['link']['target'] = $_POST['link_target'];
             $this->options['tools']['css'] = $_POST['css'];
 
-            update_site_option( 'wpp_settings_config', $this->options );
-            echo "<div class=\"updated\"><p><strong>" . __( 'Settings saved.', 'wordpress-popular-posts' ) . "</strong></p></div>";
+            update_option( 'wpp_settings_config', $this->options );
+            echo "<div class=\"notice notice-success is-dismissible\"><p><strong>" . __( 'Settings saved.', 'wordpress-popular-posts' ) . "</strong></p></div>";
 
         }
     }
@@ -59,10 +66,9 @@ if ( isset($_POST['section']) ) {
                 $this->options['tools']['thumbnail']['field'] = ( !empty( $_POST['thumb_field']) ) ? $_POST['thumb_field'] : "wpp_thumbnail";
                 $this->options['tools']['thumbnail']['default'] = ( !empty( $_POST['upload_thumb_src']) ) ? $_POST['upload_thumb_src'] : "";
                 $this->options['tools']['thumbnail']['resize'] = $_POST['thumb_field_resize'];
-                $this->options['tools']['thumbnail']['responsive'] = $_POST['thumb_responsive'];
 
-                update_site_option( 'wpp_settings_config', $this->options );
-                echo "<div class=\"updated\"><p><strong>" . __( 'Settings saved.', 'wordpress-popular-posts' ) . "</strong></p></div>";
+                update_option( 'wpp_settings_config', $this->options );
+                echo "<div class=\"notice notice-success is-dismissible\"><p><strong>" . __( 'Settings saved.', 'wordpress-popular-posts' ) . "</strong></p></div>";
 
             }
 
@@ -102,8 +108,8 @@ if ( isset($_POST['section']) ) {
               ? $_POST['sample_rate']
               : 100;
 
-            update_site_option( 'wpp_settings_config', $this->options );
-            echo "<div class=\"updated\"><p><strong>" . __( 'Settings saved.', 'wordpress-popular-posts' ) . "</strong></p></div>";
+            update_option( 'wpp_settings_config', $this->options );
+            echo "<div class=\"notice notice-success is-dismissible\"><p><strong>" . __( 'Settings saved.', 'wordpress-popular-posts' ) . "</strong></p></div>";
 
         }
     }
@@ -116,10 +122,10 @@ if ( $this->options['tools']['css'] && !file_exists( get_stylesheet_directory() 
 
 $rand = md5( uniqid(rand(), true) );
 
-if ( !$wpp_rand = get_site_option("wpp_rand") ) {
-    add_site_option( "wpp_rand", $rand );
+if ( !$wpp_rand = get_option("wpp_rand") ) {
+    add_option( "wpp_rand", $rand );
 } else {
-    update_site_option( "wpp_rand", $rand );
+    update_option( "wpp_rand", $rand );
 }
 
 ?>
@@ -131,7 +137,7 @@ if ( !$wpp_rand = get_site_option("wpp_rand") ) {
                 ajaxurl,
                 {
                     action: 'wpp_clear_data',
-                    token: '<?php echo get_site_option("wpp_rand"); ?>',
+                    token: '<?php echo get_option("wpp_rand"); ?>',
                     clear: 'cache'
                 }, function(data){
                     var response = "";
@@ -170,7 +176,7 @@ if ( !$wpp_rand = get_site_option("wpp_rand") ) {
                 ajaxurl,
                 {
                     action: 'wpp_clear_data',
-                    token: '<?php echo get_site_option("wpp_rand"); ?>',
+                    token: '<?php echo get_option("wpp_rand"); ?>',
                     clear: 'all'
                 }, function(data){
                     var response = "";
@@ -209,7 +215,7 @@ if ( !$wpp_rand = get_site_option("wpp_rand") ) {
                 ajaxurl,
                 {
                     action: 'wpp_clear_thumbnail',
-                    token: '<?php echo get_site_option("wpp_rand"); ?>'
+                    token: '<?php echo get_option("wpp_rand"); ?>'
                 }, function(data){
                     var response = "";
 
@@ -251,14 +257,6 @@ if ( !$wpp_rand = get_site_option("wpp_rand") ) {
     </ul>
 </nav>
 
-<?php
-$tabs = array(
-    'stats' => __( 'Stats', 'wordpress-popular-posts' ),
-    'tools' => __( 'Tools', 'wordpress-popular-posts' ),
-    'params' => __( 'Parameters', 'wordpress-popular-posts' ),
-    'about' => __( 'About', 'wordpress-popular-posts' )
-);
-?>
 <div class="wpp-wrapper wpp-section-<?php echo $current; ?>">
 
     <div class="wpp-header">
@@ -345,10 +343,11 @@ $tabs = array(
         <h5><?php echo $chart_data['totals']['label_date_range']; ?></h5>
 
         <ul class="wpp-header-nav" id="wpp-time-ranges">
-            <li <?php echo ( 'daily' == $this->options['stats']['range'] || 'last24hours' == $this->options['stats']['range'] ) ? ' class="current"' : ''; ?>><a href="#" data-range="last24hours" title="Last 24 hours">24h</a></li>
-            <li <?php echo ( 'weekly' == $this->options['stats']['range'] || 'last7days' == $this->options['stats']['range'] ) ? ' class="current"' : ''; ?>><a href="#" data-range="last7days" title="Last 7 days">7d</a></li>
-            <li <?php echo ( 'monthly' == $this->options['stats']['range'] || 'last30days' == $this->options['stats']['range'] ) ? ' class="current"' : ''; ?>><a href="#" data-range="last30days" title="Last 30 days">30d</a></li>
-            <li <?php echo ( 'custom' == $this->options['stats']['range'] ) ? ' class="current"' : ''; ?>><a href="#"  data-range="custom" title="Custom">Custom</a></li>
+            <li <?php echo ( 'daily' == $this->options['stats']['range'] || 'today' == $this->options['stats']['range'] ) ? ' class="current"' : ''; ?>><a href="#" data-range="today" title="<?php esc_attr_e( 'Today', 'wordpress-popular-posts' ); ?>"><?php _e( 'Today', 'wordpress-popular-posts' ); ?></a></li>
+            <li <?php echo ( 'daily' == $this->options['stats']['range'] || 'last24hours' == $this->options['stats']['range'] ) ? ' class="current"' : ''; ?>><a href="#" data-range="last24hours" title="<?php esc_attr_e( 'Last 24 hours', 'wordpress-popular-posts' ); ?>">24h</a></li>
+            <li <?php echo ( 'weekly' == $this->options['stats']['range'] || 'last7days' == $this->options['stats']['range'] ) ? ' class="current"' : ''; ?>><a href="#" data-range="last7days" title="<?php esc_attr_e( 'Last 7 days', 'wordpress-popular-posts' ); ?>">7d</a></li>
+            <li <?php echo ( 'monthly' == $this->options['stats']['range'] || 'last30days' == $this->options['stats']['range'] ) ? ' class="current"' : ''; ?>><a href="#" data-range="last30days" title="<?php esc_attr_e( 'Last 30 days', 'wordpress-popular-posts' ); ?>">30d</a></li>
+            <li <?php echo ( 'custom' == $this->options['stats']['range'] ) ? ' class="current"' : ''; ?>><a href="#"  data-range="custom" title="<?php esc_attr_e( 'Custom', 'wordpress-popular-posts' ); ?>"><?php _e( 'Custom', 'wordpress-popular-posts' ); ?></a></li>
         </ul>
 
         <div id="wpp-chart">
@@ -363,10 +362,10 @@ $tabs = array(
 
     <div id="wpp-listing" class="wpp-content"<?php echo ( 'stats' == $current ) ? '' : ' style="display: none;"'; ?>>
         <ul class="wpp-tabbed-nav">
-            <li class="active"><a href="#" title="Most viewed"><span class="fa fa-eye"></span><span>Most viewed</span></a></li>
-            <li><a href="#" title="Most commented"><span class="fa fa-comment-o"></span><span>Most commented</span></a></li>
-            <li><a href="#" title="Trending now"><span class="fa fa-rocket"></span><span>Trending now</span></a></li>
-            <li><a href="#" title="Hall of Fame"><span class="fa fa-trophy"></span><span>Hall of Fame</span></a></li>
+            <li class="active"><a href="#" title="<?php esc_attr_e( 'Most viewed', 'wordpress-popular-posts' ); ?>"><span class="fa fa-eye"></span><span><?php _e( 'Most viewed', 'wordpress-popular-posts' ); ?></span></a></li>
+            <li><a href="#" title="<?php esc_attr_e( 'Most commented', 'wordpress-popular-posts' ); ?>"><span class="fa fa-comment-o"></span><span><?php _e( 'Most commented', 'wordpress-popular-posts' ); ?></span></a></li>
+            <li><a href="#" title="<?php esc_attr_e( 'Trending now', 'wordpress-popular-posts' ); ?>"><span class="fa fa-rocket"></span><span><?php _e( 'Trending now', 'wordpress-popular-posts' ); ?></span></a></li>
+            <li><a href="#" title="<?php esc_attr_e( 'Hall of Fame', 'wordpress-popular-posts' ); ?>"><span class="fa fa-trophy"></span><span><?php _e( 'Hall of Fame', 'wordpress-popular-posts' ); ?></span></a></li>
         </ul>
 
         <div class="wpp-tab-content wpp-tab-content-active">
@@ -488,9 +487,9 @@ $tabs = array(
                             <div id="thumb-review">
                                 <img src="<?php echo ( $this->options['tools']['thumbnail']['default'] ) ? str_replace( parse_url( $this->options['tools']['thumbnail']['default'], PHP_URL_SCHEME ) . ':', '', $this->options['tools']['thumbnail']['default'] ) : plugins_url() . '/wordpress-popular-posts/public/images/no_thumb.jpg'; ?>" alt="" border="0" />
                             </div>
-                            <input id="upload_thumb_button" type="button" class="button" value="<?php _e( "Upload thumbnail", 'wordpress-popular-posts' ); ?>" />
+                            <input id="upload_thumb_button" type="button" class="button" value="<?php _e( "Change thumbnail", 'wordpress-popular-posts' ); ?>" />
                             <input type="hidden" id="upload_thumb_src" name="upload_thumb_src" value="" />
-                            <p class="description"><?php _e("How-to: upload (or select) an image, set Size to Full and click on Upload. After it's done, hit on Apply to save changes", 'wordpress-popular-posts'); ?>.</p>
+                            <p class="description"><?php _e("This image will be displayed when no thumbnail is available", 'wordpress-popular-posts'); ?>.</p>
                         </td>
                     </tr>
                     <tr valign="top">
@@ -521,19 +520,8 @@ $tabs = array(
                             </select>
                         </td>
                     </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="thumb_responsive"><?php _e("Responsive support", 'wordpress-popular-posts'); ?>:</label></th>
-                        <td>
-                            <select name="thumb_responsive" id="thumb_responsive">
-                                <option <?php if ($this->options['tools']['thumbnail']['responsive']) {?>selected="selected"<?php } ?> value="1"><?php _e("Enabled", 'wordpress-popular-posts'); ?></option>
-                                <option <?php if (!$this->options['tools']['thumbnail']['responsive']) {?>selected="selected"<?php } ?> value="0"><?php _e("Disabled", 'wordpress-popular-posts'); ?></option>
-                            </select>
-                            <br />
-                            <p class="description"><?php _e("If enabled, WordPress Popular Posts will strip height and width attributes out of thumbnails' image tags", 'wordpress-popular-posts'); ?>.</p>
-                        </td>
-                    </tr>
                     <?php
-                    $wp_upload_dir = wp_upload_dir();
+                    $wp_upload_dir = wp_get_upload_dir();
                     if ( is_dir( $wp_upload_dir['basedir'] . "/" . 'wordpress-popular-posts' ) ) :
                     ?>
                     <tr valign="top">
@@ -549,7 +537,7 @@ $tabs = array(
                     <tr valign="top">
                         <td colspan="2">
                             <input type="hidden" name="section" value="thumb" />
-                            <input type="submit" class="button-secondary action" id="btn_th_ops" value="<?php _e("Apply", 'wordpress-popular-posts'); ?>" name="" />
+                            <input type="submit" class="button-primary action" id="btn_th_ops" value="<?php _e("Apply", 'wordpress-popular-posts'); ?>" name="" />
                         </td>
                     </tr>
                 </tbody>
@@ -585,7 +573,7 @@ $tabs = array(
 
                             <label for="log_expire_time"<?php echo ($this->options['tools']['log']['limit'] == 0) ? ' style="display:none;"' : ''; ?>><input type="text" id="log_expire_time" name="log_expire_time" value="<?php echo esc_attr( $this->options['tools']['log']['expires_after'] ); ?>" size="3" /> <?php _e("day(s)", 'wordpress-popular-posts'); ?></label>
 
-                            <p class="description"<?php echo ($this->options['tools']['log']['limit'] == 0) ? ' style="display:none;"' : ''; ?>><?php _e("Data from entries that haven't been viewed within the specified time frame will be automatically discarded", 'wordpress-popular-posts'); ?>.</p>
+                            <p class="description"<?php echo ($this->options['tools']['log']['limit'] == 0) ? ' style="display:none;"' : ''; ?>><?php _e("Data older than the specified time frame will be automatically discarded", 'wordpress-popular-posts'); ?>.</p>
 
                             <br<?php echo ($this->options['tools']['log']['limit'] == 1) ? ' style="display:none;"' : ''; ?> />
                         </td>
@@ -603,7 +591,7 @@ $tabs = array(
                         </td>
                     </tr>
                     <tr valign="top">
-                        <th scope="row"><label for="cache"><?php _e("WPP Cache Expiry Policy", 'wordpress-popular-posts'); ?>:</label> <small>[<a href="https://github.com/cabrerahector/wordpress-popular-posts/wiki/7.-Performance#caching" target="_blank" title="<?php _e('What is this?', 'wordpress-popular-posts'); ?>">?</a>]</small></th>
+                        <th scope="row"><label for="cache"><?php _e("Data Caching", 'wordpress-popular-posts'); ?>:</label> <small>[<a href="https://github.com/cabrerahector/wordpress-popular-posts/wiki/7.-Performance#caching" target="_blank" title="<?php _e('What is this?', 'wordpress-popular-posts'); ?>">?</a>]</small></th>
                         <td>
                             <select name="cache" id="cache">
                                 <option <?php if ( !$this->options['tools']['cache']['active'] ) { ?>selected="selected"<?php } ?> value="0"><?php _e("Never cache", 'wordpress-popular-posts'); ?></option>
@@ -611,7 +599,7 @@ $tabs = array(
                             </select>
 
                             <br />
-                            <p class="description"><?php _e("Sets WPP's cache expiration time. WPP can cache the popular list for a specified amount of time. Recommended for large / high traffic sites", 'wordpress-popular-posts'); ?>.</p>
+                            <p class="description"><?php _e("WPP can cache the popular list for a specified amount of time. Recommended for large / high traffic sites", 'wordpress-popular-posts'); ?>.</p>
                         </td>
                     </tr>
                     <tr valign="top" <?php if ( !$this->options['tools']['cache']['active'] ) { ?>style="display:none;"<?php } ?> id="cache_refresh_interval">
@@ -653,7 +641,7 @@ $tabs = array(
                     <tr valign="top">
                         <td colspan="2">
                             <input type="hidden" name="section" value="data" />
-                            <input type="submit" class="button-secondary action" id="btn_ajax_ops" value="<?php _e("Apply", 'wordpress-popular-posts'); ?>" name="" />
+                            <input type="submit" class="button-primary action" id="btn_ajax_ops" value="<?php _e("Apply", 'wordpress-popular-posts'); ?>" name="" />
                         </td>
                     </tr>
                 </tbody>
@@ -692,7 +680,7 @@ $tabs = array(
                     <tr valign="top">
                         <td colspan="2">
                             <input type="hidden" name="section" value="misc" />
-                            <input type="submit" class="button-secondary action" value="<?php _e("Apply", 'wordpress-popular-posts'); ?>" name="" />
+                            <input type="submit" class="button-primary action" value="<?php _e("Apply", 'wordpress-popular-posts'); ?>" name="" />
                         </td>
                     </tr>
                 </tbody>
@@ -719,252 +707,282 @@ $tabs = array(
                 'https://github.com/cabrerahector/wordpress-popular-posts/wiki/1.-Using-WPP-on-posts-&-pages'
             ); ?></p>
             <br />
-            <table cellspacing="0" class="wp-list-table widefat fixed posts">
-                <thead>
-                    <tr>
-                        <th class="manage-column column-title"><?php _e('Parameter', 'wordpress-popular-posts'); ?></th>
-                        <th class="manage-column column-title"><?php _e('What it does ', 'wordpress-popular-posts'); ?></th>
-                        <th class="manage-column column-title"><?php _e('Possible values', 'wordpress-popular-posts'); ?></th>
-                        <th class="manage-column column-title"><?php _e('Defaults to', 'wordpress-popular-posts'); ?></th>
-                        <th class="manage-column column-title"><?php _e('Example', 'wordpress-popular-posts'); ?></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>header</strong></td>
-                        <td><?php _e('Sets a heading for the list', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('None', 'wordpress-popular-posts'); ?></td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'header' => 'Popular Posts'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp header='Popular Posts']<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>header_start</strong></td>
-                        <td><?php _e('Set the opening tag for the heading of the list', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
-                        <td>&lt;h2&gt;</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'header' => 'Popular Posts', <br />&nbsp;&nbsp;&nbsp;&nbsp;'header_start' => '&lt;h3 class="title"&gt;',<br />&nbsp;&nbsp;&nbsp;&nbsp;'header_end' => '&lt;/h3&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp header='Popular Posts' header_start='&lt;h3 class="title"&gt;' header_end='&lt;/h3&gt;']<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>header_end</strong></td>
-                        <td><?php _e('Set the closing tag for the heading of the list', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
-                        <td>&lt;/h2&gt;</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'header' => 'Popular Posts', <br />&nbsp;&nbsp;&nbsp;&nbsp;'header_start' => '&lt;h3 class="title"&gt;',<br />&nbsp;&nbsp;&nbsp;&nbsp;'header_end' => '&lt;/h3&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp header='Popular Posts' header_start='&lt;h3 class="title"&gt;' header_end='&lt;/h3&gt;']<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>limit</strong></td>
-                        <td><?php _e('Sets the maximum number of popular posts to be shown on the listing', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Positive integer', 'wordpress-popular-posts'); ?></td>
-                        <td>10</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'limit' => 5<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp limit=5]<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>range</strong></td>
-                        <td><?php _e('Tells WordPress Popular Posts to retrieve the most popular entries within the time range specified by you', 'wordpress-popular-posts'); ?></td>
-                        <td>"last24hours", "last7days", "last30days", "all", "custom"</td>
-                        <td>last24hours</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'range' => 'last7days'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp range='last7days']<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>time_quantity</strong></td>
-                        <td><?php _e('Especifies the number of time units of the custom time range', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Positive integer', 'wordpress-popular-posts'); ?></td>
-                        <td>24</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'range' => 'custom',<br />&nbsp;&nbsp;&nbsp;&nbsp;'time_quantity' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'time_unit' => 'hour'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp range='custom' time_quantity=1 time_unit='hour']<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>time_unit</strong></td>
-                        <td><?php _e('Especifies the time unit of the custom time range', 'wordpress-popular-posts'); ?></td>
-                        <td>minute, hour, day, week, month</td>
-                        <td>hour</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'range' => 'custom',<br />&nbsp;&nbsp;&nbsp;&nbsp;'time_quantity' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'time_unit' => 'hour'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp range='custom' time_quantity=1 time_unit='hour']<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>freshness</strong></td>
-                        <td><?php _e('Tells WordPress Popular Posts to retrieve the most popular entries published within the time range specified by you', 'wordpress-popular-posts'); ?></td>
-                        <td>1 (true), 0 (false)</td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'range' => 'weekly',<br />&nbsp;&nbsp;&nbsp;&nbsp;'freshness' => 1<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp range='last7days' freshness=1]<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>order_by</strong></td>
-                        <td><?php _e('Sets the sorting option of the popular posts', 'wordpress-popular-posts'); ?></td>
-                        <td>"comments", "views", "avg" <?php _e('(for average views per day)', 'wordpress-popular-posts'); ?></td>
-                        <td>views</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'order_by' => 'comments'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp order_by='comments']<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>post_type</strong></td>
-                        <td><?php _e('Defines the type of posts to show on the listing', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
-                        <td>post,page</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'post_type' => 'post,page,your-custom-post-type'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp post_type='post,page,your-custom-post-type']<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>pid</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will exclude the specified post(s) ID(s) form the listing.', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('None', 'wordpress-popular-posts'); ?></td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'pid' => '60,25,31'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp pid='60,25,31']<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>cat</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will retrieve all entries that belong to the specified category ID(s). If a minus sign is used, entries associated to the category will be excluded instead.', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('None', 'wordpress-popular-posts'); ?></td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'cat' => '1,55,-74'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp cat='1,55,-74']<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>taxonomy</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will filter posts by a given taxonomy.', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('None', 'wordpress-popular-posts'); ?></td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'taxonomy' => 'post_tag',<br />&nbsp;&nbsp;&nbsp;&nbsp;'term_id' => '118,75,15'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp taxonomy='post_tag' term_id='118,75,15']<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>term_id</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will retrieve all entries that belong to the specified term ID(s). If a minus sign is used, entries associated to the term(s) will be excluded instead.', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('None', 'wordpress-popular-posts'); ?></td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'taxonomy' => 'post_tag',<br />&nbsp;&nbsp;&nbsp;&nbsp;'term_id' => '118,75,15'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp taxonomy='post_tag' term_id='118,75,15']<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>author</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will retrieve all entries created by specified author(s) ID(s).', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('None', 'wordpress-popular-posts'); ?></td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'author' => '75,8,120'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp author='75,8,120']<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>title_length</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will shorten each post title to "n" characters whenever possible', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Positive integer', 'wordpress-popular-posts'); ?></td>
-                        <td>25</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'title_length' => 25<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp title_length=25]<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>title_by_words</strong></td>
-                        <td><?php _e('If set to 1, WordPress Popular Posts will shorten each post title to "n" words instead of characters', 'wordpress-popular-posts'); ?></td>
-                        <td>1 (true), (0) false</td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'title_by_words' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'title_length' => 25<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp title_by_words=1 title_length=25]<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>excerpt_length</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will build and include an excerpt of "n" characters long from the content of each post listed as popular', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Positive integer', 'wordpress-popular-posts'); ?></td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'excerpt_length' => 55,<br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} {title} &lt;span class="wpp-excerpt"&gt;{summary}&lt;/span&gt;&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp excerpt_length=25 post_html='&lt;li&gt;{thumb} {title} &lt;span class="wpp-excerpt"&gt;{summary}&lt;/span&gt;&lt;/li&gt;']<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>excerpt_format</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will maintaing all styling tags (strong, italic, etc) and hyperlinks found in the excerpt', 'wordpress-popular-posts'); ?></td>
-                        <td>1 (true), (0) false</td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'excerpt_format' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'excerpt_length' => 55,<br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} {title} &lt;span class="wpp-excerpt"&gt;{summary}&lt;/span&gt;&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp excerpt_format=1 excerpt_length=25 post_html='&lt;li&gt;{thumb} {title} &lt;span class="wpp-excerpt"&gt;{summary}&lt;/span&gt;&lt;/li&gt;']<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>excerpt_by_words</strong></td>
-                        <td><?php _e('If set to 1, WordPress Popular Posts will shorten the excerpt to "n" words instead of characters', 'wordpress-popular-posts'); ?></td>
-                        <td>1 (true), (0) false</td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'excerpt_by_words' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'excerpt_length' => 55,<br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} {title} &lt;span class="wpp-excerpt"&gt;{summary}&lt;/span&gt;&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp excerpt_by_words=1 excerpt_length=55 post_html='&lt;li&gt;{thumb} {title} &lt;span class="wpp-excerpt"&gt;{summary}&lt;/span&gt;&lt;/li&gt;']<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>thumbnail_width</strong></td>
-                        <td><?php _e('If set, and if your current server configuration allows it, you will be able to display thumbnails of your posts. This attribute sets the width for thumbnails', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Positive integer', 'wordpress-popular-posts'); ?></td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'thumbnail_width' => 30,<br />&nbsp;&nbsp;&nbsp;&nbsp;'thumbnail_height' => 30<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp thumbnail_width=30 thumbnail_height=30]<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>thumbnail_height</strong></td>
-                        <td><?php _e('If set, and if your current server configuration allows it, you will be able to display thumbnails of your posts. This attribute sets the height for thumbnails', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Positive integer', 'wordpress-popular-posts'); ?></td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'thumbnail_width' => 30,<br />&nbsp;&nbsp;&nbsp;&nbsp;'thumbnail_height' => 30<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp thumbnail_width=30 thumbnail_height=30]<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>rating</strong></td>
-                        <td><?php _e('If set, and if the WP-PostRatings plugin is installed and enabled on your blog, WordPress Popular Posts will show how your visitors are rating your entries', 'wordpress-popular-posts'); ?></td>
-                        <td>1 (true), (0) false</td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'rating' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} {title} {rating}&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp rating=1 post_html='&lt;li&gt;{thumb} {title} {rating}&lt;/li&gt;']<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>stats_comments</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will show how many comments each popular post has got during the specified time range', 'wordpress-popular-posts'); ?></td>
-                        <td>1 (true), 0 (false)</td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_comments' => 1<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_comments=1]<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>stats_views</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will show how many views each popular post has got during the specified time range', 'wordpress-popular-posts'); ?></td>
-                        <td>1 (true), (0) false</td>
-                        <td>1</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_views' => 0<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_views=0]<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>stats_author</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will show who published each popular post on the list', 'wordpress-popular-posts'); ?></td>
-                        <td>1 (true), (0) false</td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_author' => 1<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_author=1]<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>stats_date</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will display the date when each popular post on the list was published', 'wordpress-popular-posts'); ?></td>
-                        <td>1 (true), (0) false</td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_date' => 1<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_date=1]<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>stats_date_format</strong></td>
-                        <td><?php _e('Sets the date format', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_date' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_date_format' => 'F j, Y'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_date=1 stats_date_format='F j, Y']<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>stats_category</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will display the categories associated to each entry', 'wordpress-popular-posts'); ?></td>
-                        <td>1 (true), (0) false</td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_category' => 1, <br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} &lt;a href="{url}"&gt;{text_title}&lt;/a&gt; {category}&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_taxonomy=1 post_html='&lt;li&gt;{thumb} &lt;a href="{url}"&gt;{text_title}&lt;/a&gt; {category}&lt;/li&gt;']<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>stats_taxonomy</strong></td>
-                        <td><?php _e('If set, WordPress Popular Posts will display the taxonomies associated to each entry', 'wordpress-popular-posts'); ?></td>
-                        <td>1 (true), (0) false</td>
-                        <td>0</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_taxonomy' => 1, <br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} &lt;a href="{url}"&gt;{text_title}&lt;/a&gt; {taxonomy}&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_taxonomy=1 post_html='&lt;li&gt;{thumb} &lt;a href="{url}"&gt;{text_title}&lt;/a&gt; {taxonomy}&lt;/li&gt;']<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>wpp_start</strong></td>
-                        <td><?php _e('Sets the opening tag for the listing', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
-                        <td>&lt;ul&gt;</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'wpp_start' => '&lt;ol&gt;',<br />&nbsp;&nbsp;&nbsp;&nbsp;'wpp_end' => '&lt;/ol&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp wpp_start='&lt;ol&gt;' wpp_end='&lt;/ol&gt;']<br /><br /></td>
-                    </tr>
-                    <tr class="alternate">
-                        <td><strong>wpp_end</strong></td>
-                        <td><?php _e('Sets the closing tag for the listing', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
-                        <td>&lt;/ul&gt;</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'wpp_start' => '&lt;ol&gt;',<br />&nbsp;&nbsp;&nbsp;&nbsp;'wpp_end' => '&lt;/ol&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp wpp_start='&lt;ol&gt;' wpp_end='&lt;/ol&gt;']<br /><br /></td>
-                    </tr>
-                    <tr>
-                        <td><strong>post_html</strong></td>
-                        <td><?php _e('Sets the HTML structure of each post', 'wordpress-popular-posts'); ?></td>
-                        <td><?php _e('Text string, custom HTML', 'wordpress-popular-posts'); ?>.<br /><br /><strong><?php _e('Available Content Tags', 'wordpress-popular-posts'); ?>:</strong> <br /><br /><em>{thumb}</em> (<?php _e('displays thumbnail linked to post/page, requires thumbnail_width & thumbnail_height', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{thumb_img}</em> (<?php _e('displays thumbnail image without linking to post/page, requires thumbnail_width & thumbnail_height', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{thumb_url}</em> (<?php _e('displays thumbnail url, requires thumbnail_width & thumbnail_height', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{title}</em> (<?php _e('displays linked post/page title', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{summary}</em> (<?php _e('displays post/page excerpt, and requires excerpt_length to be greater than 0', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{stats}</em> (<?php _e('displays the default stats tags', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{rating}</em> (<?php _e('displays post/page current rating, requires WP-PostRatings installed and enabled', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{score}</em> (<?php _e('displays post/page current rating as an integer, requires WP-PostRatings installed and enabled', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{url}</em> (<?php _e('outputs the URL of the post/page', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{text_title}</em> (<?php _e('displays post/page title, no link', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{author}</em> (<?php _e('displays linked author name, requires stats_author=1', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{category}</em> (<?php _e('displays linked category name, requires stats_category=1', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{taxonomy}</em> (<?php _e('displays linked taxonomy names, requires stats_taxonomy=1', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{views}</em> (<?php _e('displays views count only, no text', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{comments}</em> (<?php _e('displays comments count only, no text, requires stats_comments=1', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{date}</em> (<?php _e('displays post/page date, requires stats_date=1', 'wordpress-popular-posts'); ?>)</td>
-                        <td>&lt;li&gt;{thumb} {title} &lt;span class="wpp-meta post-stats"&gt;{stats}&lt;/span&gt;&lt;/li&gt;</td>
-                        <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} &lt;a href="{url}"&gt;{text_title}&lt;/a&gt;&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp post_html='&lt;li&gt;{thumb} &lt;a href="{url}"&gt;{text_title}&lt;/a&gt;&lt;/li&gt;']<br /><br /></td>
-                    </tr>
-                </tbody>
-            </table>
+
+            <div style="overflow-x: auto;">
+                <table cellspacing="0" class="wp-list-table">
+                    <thead>
+                        <tr>
+                            <th class="manage-column column-title"><?php _e('Parameter', 'wordpress-popular-posts'); ?></th>
+                            <th class="manage-column column-title"><?php _e('What it does ', 'wordpress-popular-posts'); ?></th>
+                            <th class="manage-column column-title"><?php _e('Possible values', 'wordpress-popular-posts'); ?></th>
+                            <th class="manage-column column-title"><?php _e('Defaults to', 'wordpress-popular-posts'); ?></th>
+                            <th class="manage-column column-title"><?php _e('Example', 'wordpress-popular-posts'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>header</strong></td>
+                            <td><?php _e('Sets a heading for the list', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('None', 'wordpress-popular-posts'); ?></td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'header' => 'Popular Posts'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp header='Popular Posts']<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>header_start</strong></td>
+                            <td><?php _e('Set the opening tag for the heading of the list', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
+                            <td>&lt;h2&gt;</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'header' => 'Popular Posts', <br />&nbsp;&nbsp;&nbsp;&nbsp;'header_start' => '&lt;h3 class="title"&gt;',<br />&nbsp;&nbsp;&nbsp;&nbsp;'header_end' => '&lt;/h3&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp header='Popular Posts' header_start='&lt;h3 class="title"&gt;' header_end='&lt;/h3&gt;']<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>header_end</strong></td>
+                            <td><?php _e('Set the closing tag for the heading of the list', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
+                            <td>&lt;/h2&gt;</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'header' => 'Popular Posts', <br />&nbsp;&nbsp;&nbsp;&nbsp;'header_start' => '&lt;h3 class="title"&gt;',<br />&nbsp;&nbsp;&nbsp;&nbsp;'header_end' => '&lt;/h3&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp header='Popular Posts' header_start='&lt;h3 class="title"&gt;' header_end='&lt;/h3&gt;']<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>limit</strong></td>
+                            <td><?php _e('Sets the maximum number of popular posts to be shown on the listing', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Positive integer', 'wordpress-popular-posts'); ?></td>
+                            <td>10</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'limit' => 5<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp limit=5]<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>range</strong></td>
+                            <td><?php _e('Tells WordPress Popular Posts to retrieve the most popular entries within the time range specified by you', 'wordpress-popular-posts'); ?></td>
+                            <td>"last24hours", "last7days", "last30days", "all", "custom"</td>
+                            <td>last24hours</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'range' => 'last7days'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp range='last7days']<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>time_quantity</strong></td>
+                            <td><?php _e('Especifies the number of time units of the custom time range', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Positive integer', 'wordpress-popular-posts'); ?></td>
+                            <td>24</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'range' => 'custom',<br />&nbsp;&nbsp;&nbsp;&nbsp;'time_quantity' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'time_unit' => 'hour'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp range='custom' time_quantity=1 time_unit='hour']<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>time_unit</strong></td>
+                            <td><?php _e('Especifies the time unit of the custom time range', 'wordpress-popular-posts'); ?></td>
+                            <td>minute, hour, day, week, month</td>
+                            <td>hour</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'range' => 'custom',<br />&nbsp;&nbsp;&nbsp;&nbsp;'time_quantity' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'time_unit' => 'hour'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp range='custom' time_quantity=1 time_unit='hour']<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>freshness</strong></td>
+                            <td><?php _e('Tells WordPress Popular Posts to retrieve the most popular entries published within the time range specified by you', 'wordpress-popular-posts'); ?></td>
+                            <td>1 (true), 0 (false)</td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'range' => 'weekly',<br />&nbsp;&nbsp;&nbsp;&nbsp;'freshness' => 1<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp range='last7days' freshness=1]<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>order_by</strong></td>
+                            <td><?php _e('Sets the sorting option of the popular posts', 'wordpress-popular-posts'); ?></td>
+                            <td>"comments", "views", "avg" <?php _e('(for average views per day)', 'wordpress-popular-posts'); ?></td>
+                            <td>views</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'order_by' => 'comments'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp order_by='comments']<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>post_type</strong></td>
+                            <td><?php _e('Defines the type of posts to show on the listing', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
+                            <td>post</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'post_type' => 'post,page,your-custom-post-type'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp post_type='post,page,your-custom-post-type']<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>pid</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will exclude the specified post(s) ID(s) form the listing.', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('None', 'wordpress-popular-posts'); ?></td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'pid' => '60,25,31'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp pid='60,25,31']<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>cat</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will retrieve all entries that belong to the specified category ID(s). If a minus sign is used, entries associated to the category will be excluded instead.', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('None', 'wordpress-popular-posts'); ?></td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'cat' => '1,55,-74'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp cat='1,55,-74']<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>taxonomy</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will filter posts by a given taxonomy.', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('None', 'wordpress-popular-posts'); ?></td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'taxonomy' => 'post_tag',<br />&nbsp;&nbsp;&nbsp;&nbsp;'term_id' => '118,75,15'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp taxonomy='post_tag' term_id='118,75,15']<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>term_id</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will retrieve all entries that belong to the specified term ID(s). If a minus sign is used, entries associated to the term(s) will be excluded instead.', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('None', 'wordpress-popular-posts'); ?></td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'taxonomy' => 'post_tag',<br />&nbsp;&nbsp;&nbsp;&nbsp;'term_id' => '118,75,15'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp taxonomy='post_tag' term_id='118,75,15']<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>author</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will retrieve all entries created by specified author(s) ID(s).', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('None', 'wordpress-popular-posts'); ?></td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'author' => '75,8,120'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp author='75,8,120']<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>title_length</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will shorten each post title to "n" characters whenever possible', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Positive integer', 'wordpress-popular-posts'); ?></td>
+                            <td>25</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'title_length' => 25<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp title_length=25]<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>title_by_words</strong></td>
+                            <td><?php _e('If set to 1, WordPress Popular Posts will shorten each post title to "n" words instead of characters', 'wordpress-popular-posts'); ?></td>
+                            <td>1 (true), (0) false</td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'title_by_words' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'title_length' => 25<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp title_by_words=1 title_length=25]<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>excerpt_length</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will build and include an excerpt of "n" characters long from the content of each post listed as popular', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Positive integer', 'wordpress-popular-posts'); ?></td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'excerpt_length' => 55,<br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} {title} &lt;span class="wpp-excerpt"&gt;{summary}&lt;/span&gt;&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp excerpt_length=25 post_html='&lt;li&gt;{thumb} {title} &lt;span class="wpp-excerpt"&gt;{summary}&lt;/span&gt;&lt;/li&gt;']<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>excerpt_format</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will maintaing all styling tags (strong, italic, etc) and hyperlinks found in the excerpt', 'wordpress-popular-posts'); ?></td>
+                            <td>1 (true), (0) false</td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'excerpt_format' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'excerpt_length' => 55,<br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} {title} &lt;span class="wpp-excerpt"&gt;{summary}&lt;/span&gt;&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp excerpt_format=1 excerpt_length=25 post_html='&lt;li&gt;{thumb} {title} &lt;span class="wpp-excerpt"&gt;{summary}&lt;/span&gt;&lt;/li&gt;']<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>excerpt_by_words</strong></td>
+                            <td><?php _e('If set to 1, WordPress Popular Posts will shorten the excerpt to "n" words instead of characters', 'wordpress-popular-posts'); ?></td>
+                            <td>1 (true), (0) false</td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'excerpt_by_words' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'excerpt_length' => 55,<br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} {title} &lt;span class="wpp-excerpt"&gt;{summary}&lt;/span&gt;&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp excerpt_by_words=1 excerpt_length=55 post_html='&lt;li&gt;{thumb} {title} &lt;span class="wpp-excerpt"&gt;{summary}&lt;/span&gt;&lt;/li&gt;']<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>thumbnail_width</strong></td>
+                            <td><?php _e('If set, and if your current server configuration allows it, you will be able to display thumbnails of your posts. This attribute sets the width for thumbnails', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Positive integer', 'wordpress-popular-posts'); ?></td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'thumbnail_width' => 30,<br />&nbsp;&nbsp;&nbsp;&nbsp;'thumbnail_height' => 30<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp thumbnail_width=30 thumbnail_height=30]<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>thumbnail_height</strong></td>
+                            <td><?php _e('If set, and if your current server configuration allows it, you will be able to display thumbnails of your posts. This attribute sets the height for thumbnails', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Positive integer', 'wordpress-popular-posts'); ?></td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'thumbnail_width' => 30,<br />&nbsp;&nbsp;&nbsp;&nbsp;'thumbnail_height' => 30<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp thumbnail_width=30 thumbnail_height=30]<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>rating</strong></td>
+                            <td><?php _e('If set, and if the WP-PostRatings plugin is installed and enabled on your blog, WordPress Popular Posts will show how your visitors are rating your entries', 'wordpress-popular-posts'); ?></td>
+                            <td>1 (true), (0) false</td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'rating' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} {title} {rating}&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp rating=1 post_html='&lt;li&gt;{thumb} {title} {rating}&lt;/li&gt;']<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>stats_comments</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will show how many comments each popular post has got during the specified time range', 'wordpress-popular-posts'); ?></td>
+                            <td>1 (true), 0 (false)</td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_comments' => 1<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_comments=1]<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>stats_views</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will show how many views each popular post has got during the specified time range', 'wordpress-popular-posts'); ?></td>
+                            <td>1 (true), (0) false</td>
+                            <td>1</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_views' => 0<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_views=0]<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>stats_author</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will show who published each popular post on the list', 'wordpress-popular-posts'); ?></td>
+                            <td>1 (true), (0) false</td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_author' => 1<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_author=1]<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>stats_date</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will display the date when each popular post on the list was published', 'wordpress-popular-posts'); ?></td>
+                            <td>1 (true), (0) false</td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_date' => 1<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_date=1]<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>stats_date_format</strong></td>
+                            <td><?php _e('Sets the date format', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_date' => 1,<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_date_format' => 'F j, Y'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_date=1 stats_date_format='F j, Y']<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>stats_category</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will display the categories associated to each entry', 'wordpress-popular-posts'); ?></td>
+                            <td>1 (true), (0) false</td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_category' => 1, <br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} &lt;a href="{url}"&gt;{text_title}&lt;/a&gt; {category}&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_taxonomy=1 post_html='&lt;li&gt;{thumb} &lt;a href="{url}"&gt;{text_title}&lt;/a&gt; {category}&lt;/li&gt;']<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>stats_taxonomy</strong></td>
+                            <td><?php _e('If set, WordPress Popular Posts will display the taxonomies associated to each entry', 'wordpress-popular-posts'); ?></td>
+                            <td>1 (true), (0) false</td>
+                            <td>0</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'stats_taxonomy' => 1, <br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} &lt;a href="{url}"&gt;{text_title}&lt;/a&gt; {taxonomy}&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp stats_taxonomy=1 post_html='&lt;li&gt;{thumb} &lt;a href="{url}"&gt;{text_title}&lt;/a&gt; {taxonomy}&lt;/li&gt;']<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>wpp_start</strong></td>
+                            <td><?php _e('Sets the opening tag for the listing', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
+                            <td>&lt;ul&gt;</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'wpp_start' => '&lt;ol&gt;',<br />&nbsp;&nbsp;&nbsp;&nbsp;'wpp_end' => '&lt;/ol&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp wpp_start='&lt;ol&gt;' wpp_end='&lt;/ol&gt;']<br /><br /></td>
+                        </tr>
+                        <tr class="alternate">
+                            <td><strong>wpp_end</strong></td>
+                            <td><?php _e('Sets the closing tag for the listing', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string', 'wordpress-popular-posts'); ?></td>
+                            <td>&lt;/ul&gt;</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'wpp_start' => '&lt;ol&gt;',<br />&nbsp;&nbsp;&nbsp;&nbsp;'wpp_end' => '&lt;/ol&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp wpp_start='&lt;ol&gt;' wpp_end='&lt;/ol&gt;']<br /><br /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>post_html</strong></td>
+                            <td><?php _e('Sets the HTML structure of each post', 'wordpress-popular-posts'); ?></td>
+                            <td><?php _e('Text string, custom HTML', 'wordpress-popular-posts'); ?>.<br /><br /><strong><?php _e('Available Content Tags', 'wordpress-popular-posts'); ?>:</strong> <br /><br /><em>{thumb}</em> (<?php _e('returns thumbnail linked to post/page, requires thumbnail_width & thumbnail_height', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{thumb_img}</em> (<?php _e('returns thumbnail image without linking to post/page, requires thumbnail_width & thumbnail_height', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{thumb_url}</em> (<?php _e('returns thumbnail url, requires thumbnail_width & thumbnail_height', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{title}</em> (<?php _e('returns linked post/page title', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{pid}</em> (<?php _e('returns the post/page ID', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{summary}</em> (<?php _e('returns post/page excerpt, and requires excerpt_length to be greater than 0', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{stats}</em> (<?php _e('returns the default stats tags', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{rating}</em> (<?php _e('returns post/page current rating, requires WP-PostRatings installed and enabled', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{score}</em> (<?php _e('returns post/page current rating as an integer, requires WP-PostRatings installed and enabled', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{url}</em> (<?php _e('returns the URL of the post/page', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{text_title}</em> (<?php _e('returns post/page title, no link', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{author}</em> (<?php _e('returns linked author name, requires stats_author=1', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{category}</em> (<?php _e('returns linked category name, requires stats_category=1', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{taxonomy}</em> (<?php _e('returns linked taxonomy names, requires stats_taxonomy=1', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{views}</em> (<?php _e('returns views count only, no text', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{comments}</em> (<?php _e('returns comments count only, no text, requires stats_comments=1', 'wordpress-popular-posts'); ?>)<br /><br /> <em>{date}</em> (<?php _e('returns post/page date, requires stats_date=1', 'wordpress-popular-posts'); ?>)</td>
+                            <td>&lt;li&gt;{thumb} {title} &lt;span class="wpp-meta post-stats"&gt;{stats}&lt;/span&gt;&lt;/li&gt;</td>
+                            <td><strong><?php _e('With wpp_get_mostpopular():', 'wordpress-popular-posts'); ?></strong><br /><br />&lt;?php<br />$args = array(<br />&nbsp;&nbsp;&nbsp;&nbsp;'post_html' => '&lt;li&gt;{thumb} &lt;a href="{url}"&gt;{text_title}&lt;/a&gt;&lt;/li&gt;'<br />);<br /><br />wpp_get_mostpopular( $args );<br />?&gt;<br /><br /><hr /><br /><strong><?php _e('With the [wpp] shortcode:', 'wordpress-popular-posts'); ?></strong><br /><br />[wpp post_html='&lt;li&gt;{thumb} &lt;a href="{url}"&gt;{text_title}&lt;/a&gt;&lt;/li&gt;']<br /><br /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <!-- End params -->
+
+    <!-- Start debug -->
+    <?php
+    global $wpdb, $wp_version;
+
+    $my_theme = wp_get_theme();
+
+    $site_plugins = get_plugins();
+    $plugin_names = array();
+
+    foreach( $site_plugins as $main_file => $plugin_meta ) :
+        if ( !is_plugin_active( $main_file ) )
+            continue;
+        $plugin_names[] = sanitize_text_field( $plugin_meta['Name'] . ' ' . $plugin_meta['Version'] );
+    endforeach;
+    ?>
+    <div id="wpp_debug" <?php echo ( "debug" == $current ) ? '' : ' style="display: none;"'; ?>>
+        <p><strong>PHP version:</strong> <?php echo phpversion(); ?></p>
+        <p><strong>PHP extensions:</strong> <?php echo implode( ', ', get_loaded_extensions() ); ?></p>
+        <p><strong>Database version:</strong> <?php echo $wpdb->get_var( "SELECT VERSION();" ); ?></p>
+        <p><strong>InnoDB availability:</strong> <?php echo $wpdb->get_var( "SELECT SUPPORT FROM INFORMATION_SCHEMA.ENGINES WHERE ENGINE = 'InnoDB';" ); ?></p>
+        <p><strong>WordPress version:</strong> <?php echo $wp_version; ?></p>
+        <p><strong>Multisite:</strong> <?php echo ( function_exists( 'is_multisite' ) && is_multisite() ) ? 'Yes' : 'No'; ?></p>
+        <p><strong>Active plugins:</strong> <?php echo implode( ', ', $plugin_names ); ?></p>
+        <p><strong>Theme:</strong> <?php echo $my_theme->get( 'Name' ) . ' (' . $my_theme->get( 'Version' ) . ') by ' . $my_theme->get( 'Author' ); ?></p>
+    </div>
+    <!-- End debug -->
 
 </div>

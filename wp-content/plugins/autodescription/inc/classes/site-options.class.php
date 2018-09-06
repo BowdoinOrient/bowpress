@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -70,6 +70,7 @@ class Site_Options extends Sanitize {
 		$this->o_plugin_updated = 'updated_' . THE_SEO_FRAMEWORK_DB_VERSION;
 		$this->seo_settings_page_slug = 'theseoframework-settings';
 
+		\add_filter( "option_page_capability_{$this->settings_field}", array( $this, 'get_settings_capability' ) );
 	}
 
 	/**
@@ -120,8 +121,14 @@ class Site_Options extends Sanitize {
 			'display_seo_bar_tables'  => 1, // SEO Bar post-list tables.
 			'display_seo_bar_metabox' => 0, // SEO Bar post SEO Settings.
 
+			'display_pixel_counter'     => 1, // Pixel counter.
+			'display_character_counter' => 1, // Character counter.
+
 			// General. Canonical.
 			'canonical_scheme' => 'automatic', // Canonical URL scheme.
+
+			// General. Timestamps.
+			'timestamps_format'   => '1',   // Timestamp format, numeric string
 
 			// Title.
 			'title_seperator'     => 'pipe',    // Title separator (note: TYPO), dropdown
@@ -136,7 +143,6 @@ class Site_Options extends Sanitize {
 		//	'description_custom'    => '', // Custom prefix TODO
 
 			// Robots directory.
-			'noodp'  => 1, // Site noopd robots settings
 			'noydir' => 1, // Site noydir robots settings
 
 			// Robots index.
@@ -201,12 +207,6 @@ class Site_Options extends Sanitize {
 			'post_publish_time' => 1, // Article Published Time
 			'post_modify_time'  => 1, // Article Modified Time
 
-			'page_publish_time' => 0, // Article Published Time
-			'page_modify_time'  => 0, // Article Modified Time
-
-			'home_publish_time' => 0, // Article Modified Time
-			'home_modify_time'  => 0, // Article Modified Time
-
 			// Twitter.
 			'twitter_card'    => 'summary_large_image', // Twitter Card layout. If no twitter:image image is found, it'll change to 'summary', radio
 			'twitter_site'    => '', // Twitter business @username
@@ -233,12 +233,12 @@ class Site_Options extends Sanitize {
 			'knowledge_type'   => 'organization', // Organization or Person, dropdown
 
 			// Knowledge business. https://developers.google.com/structured-data/customize/logos
-			'knowledge_logo' => 1,  // Fetch logo from WP Favicon
+			'knowledge_logo' => 1,  // Use Knowledge Logo from anywhere.
 			'knowledge_name' => '', // Person or Organization name
 
 			// Knowledge Logo image
-		//	'knowledge_logo_url'   => '', // TODO
-		//	'knowledge_logo_id'    => 0, // TODO
+			'knowledge_logo_url'   => '',
+			'knowledge_logo_id'    => 0,
 
 			// Knowledge sameas locations
 			'knowledge_facebook'   => '', // Facebook Account
@@ -255,7 +255,6 @@ class Site_Options extends Sanitize {
 			// Sitemaps.
 			'sitemaps_output'      => 1,   // Output of sitemaps
 			'sitemaps_modified'    => 1,   // Add sitemaps modified time
-			'sitemap_timestamps'   => '1', // Sitemaps modified time format, dropdown
 			'sitemaps_robots'      => 1,   // Add sitemaps location to robots.txt
 			'ping_google'          => 1,   // Ping Google
 			'ping_bing'            => 1,   // Ping Bing
@@ -271,7 +270,6 @@ class Site_Options extends Sanitize {
 
 			// Schema
 			'ld_json_searchbox'   => 1, // LD+Json Sitelinks Searchbox
-			'ld_json_sitename'    => 1, // LD+Json Sitename
 			'ld_json_breadcrumbs' => 1, // LD+Json Breadcrumbs
 
 			// Cache.
@@ -310,6 +308,7 @@ class Site_Options extends Sanitize {
 	 * Updates special hidden values to default on settings save.
 	 *
 	 * @since 2.6.0
+	 * @securitycheck 3.0.0 OK.
 	 * @TODO REMOVE THIS and use a better upgrade handler. Source for code debt.
 	 */
 	protected function update_hidden_options_to_default() {
@@ -354,7 +353,7 @@ class Site_Options extends Sanitize {
 			return;
 
 		//* If current user isn't allowed to update options, don't do anything.
-		if ( ! \current_user_can( $this->settings_capability() ) )
+		if ( ! $this->can_access_settings() )
 			return;
 
 		$updated = false;
@@ -402,6 +401,7 @@ class Site_Options extends Sanitize {
 	 * Run before headers are sent.
 	 *
 	 * @since 2.6.0
+	 * @securitycheck 3.0.3 OK.
 	 */
 	protected function pre_output_site_updated_plugin_notice() {
 
@@ -410,7 +410,7 @@ class Site_Options extends Sanitize {
 		 * Only checks for extra parameters. Then redirects further to only output
 		 * notice. User capability is checked beforehand.
 		 */
-		if ( \current_user_can( $this->settings_capability() ) && $this->is_seo_settings_page( false ) ) {
+		if ( $this->can_access_settings() && $this->is_seo_settings_page( false ) ) {
 			//* Redirect to current page if on options page to correct option values. Once.
 			if ( ! isset( $_REQUEST['tsf-settings-updated'] ) || 'true' !== $_REQUEST['tsf-settings-updated'] )
 				$this->admin_redirect( $this->seo_settings_page_slug, array( 'tsf-settings-updated' => 'true' ) );
@@ -423,7 +423,7 @@ class Site_Options extends Sanitize {
 		$this->init_admin_scripts();
 
 		//* Output notice.
-		\add_action( 'admin_notices', array( $this, 'site_updated_plugin_notice' ) );
+		\add_action( 'admin_notices', array( $this, 'do_settings_updated_notice' ) );
 
 	}
 
@@ -434,7 +434,7 @@ class Site_Options extends Sanitize {
 	 *
 	 * @access private
 	 */
-	public function site_updated_plugin_notice() {
+	public function do_settings_updated_notice() {
 
 		$settings_url = $this->seo_settings_page_url();
 		$link = sprintf( '<a href="%s" title="%s" target="_self">%s</a>', $settings_url, \esc_attr__( 'SEO Settings', 'autodescription' ), \esc_html__( 'here', 'autodescription' ) );
@@ -661,7 +661,7 @@ class Site_Options extends Sanitize {
 		 * These can only be set when one has access to the Settings Page or database.
 		 * Also checks for capabilities.
 		 */
-		if ( ! \current_user_can( $this->settings_capability() ) || ! $this->is_seo_settings_page( false ) )
+		if ( ! $this->can_access_settings() || ! $this->is_seo_settings_page( false ) )
 			return;
 
 		if ( $this->get_option( 'tsf-settings-reset', false ) ) {
@@ -824,118 +824,6 @@ class Site_Options extends Sanitize {
 		}
 
 		return $warned_cache[ $key ];
-	}
-
-	/**
-	 * Fetches user SEO user meta data by name.
-	 * Caches all meta data per $user_id.
-	 *
-	 * @since 2.7.0
-	 * @staticvar array $options_cache
-	 *
-	 * @param int $user_id The user ID. When empty, it will try to fetch the current user.
-	 * @param string $option The option name.
-	 * @param mixed $default The default value to return when the data doesn't exist.
-	 * @return mixed The metadata value.
-	 */
-	public function get_user_option( $user_id = 0, $option, $default = null ) {
-
-		if ( ! $option )
-			return null;
-
-		if ( empty( $user_id ) )
-			$user_id = $this->get_user_id();
-
-		if ( ! $user_id )
-			return null;
-
-		static $options_cache = array();
-
-		if ( isset( $options_cache[ $user_id ][ $option ] ) )
-			return $options_cache[ $user_id ][ $option ];
-
-		$usermeta = $this->get_user_meta( $user_id );
-
-		return $options_cache[ $user_id ][ $option ] = isset( $usermeta[ $option ] ) ? $usermeta[ $option ] : $default;
-	}
-
-	/**
-	 * Sets up user ID and returns it if user is found.
-	 * To be used in AJAX, back-end and front-end.
-	 *
-	 * @since 2.7.0
-	 *
-	 * @return int $user_id : 0 if user is not found.
-	 */
-	public function get_user_id() {
-
-		static $user_id = null;
-
-		if ( isset( $user_id ) )
-			return $user_id;
-
-		$user = \wp_get_current_user();
-
-		return $user_id = $user->exists() ? (int) $user->ID : 0;
-	}
-
-	/**
-	 * Fetches The SEO Framework usermeta.
-	 *
-	 * @since 2.7.0
-	 * @since 2.8.0 Always returns array, even if no value is assigned.
-	 * @staticvar array $usermeta_cache
-	 *
-	 * @param int $user_id The user ID.
-	 * @param string $key The user metadata key. Leave empty to fetch all data.
-	 * @param bool $use_cache Whether to store and use options from cache.
-	 * @return array The user SEO meta data.
-	 */
-	public function get_user_meta( $user_id, $key = THE_SEO_FRAMEWORK_USER_OPTIONS, $use_cache = true ) {
-
-		if ( false === $use_cache )
-			return ( $meta = \get_user_meta( $user_id, $key, true ) ) && is_array( $meta ) ? $meta : array();
-
-		static $usermeta_cache = array();
-
-		if ( isset( $usermeta_cache[ $user_id ][ $key ] ) )
-			return $usermeta_cache[ $user_id ][ $key ];
-
-		return $usermeta_cache[ $user_id ][ $key ] = ( $meta = \get_user_meta( $user_id, $key, true ) ) && is_array( $meta ) ? $meta : array();
-	}
-
-	/**
-	 * Updates user SEO option.
-	 *
-	 * @since 2.7.0
-	 * @since 2.8.0 New users now get a new array assigned.
-	 *
-	 * @param int $user_id The user ID.
-	 * @param string $option The user's SEO metadata option.
-	 * @param mixed $value The escaped option value.
-	 * @return bool True on success. False on failure.
-	 */
-	public function update_user_option( $user_id = 0, $option, $value ) {
-
-		if ( ! $option )
-			return false;
-
-		if ( empty( $user_id ) )
-			$user_id = $this->get_user_id();
-
-		if ( empty( $user_id ) )
-			return false;
-
-		$meta = $this->get_user_meta( $user_id, THE_SEO_FRAMEWORK_USER_OPTIONS, false );
-
-		/**
-		 * @since 2.8.0 initializes new array on empty values.
-		 */
-		is_array( $meta ) or $meta = array();
-
-		$meta[ $option ] = $value;
-
-		return \update_user_meta( $user_id, THE_SEO_FRAMEWORK_USER_OPTIONS, $meta );
 	}
 
 	/**

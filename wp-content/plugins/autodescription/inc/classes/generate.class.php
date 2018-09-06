@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -30,7 +30,7 @@ defined( 'ABSPATH' ) or die;
  *
  * @since 2.8.0
  */
-class Generate extends Term_Data {
+class Generate extends User_Data {
 
 	/**
 	 * Constructor, load parent constructor
@@ -40,12 +40,14 @@ class Generate extends Term_Data {
 	}
 
 	/**
-	 * Output the `index`, `follow`, `noodp`, `noydir`, `noarchive` robots meta code in array
+	 * Returns the `index`, `follow`, `noydir`, `noarchive` robots meta code array.
 	 *
 	 * @since 2.2.2
 	 * @since 2.2.4 Added robots SEO settings check.
 	 * @since 2.2.8 Added check for empty archives.
 	 * @since 2.8.0 Added check for protected/private posts.
+	 * @since 3.0.0 1: Removed noodp.
+	 *              2: Improved efficiency by grouping if statements.
 	 *
 	 * @global object $wp_query
 	 *
@@ -58,22 +60,24 @@ class Generate extends Term_Data {
 			'noindex'   => $this->get_option( 'site_noindex' ) ? 'noindex' : '',
 			'nofollow'  => $this->get_option( 'site_nofollow' ) ? 'nofollow' : '',
 			'noarchive' => $this->get_option( 'site_noarchive' ) ? 'noarchive' : '',
-			'noodp'     => $this->get_option( 'noodp' ) ? 'noodp' : '',
 			'noydir'    => $this->get_option( 'noydir' ) ? 'noydir' : '',
 		);
+
+		$is_archive = $this->is_archive();
+		$is_front_page = $this->is_real_front_page();
 
 		/**
 		 * Check the Robots SEO settings, set noindex for paged archives.
 		 * @since 2.2.4
 		 */
-		if ( $this->is_archive() && $this->paged() > 1 )
+		if ( $is_archive && $this->paged() > 1 )
 			$meta['noindex'] = $this->get_option( 'paged_noindex' ) ? 'noindex' : $meta['noindex'];
 
-		if ( $this->is_real_front_page() && ( $this->page() > 1 || $this->paged() > 1 ) )
+		if ( $is_front_page && ( $this->page() > 1 || $this->paged() > 1 ) )
 			$meta['noindex'] = $this->get_option( 'home_paged_noindex' ) ? 'noindex' : $meta['noindex'];
 
 		//* Check home page SEO settings, set noindex, nofollow and noarchive
-		if ( $this->is_real_front_page() ) {
+		if ( $is_front_page ) {
 			$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'homepage_noindex' ) ? 'noindex' : $meta['noindex'];
 			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'homepage_nofollow' ) ? 'nofollow' : $meta['nofollow'];
 			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'homepage_noarchive' ) ? 'noarchive' : $meta['noarchive'];
@@ -91,13 +95,14 @@ class Generate extends Term_Data {
 				$meta['noindex'] = 'noindex';
 		}
 
-		if ( $this->is_category() || $this->is_tag() || $this->is_tax() ) {
+		if ( $is_archive ) :
+			$term_data = $this->get_current_term_meta();
 
-			$data = $this->get_term_data();
-
-			$meta['noindex']   = empty( $meta['noindex'] ) && ! empty( $data['noindex'] ) ? 'noindex' : $meta['noindex'];
-			$meta['nofollow']  = empty( $meta['nofollow'] ) && ! empty( $data['nofollow'] ) ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = empty( $meta['noarchive'] ) && ! empty( $data['noarchive'] ) ? 'noarchive' : $meta['noarchive'];
+			if ( $term_data ) {
+				$meta['noindex']   = empty( $meta['noindex'] ) && ! empty( $term_data['noindex'] ) ? 'noindex' : $meta['noindex'];
+				$meta['nofollow']  = empty( $meta['nofollow'] ) && ! empty( $term_data['nofollow'] ) ? 'nofollow' : $meta['nofollow'];
+				$meta['noarchive'] = empty( $meta['noarchive'] ) && ! empty( $term_data['noarchive'] ) ? 'noarchive' : $meta['noarchive'];
+			}
 
 			//* If on custom Taxonomy page, but not a category or tag, then should've received specific term SEO settings.
 			if ( $this->is_category() ) {
@@ -108,31 +113,21 @@ class Generate extends Term_Data {
 				$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'tag_noindex' ) ? 'noindex' : $meta['noindex'];
 				$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'tag_nofollow' ) ? 'nofollow' : $meta['nofollow'];
 				$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'tag_noindex' ) ? 'noarchive' : $meta['noarchive'];
+			} elseif ( $this->is_author() ) {
+				$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'author_noindex' ) ? 'noindex' : $meta['noindex'];
+				$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'author_nofollow' ) ? 'nofollow' : $meta['nofollow'];
+				$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'author_noarchive' ) ? 'noarchive' : $meta['noarchive'];
+			} elseif ( $this->is_date() ) {
+				$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'date_noindex' ) ? 'noindex' : $meta['noindex'];
+				$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'date_nofollow' ) ? 'nofollow' : $meta['nofollow'];
+				$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'date_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 			}
-		}
-
-		if ( $this->is_author() ) {
-			$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'author_noindex' ) ? 'noindex' : $meta['noindex'];
-			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'author_nofollow' ) ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'author_noarchive' ) ? 'noarchive' : $meta['noarchive'];
-		}
-
-		if ( $this->is_date() ) {
-			$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'date_noindex' ) ? 'noindex' : $meta['noindex'];
-			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'date_nofollow' ) ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'date_noarchive' ) ? 'noarchive' : $meta['noarchive'];
-		}
+		endif;
 
 		if ( $this->is_search() ) {
 			$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'search_noindex' ) ? 'noindex' : $meta['noindex'];
 			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'search_nofollow' ) ? 'nofollow' : $meta['nofollow'];
 			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'search_noarchive' ) ? 'noarchive' : $meta['noarchive'];
-		}
-
-		if ( $this->is_attachment() ) {
-			$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'attachment_noindex' ) ? 'noindex' : $meta['noindex'];
-			$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'attachment_nofollow' ) ? 'nofollow' : $meta['nofollow'];
-			$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'attachment_noarchive' ) ? 'noarchive' : $meta['noarchive'];
 		}
 
 		if ( $this->is_singular() ) {
@@ -143,11 +138,20 @@ class Generate extends Term_Data {
 			if ( $this->is_protected( $this->get_the_real_ID() ) ) {
 				$meta['noindex'] = 'noindex';
 			}
+
+			if ( $this->is_attachment() ) {
+				$meta['noindex']   = empty( $meta['noindex'] ) && $this->is_option_checked( 'attachment_noindex' ) ? 'noindex' : $meta['noindex'];
+				$meta['nofollow']  = empty( $meta['nofollow'] ) && $this->is_option_checked( 'attachment_nofollow' ) ? 'nofollow' : $meta['nofollow'];
+				$meta['noarchive'] = empty( $meta['noarchive'] ) && $this->is_option_checked( 'attachment_noarchive' ) ? 'noarchive' : $meta['noarchive'];
+			}
 		}
 
 		/**
-		 * Applies filters the_seo_framework_robots_meta_array : array
+		 * Applies filters the_seo_framework_robots_meta_array
+		 *
 		 * @since 2.6.0
+		 *
+		 * @param array $meta The current term meta.
 		 */
 		$meta = (array) \apply_filters( 'the_seo_framework_robots_meta_array', $meta );
 
@@ -228,6 +232,7 @@ class Generate extends Term_Data {
 	 * Fetch blog description.
 	 *
 	 * @since 2.5.2
+	 * @since 3.0.0 No longer returns untitled when empty, instead, it just returns an empty string.
 	 * @staticvar string $description
 	 *
 	 * @return string $blogname The trimmed and sanitized blog description.
@@ -241,7 +246,7 @@ class Generate extends Term_Data {
 
 		$description = trim( \get_bloginfo( 'description', 'display' ) );
 
-		return $description = $description ?: $this->untitled();
+		return $description = $description ?: '';
 	}
 
 	/**
@@ -310,8 +315,6 @@ class Generate extends Term_Data {
 			$type = 'article';
 		} elseif ( $this->is_author() ) {
 			$type = 'profile';
-		} elseif ( $this->is_blog_page() || ( $this->is_real_front_page() && ! $this->has_page_on_front() ) ) {
-			$type = 'blog';
 		} else {
 			$type = 'website';
 		}
@@ -392,7 +395,7 @@ class Generate extends Term_Data {
 		if ( isset( $cache ) )
 			return $cache;
 
-		if ( ! $this->description_from_cache( true ) ) {
+		if ( ! $this->get_twitter_description() ) {
 			$retval = array();
 		} elseif ( ! $this->title_from_cache( '', '', '', true ) ) {
 			$retval = array();

@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -64,9 +64,18 @@ class Cache extends Sitemaps {
 	 *
 	 * @since 2.5.2
 	 *
-	 * @var string The Theme Doing It Right Transient Name.
+	 * @var string
 	 */
 	protected $theme_doing_it_right_transient;
+
+	/**
+	 * The excluded Post IDs transient name.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var string
+	 */
+	protected $excluded_post_ids_transient;
 
 	/**
 	 * Constructor, load parent constructor and set up caches.
@@ -148,6 +157,10 @@ class Cache extends Sitemaps {
 		\add_action( 'post_updated', array( $this, 'delete_post_cache' ) );
 		\add_action( 'page_updated', array( $this, 'delete_post_cache' ) );
 
+		//* Excluded IDs cache.
+		\add_action( 'save_post', array( $this, 'delete_excluded_ids_cache' ) );
+		\add_action( 'edit_attachment', array( $this, 'delete_excluded_ids_cache' ) );
+
 		$run = true;
 	}
 
@@ -166,14 +179,18 @@ class Cache extends Sitemaps {
 	}
 
 	/**
-	 * Delete transient on post save.
+	 * Deletes transient on post save.
 	 *
 	 * @since 2.8.0
+	 * @since 3.0.0 Process is halted when no valid $post_id is supplied.
 	 *
 	 * @param int $post_id The Post ID that has been updated.
 	 * @return bool True on success, false on failure.
 	 */
 	public function delete_post_cache( $post_id ) {
+
+		if ( ! $post_id )
+			return false;
 
 		$success = array();
 
@@ -186,6 +203,30 @@ class Cache extends Sitemaps {
 		}
 
 		return ! in_array( false, $success, true );
+	}
+
+	/**
+	 * Deletes excluded post IDs cache.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function delete_excluded_ids_cache() {
+		return $this->delete_cache( 'excluded_post_ids' );
+	}
+
+	/**
+	 * Deletes excluded post IDs transient cache.
+	 *
+	 * @since 3.0.0
+	 * @see $this->delete_excluded_ids_cache()
+	 *
+	 * @return bool True
+	 */
+	public function delete_excluded_post_ids_transient() {
+		\delete_transient( $this->excluded_post_ids_transient );
+		return true;
 	}
 
 	/**
@@ -284,6 +325,10 @@ class Cache extends Sitemaps {
 				return $this->object_cache_delete( $this->get_robots_txt_cache_key() );
 				break;
 
+			case 'excluded_post_ids' :
+				return $this->delete_excluded_post_ids_transient();
+				break;
+
 			case 'detection' :
 				return $this->delete_theme_dir_transient();
 				break;
@@ -380,7 +425,7 @@ class Cache extends Sitemaps {
 	 * @param string $value Transient value. Expected to not be SQL-escaped.
 	 * @param int $expiration Optional Transient expiration date, optional. Expected to not be SQL-escaped.
 	 */
-	public function set_transient( $transient, $value, $expiration = '' ) {
+	public function set_transient( $transient, $value, $expiration = 0 ) {
 
 		if ( $this->the_seo_framework_use_transients )
 			\set_transient( $transient, $value, $expiration );
@@ -469,6 +514,7 @@ class Cache extends Sitemaps {
 	 * @since 2.8.0:
 	 *    1. Added locale suffix.
 	 *    2. Added check for option 'cache_sitemap'.
+	 * @since 3.0.0 Now also sets up $excluded_post_ids_transient
 	 * @global int $blog_id
 	 */
 	public function setup_transient_names() {
@@ -478,11 +524,13 @@ class Cache extends Sitemaps {
 		 * When the caching mechanism changes. Change this value.
 		 * Use hex. e.g. 0, 1, 2, 9, a, b
 		 */
-		$sitemap_revision = '3';
-		$theme_dir_revision = '0';
+		$sitemap_revision = '4';
+		$theme_dir_revision = '1';
+		$exclude_revision = '0';
 
 		$this->sitemap_transient = $this->is_option_checked( 'cache_sitemap' ) ? $this->add_cache_key_suffix( 'tsf_sitemap_' . $sitemap_revision ) : '';
 		$this->theme_doing_it_right_transient = 'tsf_tdir_' . $theme_dir_revision . '_' . $blog_id;
+		$this->excluded_post_ids_transient = 'tsf_exclude_' . $exclude_revision . '_' . $blog_id;
 	}
 
 	/**
@@ -519,7 +567,7 @@ class Cache extends Sitemaps {
 
 		$cache_key = $this->generate_cache_key( $page_id, $taxonomy, $type );
 
-		$revision = '2';
+		$revision = '3';
 		$additions = $this->add_description_additions( $page_id, $taxonomy );
 
 		if ( $additions ) {
@@ -563,13 +611,12 @@ class Cache extends Sitemaps {
 
 		$cache_key = $this->generate_cache_key( $page_id, $taxonomy, $type );
 
-		$revision = '5';
+		$revision = '6';
 
 		/**
 		 * Change key based on options.
 		 */
 		$options = $this->enable_ld_json_breadcrumbs() ? '1' : '0';
-		$options .= $this->enable_ld_json_sitename() ? '1' : '0';
 		$options .= $this->enable_ld_json_searchbox() ? '1' : '0';
 
 		return 'tsf_' . $revision . '_' . $options . '_ldjs_' . $cache_key;
@@ -731,6 +778,7 @@ class Cache extends Sitemaps {
 			$query = '';
 
 			//* TODO figure out why this check is here... admin compat maybe?
+			//! TODO convert the search query to a hash: search_(hash)... encode first!
 			if ( function_exists( 'get_search_query' ) ) {
 				$search_query = \get_search_query( $_escaped = true );
 
@@ -822,18 +870,18 @@ class Cache extends Sitemaps {
 	 * @since 2.8.0 1: $locale is now static.
 	 *              2: $key may now be empty.
 	 * @staticvar string $locale
+	 * @global string $blog_id
 	 *
 	 * @return string the cache key.
 	 */
 	protected function add_cache_key_suffix( $key = '' ) {
-		global $blog_id;
 
 		static $locale = null;
 
 		if ( is_null( $locale ) )
 			$locale = strtolower( \get_locale() );
 
-		return $key . '_' . $blog_id . '_' . $locale;
+		return $key . '_' . $GLOBALS['blog_id'] . '_' . $locale;
 	}
 
 	/**
@@ -970,6 +1018,8 @@ class Cache extends Sitemaps {
 	 *
 	 * @since 2.9.1
 	 * @uses THE_SEO_FRAMEWORK_DB_VERSION as cache key buster.
+	 * @uses $this->generate_cache_key_by_type()
+	 * @see $this->get_meta_output_cache_key_by_query()
 	 *
 	 * @param int $id The ID. Defaults to $this->get_the_real_ID();
 	 * @param string $taxonomy The term taxonomy
@@ -983,10 +1033,10 @@ class Cache extends Sitemaps {
 		 */
 		$key = $this->generate_cache_key_by_type( $id, $taxonomy, $type ) . '_' . THE_SEO_FRAMEWORK_DB_VERSION;
 
-		$page = '1';
-		$paged = '1';
+		//= Refers to the first page, always.
+		$_page = $_paged = '1';
 
-		return $cache_key = 'seo_framework_output_' . $key . '_' . $paged . '_' . $page;
+		return $cache_key = 'seo_framework_output_' . $key . '_' . $_paged . '_' . $_page;
 	}
 
 	/**
@@ -1011,13 +1061,13 @@ class Cache extends Sitemaps {
 	 *
 	 * @since 2.3.0
 	 * @since 2.7.0 : Added admin referer check.
+	 * @securitycheck 3.0.0 OK.
 	 *
 	 * @return bool Whether if sitemap transient is deleted.
 	 */
 	public function delete_sitemap_transient_permalink_updated() {
 
 		if ( isset( $_POST['permalink_structure'] ) || isset( $_POST['category_base'] ) ) {
-
 			if ( \check_admin_referer( 'update-permalink' ) )
 				return $this->delete_cache( 'sitemap' );
 		}
@@ -1126,10 +1176,8 @@ class Cache extends Sitemaps {
 	 */
 	public function delete_theme_dir_transient( $value = null, $options = null ) {
 
-		if ( isset( $options['type'] ) ) {
-			if ( 'theme' !== $options['type'] )
-				return false;
-		}
+		if ( isset( $options['type'] ) && 'theme' !== $options['type'] )
+			return false;
 
 		\delete_transient( $this->theme_doing_it_right_transient );
 
@@ -1157,5 +1205,45 @@ class Cache extends Sitemaps {
 
 			\set_transient( $this->theme_doing_it_right_transient, $dir, 0 );
 		}
+	}
+
+	/**
+	 * Builds and returns the excluded post IDs transient.
+	 *
+	 * @since 3.0.0
+	 * @staticvar array $cache
+	 *
+	 * @return array : { 'archive', 'search' }
+	 */
+	public function get_excluded_ids_from_cache() {
+
+		static $cache = null;
+
+		if ( null === $cache )
+			$cache = $this->get_transient( $this->excluded_post_ids_transient );
+
+		if ( false === $cache ) {
+			global $wpdb;
+			$cache = array();
+
+			//= Two separated equals queries are faster than a single IN with 'meta_key'.
+			$cache['archive'] = $wpdb->get_results(
+				$wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key = '%s'", 'exclude_from_archive' )
+			);
+			$cache['search'] = $wpdb->get_results(
+				$wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key = '%s'", 'exclude_local_search' )
+			);
+
+			foreach ( array( 'archive', 'search' ) as $key ) {
+				array_walk( $cache[ $key ], function( &$v ) {
+					$v = $v->meta_value ? (int) $v->post_id : false;
+				} );
+				$cache[ $key ] = array_filter( $cache[ $key ] );
+			}
+
+			$this->set_transient( $this->excluded_post_ids_transient, $cache );
+		}
+
+		return $cache;
 	}
 }

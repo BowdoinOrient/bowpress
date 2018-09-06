@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -37,21 +37,52 @@ class Term_Data extends Post_Data {
 	 */
 	protected function __construct() {
 		parent::__construct();
-
-		//* Initialize term meta filters and actions.
-		$this->initialize_term_meta();
 	}
 
 	/**
 	 * Initializes term meta data filters and functions.
 	 *
 	 * @since 2.7.0
+	 * @since 3.0.0 No longer checks for admin query.
 	 */
 	public function initialize_term_meta() {
-		if ( $this->is_admin() ) {
-			\add_action( 'edit_term', array( $this, 'update_term_meta' ), 10, 2 );
-			\add_action( 'delete_term', array( $this, 'delete_term_meta' ), 10, 2 );
+		\add_action( 'edit_term', array( $this, 'update_term_meta' ), 10, 2 );
+		\add_action( 'delete_term', array( $this, 'delete_term_meta' ), 10, 2 );
+	}
+
+	/**
+	 * Determines if current query handles term meta.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool
+	 */
+	public function is_term_meta_capable() {
+		return $this->is_category() || $this->is_tag() || $this->is_tax() || \is_post_type_archive();
+	}
+
+	/**
+	 * Returns and caches term meta for the current query.
+	 *
+	 * @since 3.0.0
+	 * @staticvar array $cache
+	 *
+	 * @return array The current term meta.
+	 */
+	public function get_current_term_meta() {
+
+		static $cache;
+
+		if ( isset( $cache ) )
+			return $cache ?: array();
+
+		if ( $this->is_term_meta_capable() ) {
+			$cache = $this->get_term_meta( \get_queried_object_id() ) ?: false;
+		} else {
+			$cache = false;
 		}
+
+		return $cache ?: array();
 	}
 
 	/**
@@ -60,6 +91,7 @@ class Term_Data extends Post_Data {
 	 *
 	 * @since 2.7.0
 	 * @since 2.8.0 : Added filter.
+	 * @since 3.0.0 : Added filter.
 	 * @staticvar array $cache
 	 *
 	 * @param int $term_id The Term ID.
@@ -80,11 +112,21 @@ class Term_Data extends Post_Data {
 		$data = \get_term_meta( $term_id, THE_SEO_FRAMEWORK_TERM_OPTIONS, true );
 
 		//* Evaluate merely by presence.
-		if ( isset( $data['saved_flag'] ) )
-			return $cache[ $term_id ] = $data;
+		if ( isset( $data['saved_flag'] ) ) {
+			/**
+			 * Applies filters 'the_seo_framework_current_term_meta'.
+			 *
+			 * @since 3.0.0
+			 *
+			 * @param array $data The current term data.
+			 * @param int   $term_id The term ID.
+			 */
+			return $cache[ $term_id ] = \apply_filters( 'the_seo_framework_current_term_meta', $data, $term_id );
+		}
 
 		/**
-		 * Applies filters 'the_seo_framework_get_term_meta'
+		 * Applies filters 'the_seo_framework_get_term_meta'.
+		 * NOTE: Only works before TSF sets its saved - flag. To be used prior to migration.
 		 *
 		 * @since 2.8.0
 		 *
@@ -122,6 +164,7 @@ class Term_Data extends Post_Data {
 	 * Sanitizes and saves term meta data when a term is altered.
 	 *
 	 * @since 2.7.0
+	 * @securitycheck 3.0.0 OK.
 	 *
 	 * @param int $term_id     Term ID.
 	 * @param int $tt_id       Term Taxonomy ID.
@@ -157,6 +200,8 @@ class Term_Data extends Post_Data {
 						continue 2;
 
 					default :
+						// Not implemented for compatibility reasons.
+						// unset( $data[ $key ] );
 						break;
 				endswitch;
 			endforeach;
@@ -193,34 +238,12 @@ class Term_Data extends Post_Data {
 	}
 
 	/**
-	 * Fetch set Term data.
-	 *
-	 * @since 2.6.0
-	 * @since 2.7.0 Handles term object differently for upgraded database.
-	 *
-	 * @todo @since 2.8.0 Will no longer use $term.
-	 *
-	 * @param object|null $term The TT object, if it isn't set, one is fetched.
-	 * @param object|null $term_id The term object.
-	 * @return array The SEO Framework TT data.
-	 */
-	public function get_term_data( $term = null, $term_id = 0 ) {
-
-		if ( is_null( $term ) )
-			$term = $this->fetch_the_term( $term_id );
-
-		if ( isset( $term->term_id ) )
-			return $this->get_term_meta( $term->term_id );
-
-		//* Return null if no term can be set.
-		return null;
-	}
-
-	/**
 	 * Try to fetch a term if none can be found.
 	 *
 	 * @since 2.6.0
+	 * @since 3.0.0 Can now get custom post type objects.
 	 * @access private
+	 * @todo deprecate
 	 *
 	 * @param int $id The possible taxonomy Term ID.
 	 * @return false|object The Term object.
@@ -248,6 +271,8 @@ class Term_Data extends Post_Data {
 				$term[ $id ] = \get_queried_object();
 			} elseif ( $this->is_tax() ) {
 				$term[ $id ] = \get_term_by( 'slug', \get_query_var( 'term' ), \get_query_var( 'taxonomy' ) );
+			} elseif ( \is_post_type_archive() ) {
+				$term[ $id ] = \get_post_type_object( \get_query_var( 'post_type' ) );
 			}
 		}
 
@@ -287,6 +312,8 @@ class Term_Data extends Post_Data {
 	 *
 	 * @since 2.6.0
 	 * @since 2.9.4 Added $term->label and $term->labels->singular_name as additional fallbacks.
+	 * @since 3.0.4 : 1. Now caches ->label and ->singular_name.
+	 *                2. No longer caches fallbacks.
 	 * @staticvar string $term_name : Caution: This function only runs once per screen and doesn't check the term type more than once.
 	 *
 	 * @param object $term The Taxonomy Term object.
@@ -306,6 +333,8 @@ class Term_Data extends Post_Data {
 			$term_name = array();
 		}
 
+		$ret = '';
+
 		if ( isset( $term->taxonomy ) ) {
 			$tax_type = $term->taxonomy;
 
@@ -320,25 +349,61 @@ class Term_Data extends Post_Data {
 
 			if ( $singular ) {
 				if ( isset( $term_labels[ $tax_type ]->singular_name ) )
-					return $term_name[ $singular ] = $term_labels[ $tax_type ]->singular_name;
+					$ret = $term_labels[ $tax_type ]->singular_name;
 			} else {
 				if ( isset( $term_labels->name ) )
-					return $term_name[ $singular ] = $term_labels[ $tax_type ]->name;
+					$ret = $term_labels[ $tax_type ]->name;
 			}
 		} elseif ( isset( $term->label ) ) {
-			return $term->label;
+			$ret = $term->label;
 		} elseif ( isset( $term->labels->singular_name ) ) {
-			return $term->labels->singular_name;
+			$ret = $term->labels->singular_name;
 		}
 
-		if ( $fallback ) {
+		if ( $fallback && ! $ret ) {
 			//* Fallback to Page as it is generic.
-			if ( $singular )
-				return $term_name[ $singular ] = \esc_html__( 'Page', 'autodescription' );
-
-			return $term_name[ $singular ] = \esc_html__( 'Pages', 'autodescription' );
+			if ( $singular ) {
+				return \esc_html__( 'Page', 'autodescription' );
+			} else {
+				return \esc_html__( 'Pages', 'autodescription' );
+			}
 		}
 
-		return $term_name[ $singular ] = '';
+		return $term_name[ $singular ] = $ret;
+	}
+
+	/**
+	 * Returns hierarchical taxonomies for post type.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $get       Whether to get the names or objects.
+	 * @param string $post_type The post type. Will default to current post type.
+	 * @return array The post type objects or names.
+	 */
+	public function get_hierarchical_taxonomies_as( $get = 'objects', $post_type = '' ) {
+
+		if ( ! $post_type )
+			$post_type = \get_post_type( $this->get_the_real_ID() );
+
+		if ( ! $post_type )
+			return array();
+
+		$taxonomies = \get_object_taxonomies( $post_type, 'objects' );
+		$taxonomies = array_filter( $taxonomies, function( $t ) {
+			return $t->hierarchical;
+		} );
+
+		switch ( $get ) {
+			case 'names' :
+				$taxonomies = array_keys( $taxonomies );
+				break;
+
+			default :
+			case 'objects' :
+				break;
+		}
+
+		return $taxonomies;
 	}
 }

@@ -8,7 +8,7 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              http://cabrerahector.com/
+ * @link              https://cabrerahector.com/
  * @since             4.0.0
  * @package           WordPressPopularPosts
  *
@@ -16,9 +16,9 @@
  * Plugin Name:       WordPress Popular Posts
  * Plugin URI:        https://wordpress.org/plugins/wordpress-popular-posts/
  * Description:       A highly customizable widget that displays the most popular posts on your blog.
- * Version:           4.0.3
+ * Version:           4.1.2
  * Author:            Hector Cabrera
- * Author URI:        http://cabrerahector.com/
+ * Author URI:        https://cabrerahector.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       wordpress-popular-posts
@@ -28,6 +28,8 @@
 if ( ! defined( 'WPINC' ) ) {
     die();
 }
+
+define( 'WPP_VER', '4.1.2' );
 
 /*
  * The code that runs during plugin activation.

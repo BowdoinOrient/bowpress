@@ -1,10 +1,11 @@
 === The SEO Framework ===
 Contributors: Cybr
 Donate link: https://theseoframework.com/donate/
-Tags: google, bing, open graph, seo, xml sitemap, schema, local, meta, search engine, woocommerce, amp, facebook, twitter
+Tags: SEO, XML Sitemap, Google, Open Graph, Schema.org, Twitter
 Requires at least: 4.4.0
-Tested up to: 4.8.1
-Stable tag: 2.9.4
+Tested up to: 4.9.4
+Requires PHP: 5.3.0
+Stable tag: 3.0.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -17,7 +18,17 @@ The SEO Framework plugin provides an automated and advanced SEO solution for you
 
 This plugin provides an automated, accessible, unbranded and extremely fast SEO solution for any WordPress website.
 
-For optional advanced SEO tools and output, check out our free companion plugin [Extension Manager](https://wordpress.org/plugins/the-seo-framework-extension-manager/).
+= Extensions =
+
+For more advanced SEO tools and output, check out our free companion plugin [Extension Manager](https://wordpress.org/plugins/the-seo-framework-extension-manager/).
+Many extensions are included, among others are:
+
+* **[Focus](https://theseoframework.com/extensions/focus/)** helps you write targeted content with **focus keywords**, their inflections, and their synonyms. A great addition for bloggers and businesses alike.
+* **[Local](https://theseoframework.com/extensions/local/)** helps you set up local SEO business information. This could expand your business' "Knowledge Graph" card for local search listings.
+
+Visit our [Extensions overview page](https://theseoframework.com/extensions/) for more information.
+
+= Foreword =
 
 > <strong>This plugin strongly helps you create better SEO value for your content.</strong><br>
 > But at the end of the day, it all depends on how entertaining or well-constructed your content or product is.
@@ -25,8 +36,8 @@ For optional advanced SEO tools and output, check out our free companion plugin 
 > No SEO plugin does the magic thing to be found instantly. But doing it right helps a lot.<br>
 > The SEO Framework helps you doing it right. Give it a try!
 >
-> The default settings are recommended within the SEO Settings page. If you know what you're doing, go ahead and change them! Each option is also vastly documented.
-> Don't forget to set up the social meta settings and a home page description; those can greatly increase conversion.
+> The default settings, found within the SEO Settings page, are recommended. If you know what you're doing, go ahead and change them! Each option is also vastly documented.
+> Don't forget to set up the Social Meta Settings and a homepage description; those can greatly increase conversion.
 
 = This plugin: =
 
@@ -43,9 +54,7 @@ For optional advanced SEO tools and output, check out our free companion plugin 
 *Read [this guide](https://theseoframework.com/docs/seo-data-migration/) on transferring SEO Content using SEO Data Transporter.*
 
 = Unbranded, Free and for the Professional =
-This plugin is unbranded! This means that we don't even put the name "The SEO Framework" anywhere within the WordPress interface, aside from the plugin activation page.
-This plugin makes great use of the default WordPress interface elements, like as if this plugin is part of WordPress. No ads, no nags.
-The small and hidden HTML comments can easily be disabled with the use of a filter or extension.
+This plugin is unbranded! This means that we don't even put the name "The SEO Framework" anywhere within the WordPress interface, aside from the plugin activation page. This plugin makes great use of the default WordPress interface elements, like as if this plugin is part of WordPress. No ads, no nags. The small and hidden HTML comments can easily be disabled with the use of a filter or extension.
 
 Nobody has to know about the tools you've used to create your or someone else's website. A clean interface, for everyone.
 
@@ -54,7 +63,7 @@ Nobody has to know about the tools you've used to create your or someone else's 
 
 * Titles according to your settings with archive prefixes.
 * Descriptions with anti-spam techniques and detection that informs you when it can be improved.
-* A canonical URL to prevent duplicated content; with full Domain Mapping, subdomain, and HTTPS support.
+* A canonical URL to prevent duplicated content; with full "domain mapping", subdomain, and HTTPS support.
 * Various Open Graph, Facebook and Twitter tags.
 * Special Open Graph descriptions, which organically integrates within the Facebook and Twitter snippets.
 * Open Graph images, they are automatically resized and optimized when needed.
@@ -62,10 +71,10 @@ Nobody has to know about the tools you've used to create your or someone else's 
 * Structured Data for Google's Knowledge Graph; like Personal/Business site relations, names, and logos.
 * Structured Data for Breadcrumbs that extend pages and categories relationship support in Google Search.
 * Structured Data for Google Search that lets it know your preferred site name.
-* Publishing and editing dates for Social Sites and Search Engines alike.
+* Publishing and editing dates for social sites and search engines alike.
 * Paginated content relationship links, to help visitors going to the right page.
-* A sitemap with all your pages, posts and CPT, which listens to their set settings.
-* Feed excerpts and backlinks within, to prevent automated content theft.
+* A sitemap with all your pages, posts and CPT, which listens to their page settings.
+* Feed excerpts and backlinks within, to reduce automated content theft.
 
 **This plugin goes further, behind the screens it:**
 
@@ -80,11 +89,11 @@ Nobody has to know about the tools you've used to create your or someone else's 
 
 * Automated title output options; they encourage you to follow the guidelines.
 * Automated description output options.
-* Schema.org Structured Data output options.
+* Schema.org structured data output options.
 * Various robots meta output options.
 * Many home page specific options.
 * Facebook, Twitter, and Pinterest social integration options.
-* Google, Bing, Pinterest and Yandex Webmaster verification codes.
+* Google, Bing, Pinterest and Yandex webmaster verification codes.
 * Sitemap integration with personalization.
 * Robots.txt sitemap integration.
 * Feed anti-scraper options.
@@ -101,10 +110,11 @@ Take a look at the API documentation located at [The SEO Framework API Docs](htt
 * If the description is too long, too short, duplicated, has too many repeated words and/or automatically generated.
 * If the page is indexed, redirected, followed and/or archived, while looking at other WordPress settings.
 
-**We call this The SEO Bar. Check out the [Screenshots](https://wordpress.org/plugins/autodescription/#screenshots) to see how it helps you!**
+**We call this the SEO Bar. Check out the [Screenshots](https://wordpress.org/plugins/autodescription/#screenshots) to see how it helps you!**
 
 = Hardcore caching =
 This plugin's code is highly optimized on PHP-level and uses variable, object and transient caching. This means that there's little extra page load time from this plugin, even with more meta tags used.
+
 A caching plugin isn't even needed for this plugin as you won't notice a difference; however, it's supported wherever best suited.
 
 = Compatibility =
@@ -117,18 +127,17 @@ A caching plugin isn't even needed for this plugin as you won't notice a differe
 * Right to Left (RTL) languages, through its interface and generation.
 * Extended color vision deficiency accessibility.
 * Screen reader accessibility.
-* MultiSite, this plugin is in fact built upon one.
+* Multisite, this plugin is in fact built upon one.
 * Detection of robots.txt and sitemap.xml files.
 * Both up-to-date and outdated themes.
 * Detection of various other popular SEO tools to prevent duplicated output.
-* Translation plugins WPML, Polylang and qTranslate X.
+* Translation plugins like WPML, Polylang, WPGlobus and MultilingualPress.
 * WooCommerce, for free, in all its glory.
 
 = An additional sitemap =
-The sitemap generated with The SEO Framework is sufficient for Search Engines to find posts, pages and supported custom post types throughout your website.
-It also listens to the "noindex" settings on each of the items and works great with various translation plugins.
-However, if you require a more expanded sitemap, feel free to activate a dedicated Sitemap plugin. The SEO Framework will automatically deactivate its Sitemap functionality when another (known) sitemap plugin is found.
-If it is not automatically detected and no notification has been provided in the Sitemap Settings, feel free to open a support ticket and it will be addressed carefully.
+The sitemap generated with The SEO Framework is sufficient for search engines to find posts, pages and supported custom post types throughout your website. It also listens to the "noindex" settings on each of the items and works great with various translation plugins.
+
+However, if you require a more expanded sitemap, feel free to activate a dedicated Sitemap plugin. The SEO Framework will automatically deactivate its Sitemap functionality when another (known) sitemap plugin is found. If it is not automatically detected and no notification has been provided in the Sitemap Settings, feel free to open a support ticket and it will be addressed carefully.
 
 = Hidden breadcrumbs =
 The Breadcrumb script generated by this plugin on Posts will also make sure Google easily finds related categories which aren't included in the Sitemap of this plugin.
@@ -142,7 +151,7 @@ The Breadcrumb script generated by this plugin on Posts will also make sure Goog
 
 = Installation instructions: =
 
-1. Install The SEO Framework either via the WordPress.org plugin directory or by uploading the files to your server.
+1. Install "The SEO Framework" either via the WordPress.org plugin directory or by uploading the files to your server.
 1. Either Network Activate this plugin or activate it on a single site.
 1. That's it!
 
@@ -153,6 +162,7 @@ The Breadcrumb script generated by this plugin on Posts will also make sure Goog
 * Do fill in the Home Page "General" settings.
 * Do fill in the Social Meta "General", "Facebook" and "Twitter" settings.
 * Notice that red checkboxes are recommended to be left unchecked. And green checkboxes are recommended to be checked.
+	* These color-coded boxes are shown in non-Gecko browsers, i.e. everything but Firefox.
 
 = This plugin auto-configures SEO meta settings, and: =
 
@@ -165,7 +175,7 @@ The Breadcrumb script generated by this plugin on Posts will also make sure Goog
 == Screenshots ==
 
 1. This plugin shows you what you can improve, at a glance. With complete color vision deficiency support.
-2. Hover over any of the SEO Bar's items to see how you can improve the page's SEO. Red is bad, orange is okay, green is good. Blue is situational.
+2. Hover over any of the SEO Bar's items to see how you can improve the page's SEO. Red is bad, orange is okay, green is good. Blue is informational.
 3. The dynamic Post/Page SEO settings meta box. Another version of this box is also implemented for Categories and Tags.
 4. The dynamic Post/Page SEO settings meta box also fits neatly in the sidebar. For when you want to work faster.
 5. The SEO Settings Page. With over 100 settings, you are in full control.
@@ -175,231 +185,292 @@ The Breadcrumb script generated by this plugin on Posts will also make sure Goog
 = Is The SEO Framework Free? =
 
 Absolutely! It will stay free as well, without ads or nags!
+This plugin is all-inclusive without upsells.
 
-= Is there a Premium version? =
-
-Nope! This plugin is all-inclusive.
-
-= Free & Premium Extensions =
+= Is there more? =
 
 For more advanced SEO options and output, we offer the free plugin [Extension Manager](https://wordpress.org/plugins/the-seo-framework-extension-manager/).
 
 = I have a feature request, I've found a bug, a plugin is incompatible... =
 
-Please visit [the support forums](https://wordpress.org/support/plugin/autodescription) and kindly tell me about it. I try to get back to you within 48 hours. :)
-
-= Is this really a Framework? =
-
-The SEO Framework is its own self-serving technical framework. It keeps track of everything WordPress and SEO while it allows other plugins to interact with it easily.
-Through its framework it allows you to SEO your complete website. It also allows for extensions and real-time alterations; for when you really want or need to change something.
-Extensions built for this plugin might just as well work as a standalone; however, The SEO Framework provides an easier and faster way of doing so.
+Please visit [the support forums](https://wordpress.org/support/plugin/autodescription) and kindly tell us about it.
+We'll try to get back to you within 72 hours. :)
 
 = I am a developer; how can I help? =
 
-The SEO Framework is currently a one-man project. However, any input is greatly appreciated and everything will be considered.
+Any input is greatly appreciated, and everything will be considered.
 Please visit the [GitHub project page](https://github.com/sybrew/the-seo-framework) to submit issues or even pull requests.
 
-= I want to modify how this plugin works =
+= I want to modify how this plugin works. =
 
 The SEO Framework is very pluggable in many fields. Please refer to the [API documentation](https://theseoframework.com/docs/api/).
 
 = The sitemap doesn't contain categories, images, news, etc. is this OK? =
 
-This is not an issue. Search Engines love crawling WordPress because its structure is consistent and well known.
-If a visitor can't find a page, then why would a Search Engine? Don't rely on your sitemap, but on your content and website's usability.
+This is not an issue. Search engines love crawling WordPress because its structure is consistent and well known.
+If a visitor can't find a page, then why would a search engine? Don't rely on your sitemap, but on your content and website's usability.
+
+Check out our [Extension Manager](https://wordpress.org/plugins/the-seo-framework-extension-manager/).
+It contains extensions, like Articles, that fill in the gaps with newer techniques.
+
+= The sitemap contains unwanted links. =
+
+The SEO Framework takes all publicly queryable posts, pages, and CPT and puts them in the sitemap.
+
+If you don't want a page in the sitemap, consider enabling the `noindex` option. This will also remove the page from search engine result pages.
+
+If the link shouldn't be in the sitemap because it's meant for structural reasons, then inform the plugin or theme author that created them.
+You should tell the author to check out the "`public` and `rewrite` post type arguments". The plugin or theme author should know that that means.
 
 = What's do the application/ld+json scripts do? =
 
-The JSON-LD scripts are Search Engine helpers which tell Search Engines how to connect and index the site.
-They can tell the Search Engine if your site contains an internal search engine, what sites you're socially connected to and what page structure you're using.
-This is also referred to as Structured Data.
+The JSON-LD scripts are search engine helpers which tell search engines how to connect and index the site.
+They can tell the search engine if your site contains an internal search engine, what sites you're socially connected to and what page structure you're using.
+This is also referred to as "Structured Data".
 
 = The metadata is not being updated, and I'm using a caching plugin. =
 
-All The SEO Framework's metadata is put into Object cache when a caching plugin is available. The descriptions and Schema.org scripts are put into Transients. Please be sure to clear your cache.
+All The SEO Framework's metadata is put into Object cache when a caching plugin is available.
+The descriptions and Schema.org scripts are put into Transients.
+Please be sure to clear your cache or adjust the plugin's caching settings if deemed necessary.
 
 = I want to transport SEO data from other plugins to The SEO Framework, how do I do this? =
 
 Please refer to this small guide: [SEO Data Migration](http://theseoframework.com/docs/seo-data-migration/).
-Transporting Terms and Taxonomies SEO data isn't supported.
+Transporting Categories, Tags and other terms' SEO data isn't supported.
 
 == Changelog ==
 
-= 2.9.4 - Terminal Queries =
+= 3.0.6 - Lionize =
 
-**Release date:**
+**Release date**
 
-* August 30th, 2017
+* May 6th, 2018
 
 **Summarized:**
 
-* New performance options have been added. They allow you to optimize Search and Archive query alterations.
-* Schema.org JSON-LD data is now cleaner when you run PHP 5.4 or later.
-* Custom input image URLs can now dynamically switch between HTTP and HTTPS and the dimensions are always set, regardless of input.
-* Multisite networks no longer initiate new database connections on every page for plugin compatibility checks.
+* TSF now integrates completely with attachment pages.
+* Non-personalized Facebook profile links can now be set via the Social SEO settings and user's Authorial Info settings.
+* Seven bugs have been fixed, mainly involving descriptions and the sitemap.
+* The plugin now suggests, **once**, that you can use Focus keywords via the Extension Manager.
+
+**For everyone, about the suggestion:**
+
+* We believe not everyone is up-to-date yet with the current progression of the extensions. Some of which can help you out greatly with SEO.
+* So, from this update, all sites will get a one-time-only auto-dismissing suggestion for [TSFEM](https://wordpress.org/plugins/the-seo-framework-extension-manager/).
+* This suggestion has many conditions attached before being shown. So, it's likely you won't ever see it.
+* We understand that not everyone welcomes this introduction. However, this suggestion is to help this plugin and your site grow, from which we all will benefit.
+
+**For developers, about descriptions:**
+
+* If you're using description-related filters or functions from TSF on your sites, check out the detailed "for developers" log.
+* Many functions have been silently deprecated, and you should now use simple caller functions.
+* No action is needed from your side until the next major release (ETA July 2018).
+
+**For developers, about titles ETA July 2018:**
+
+* In the next major release, we're going to change how we handle titles.
+* This change won't affect users directly. But it will allow us to manipulate the titles better.
+* For more information, [view and subscribe to issue 202](https://github.com/sybrew/the-seo-framework/issues/202).
+
+[View the detailed log](https://theseoframework.com/?p=2365#detailed).
+
+= 3.0.5 - Rectified =
+
+**Release date:**
+
+* February 27th, 2018
+
+**Summarized:**
+
+* An issue with outdated browsers not parsing TSF's admin JavaScript has been resolved.
+
+[View the detailed log](https://theseoframework.com/?p=2272#detailed).
+
+= 3.0.4 - Illustrious =
+
+**Release date:**
+
+* February 25th, 2018
 
 **Did you know?**
 
-* Local SEO has been added to the [Extension Manager](https://wordpress.org/plugins/the-seo-framework-extension-manager/).
-* It increases location-aware search presence in Google Search, Google Maps, and even Google Images.
-
-**Detailed log:**
-
-* ***I had not overlooked them, and [they shall be answered](https://theseoframework.com/?p=2135#detailed).***
-
-= 2.9.3 - Assiduous Substratum =
-
-**Release date:**
-
-* July 3rd, 2017
-
-**Announcement: Local SEO Beta**
-
-* Local SEO is a premium extension, and it's almost ready for testing.
-* As we do not want to spam your WordPress dashboard, I've created a new [Twitter account](https://twitter.com/TheSEOFramework) for future announcements.
-* Feel free to follow us to receive the latest updates. As we're planning a test-run prior to release, further details for beta-access will also follow in a tweet.
-
-[youtube https://www.youtube.com/?v=q_ZnBuU1BwY&w=611&h=642&showinfo=0&rel=0&showsearch=0]
+* We're working on an extension for keyword and subject analysis, named [Focus](https://github.com/sybrew/The-SEO-Framework-Extension-Manager/tree/master/extensions/free/focus/trunk).
+* In its current state, it's already on par with other solutions, but we are going to take it even further.
+* More details will follow in a blog post, which we'll link to on our [Twitter page](https://twitter.com/TheSEOFramework) when the features are ready.
 
 **Summarized:**
 
-* Social images can now scale up to 4K resolution. This means (manual and automated) forced cropping no longer initiates at 1500px but at 4096px.
-* A new option has been added for every taxonomical post type in the Visibility tab. It allows you to prevent the annotated pages from showing up in Archives.
-* Structured Data output has been revisited. This includes merging of output, removal of misplaced output, and performance improvements.
-* When your home page is a blog, pages without an ID (404, search, date archives, etc.) had output and caching issues. These issues have been resolved.
-* Several security concerns have also been addressed. Although, none of them could be verified as the coding environment is already well protected.
+* This is a maintenance release with over 10 bugs fixed. Most notoriously were pixel guideline calculation errors and home page title errors.
+* Open Graph and Twitter custom title and description options have been added to every post, page, and CPT.
+* The description character count and pixel length guidelines have been updated.
+* All publicly queryable CPT posts and pages now support SEO settings and are included in the sitemap. No more messing with filters is needed.
 
-**For everyone: Caching changes:**
+**About the new description guidelines:**
 
-* Descriptions and Schema.org output transients are no longer enabled by default. Because for most sites, it's better left disabled.
-* This has been done to reduce database calls. Ultimately, the performance benefits of using the transients are use-case specific.
+* Google increased their SERP's description length a few months ago, so we've updated the upper-limit guidelines.
+* We recommend enforcing these new guidelines for new pages, cornerstone pages, and the home page.
+* Although the description lengths have been updated, the transient cache isn't invalidated.
+* Over time the cache will refresh itself, this is done automatically by WordPress, or via your caching plugin's transients handler (if applicable).
 
-**For developers: Schema.org output code changes:**
+**About the social meta input:**
 
-* The Schema.org output code has been [rewritten](https://github.com/sybrew/the-seo-framework/issues/97). This improves reliability, performance and extensibility.
-* If you've extended or altered the Schema.org generation output, you might wish to revisit your coding implementations.
-* All affronted methods have been correctly deprecated and tested once more. So, 500 errors shouldn't occur.
-* To be certain, visit the detailed changelog and compare your code.
+* There are new Open Graph and Twitter inputs in the SEO Settings.
+* The Twitter settings, when left empty, will use the Open Graph output.
+* The Open Graph settings, when left empty, will use the SEO meta output.
+* As always, auto-generated Open Graph and Twitter descriptions won't use prefixes.
 
-**For high-traffic webmasters and Google Analytics integration plugin authors: About the Search URL change:**
+**Found unwanted links in the sitemap?**
 
-* From this update, new canonical URLs will be generated for search queries to comply to the pretty permalink structure.
-* WordPress natively supports the `/search/{search_term}` endpoint; however, Google Analytics does not.
-* To enable support, please visit [this page](https://support.google.com/analytics/answer/1012264?hl=en&ref_topic=1031951#Post) for more information.
-* I've created a plugin that will enhance support for you. You can download it [here](https://gist.github.com/sybrew/ab5553dd8a06e73794680c4a2cc24661).
-* An extension is planned that will implement Google Analytics for you, complying to those guidelines.
+* If you find posts in the sitemap that shouldn't be there, please refer to [our renewed FAQ](https://wordpress.org/plugins/autodescription/#faq).
+* The FAQ entry title is "The sitemap contains unwanted links".
 
-**Detailed log:**
+[View the detailed log](https://theseoframework.com/?p=2264#detailed).
 
-* ***Already the Sun is climbing to noon, and I feel the need of [something to strengthen me](https://theseoframework.com/?p=2064#detailed).***
-
-= 2.9.2 - Diminutive Consolidation =
+= 3.0.3 - Diligence =
 
 **Release date:**
 
-* May 8th, 2017
+* December 6th, 2017
 
 **Summarized:**
 
-* Now, Polylang is officially supported by The SEO Framework.
-* The sitemap now supports plain permalinks. That means it now literally works for every website.
-* The robots.txt file has been enhanced, so it now informs you when the output location is incorrect.
-* Moreover, various bugs have been fixed, mainly concerning third party plugins.
+* This update implements a workaround for an issue with bbPress, and various UI bugs have been fixed as well.
 
-**We're looking for translation editors:**
+[View the detailed log](https://theseoframework.com/?p=2236#detailed).
 
-* First, thank you so much to all the translation [contributors](https://translate.wordpress.org/projects/wp-plugins/autodescription/contributors).
-* Now, if you want to see The SEO Framework in your language, head over to [this page](https://translate.wordpress.org/projects/wp-plugins/autodescription) and feel free to contribute.
-* If you wish to easily maintain and keep a close eye on all the contributions for your language, [ask us](https://theseoframework.com/contact/) to ask WordPress Polyglots to add you as a contributor.
-* Ultimately, it's up to the WordPress Polyglots team to fulfill your request. It generally depends on how well you've submitted translations for you to be accepted.
-
-**A few notes about translations:**
-
-* If you use a machine to translate for you, note that they can generate out-of-context strings. So keep an eye out for those!
-* If you notice that strings are very hard to translate, e.g. because of grammatical gender, [let us know](https://github.com/sybrew/the-seo-framework/issues/new)!
-* Please don't translate "The SEO Framework", it's a registered brand-name.
-* Be sure not to add spaces if you see backticks, asterisks, or brackets. They're used for Markdown language construction.
-* In TSF, you generally can't use UTF character codes like `&#38;#x2661;`, as they're automatically removed or rendered unreadable for added security. Add them as displayed instead: **♡**.
-
-**Detailed log:**
-
-* ***If you are a friend, speak the password, and the doors will open, and [you can enter](https://theseoframework.com/?p=1982#detailed).***
-
-= 2.9.1 - Sovereign Comprehension =
+= 3.0.2 - Esteem =
 
 **Release date:**
 
-* March 27th, 2017
+* November 23rd, 2017
 
 **Summarized:**
 
-* This release patches a few bugs that were brought with the 2.9.0 release related to debugging and cache clearing.
-* And if you like to use quick edit a lot, the SEO Bar will now also re-render on save.
+* This update fixes an issue with wpForo found in the 3.0 release of TSF.
 
-**Detailed log:**
+[View the detailed log](https://theseoframework.com/?p=2231#detailed).
 
-* ***All we have to decide is what to do with [the time that is given us](https://theseoframework.com/?p=1912#detailed).***
-
-= 2.9.0 - Equitable Erudition =
-
-*Courage is found in unlikely places - J.R.R. Tolkien*
+= 3.0.1 - Renown =
 
 **Release date:**
 
-* March 25th, 2017
+* November 20th, 2017
 
 **Summarized:**
 
-* This update focuses on fixing bugs and expanding the API for developers.
-* To expand the API for per page (in-post) SEO settings, tabs had to be added in the SEO settings meta box.
-* The JavaScript code has also been overhauled to improve performance and allow third party implementation.
-* Moreover, the home page settings now allow you to upload a social image.
-* Structured data markup has also been improved, like the inclusion of an alternative Sitename and fixes for Breadcrumb images.
-* The sitemap can now include the blog page. The lastmod value of which listens to multiple pages to automatically determines what's best.
-* Unfortunately, Twitter has removed support for photo cards. This update makes sure that the regarding settings correctly convert to the current format.
+* This update fixes a few issues found in the 3.0 release of TSF.
 
-**Only one week left for the earliest of early-bird discounts:**
+[View the detailed log](https://theseoframework.com/?p=2225#detailed).
 
-* With [The SEO Framework - Extension Manager](https://wordpress.org/plugins/the-seo-framework-extension-manager/)'s release, a celebratory discount has been introduced.
-* If you wish to benefit from this lifetime discount, [visit the shop](https://premium.theseoframework.com/shop/) for more information.
-* More awesome extensions are coming soon!
+= 3.0.0 - Eminence =
+
+**Release date:**
+
+* November 19th, 2017
+
+**Did you know?**
+
+* Since about a week ago, 3 new free extensions are available in the [Extension Manager](https://wordpress.org/plugins/the-seo-framework-extension-manager/).
+
+**Summarized:**
+
+* Finally, after 8 months of preparation, experimenting, testing, and coding, TSF 3.0 is here.
+* This update focuses on improved social site interaction, WordPress' API coherence, and optimizing UX.
+* To improve social site interaction, social site links can be added through author profile pages.
+* The Open Graph protocol has been updated, so will your meta output.
+* The canonical URL generation has been revised, and it now works mostly through WordPress' API.
+* For improved UX we've added pixel counters, better tooltips, and admin color scheme adherence.
+* Oh, you can also select the primary term for each hierarchical post type.
+
+**New primary terms:**
+
+* *In WordPress, terms are generally known as categories.*
+* The primary term influences how canonical URLs are generated for the post, and how breadcrumbs are constructed.
+* Next to each term selection list, you'll now see radio buttons pop up aside each selected term.
+* The selected term will be assigned as the primary term.
+* If no primary term is selected, an assigned term that has been implemented earliest on the site will be used.
+* Note that this feature requires JavaScript to be enabled. Authors without JavaScript can't change the primary term.
+
+**Revised canonical URLs:**
+
+* The canonical URL generation has been completely rewritten. Most users won't notice anything from this.
+* It now uses WordPress' 4.6+ canonical URL generation (backward-compatibility is provided), instead of an in-house "guessing" version.
+* **So, the Canonical URL should now always be compatible with any plugin, out of the box.** This is great news for translation plugin users!
+* Note that canonical URLs are no longer outputted on private or unpublished posts.
+* Note that if a query isn't registered correctly, the URL will also stay empty. Or, in unlikely cases, it will link to the home page.
+	* Contact the respective plugin author on such issues. I'd love to help them correct this.
+
+**Finally, author SEO:**
+
+* On profile pages of users with Author capabilities (or higher), two new settings have been added under heading **"Authorial Info"**.
+* Here, authors can set their Facebook profile page and Twitter profile page.
+* These links will be used in Open Graph and Twitter meta output.
+* Note that the author's profile must be public for it to be used when sharing links.
+* When no author links are set, the "new" fallback URLs from the Social Meta Settings will be used.
+* Expand your authorial presence using the free [Articles Extension](https://theseoframework.com/extensions/articles/).
+
+**A better admin experience:**
+
+* This plugin now uses your chosen admin color scheme, subtly. You can see it being used as highlights and for tooltips.
+* About tooltips, they've been completely rewritten:
+	* They now look for boundaries, so they won't fall off the page or bound box. They can also face down when needed.
+	* They try to center themselves based on your initial pointer position.
+	* They work perfectly on any touch screen, also using Windows Touch.
+	* They no longer gulp down RAM, they use cutlery. Basically, fewer DOM items initiate them and they self-destruct as they disappear.
+	* Tooltips are now used on every `[?]` mark, so you can instantly see what those marks convey.
+* Title input and preview generation has also been completely rewritten, and this was a big challenge to implement:
+	* Titles now update on various actions, like updating the visibility or name of the page.
+	* Titles now show prefixes, like "Private:" or "Protected:". They'll try to fit neatly, wherever.
+	* Character counters are now always correct; they no longer "guess", they "know".
+	* Pixel counters have been added too. More on that below.
+* The CSS and JS scripts implemented by TSF have been optimized even further. So your admin experience should be a little speedier.
+
+**The pixel counter:**
+
+* A character-count guideline is nice to have. But it remains a guideline, and you want facts... correct?
+* So, we've added a pixel counter. This pixel counter knows exactly how much space your titles and descriptions take up in Google's SERP.
+* To explain this difference visually: Five characters of "WWWWW" take up more space than five of "IIIII".
+* Hover over the pixel counter to see how many pixels you've used.
+* Through testing we found that time-sensitive items (i.e. articles) have less space available for descriptions.
+* You can enable and disable the character and pixel counters at the Layout settings.
+* Note that new installations won't get to see the character counter by default anymore.
+* Note that the pixel counter isn't represented (yet) by the SEO Bar. So, you shouldn't have to worry about yellow or even red items.
+
+**AI good structure:**
+
+* You can now upload a square website logo. This is used in the [Articles Extension](https://theseoframework.com/extensions/articles/), too.
+* The "Site Name" project has been dropped, and this data is now fetched through other means, like the "Sitelinks Searchbox".
+* Breadcrumbs have been revised, too. The generation is now smarter in tree selection, and only one breadcrumb is outputted, which uses your primary term selection.
+* WooCommerce 3.0+ products are recognized correctly by search engines, once more.
+
+**Privacy everywhere:**
+
+* When you click on any link outputted by TSF on your domain, you can be certain it no longer carries any traceable information.
+
+**A note on browser compatibility:**
+
+* As we want to move forward, we don't believe we should be supporting insecure browsers.
+* So, your admin experience will be degraded when using an outdated browser.
+* Be sure to use at least IE 11, Safari 10, iOS 10, or better.
+* We expect only a few users to be negatively affected. For everyone else, we welcome you to the future of browsing.
 
 **Survey:**
 
-* After updating, please fill in our [Update Survey](https://theseoframework.com/?p=1781): tell us what you like or can be done better.
-
-**For everyone: Tabbed In-post SEO layout**
-
-* This release brings tabbed layout to the in-post SEO settings.
-* With this change I've also altered the overall looks, with the help from [Daniel](https://github.com/danielpost).
-* This layout allows extensions from the [Extension Manager](https://wordpress.org/plugins/the-seo-framework-extension-manager/) to be implemented much easier.
-* This layout is self-responsive! This means it's not dependent on the browser size, but on how much content will fit.
-* Therefore, this layout allows the SEO settings to be placed in the right sidebar! Take a look at the [new screenshots](https://wordpress.org/plugins/autodescription/#screenshots).
-
-**For everyone: Browser support**
-
-* This release brings [CSS Flexbox](https://www.w3.org/TR/css-flexbox-1/) to the new in-post SEO settings meta box.
-* The flexbox module is still experimental, in a way that not all browsers correctly support this to the fullest extend.
-* However, support for as many browsers feasible has been implemented. Check out [the list](https://theseoframework.com/?p=1903#browser-support). Enjoy!
-* The gist is that Chrome, Firefox, IE10 and Safari 6 or later are supported.
-
-**SEO Tip of the Update - Trust in layout**
-
-* Is your website glitchy and has placeholder images, unmatched colors or weirdly contrasting borders all over the place?
-* Consider going for a more modern and clean layout. Strip out what isn't necessary. A clean layout implies professionalism and increases visitors' trust.
-* Even if you're just starting out with your website, remove all that could be but really isn't. Because if you leave in placeholders for the future, it implies amateurism.
-* People want their truth to be confirmed or their problems to be solved. If you can't confirm or solve the layout of your website, then they won't trust you to do so for their issues.
-* Simply put: It doesn't have to be perfect, it just must be done.
+* After updating and playing around with the update, feel free to fill in our [update survey](https://theseoframework.com/?p=1781). Tell us what you like or what could've been done better.
 
 **Detailed log:**
 
-* ***It is some miles, but [it will shorten your journey tomorrow](https://theseoframework.com/?p=1903#detailed).***
+* ***Before anything else, preparation is the [key to success](https://theseoframework.com/?p=2210#detailed).***
 
 = Full changelog =
 
 * **The full changelog can be found [here](http://theseoframework.com/?cat=2).**
 
 == Upgrade Notice ==
+
+= 3.0.0 =
+A major update. Make a backup of your database before upgrading.
 
 = 2.9.3 =
 A highly recommended update that fixes "Home Page as Blog" query issues.

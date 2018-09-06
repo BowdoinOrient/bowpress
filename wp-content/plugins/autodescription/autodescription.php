@@ -3,7 +3,7 @@
  * Plugin Name: The SEO Framework
  * Plugin URI: https://theseoframework.com/
  * Description: An automated, advanced, accessible, unbranded and extremely fast SEO solution for any WordPress website.
- * Version: 2.9.4
+ * Version: 3.0.6
  * Author: Sybre Waaijer
  * Author URI: https://theseoframework.com/
  * License: GPLv3
@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -36,7 +36,8 @@ defined( 'ABSPATH' ) or die;
 // 		define( 'THE_SEO_FRAMEWORK_DEBUG', true );
 // 		define( 'THE_SEO_FRAMEWORK_DEBUG_HIDDEN', true );
 // 		define( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS', true );
-// 		update_option( 'the_seo_framework_upgraded_db_version', '0' );
+// 		update_option( 'the_seo_framework_upgraded_db_version', '3060' );
+// 		update_option( 'the_seo_framework_tested_upgrade_version', '0' );
 // 		add_filter( 'the_seo_framework_use_object_cache', '__return_false' );
 // 	}
 // }},0);
@@ -51,7 +52,7 @@ defined( 'ABSPATH' ) or die;
  *
  * @since 1.0.0
  */
-define( 'THE_SEO_FRAMEWORK_VERSION', '2.9.4' );
+define( 'THE_SEO_FRAMEWORK_VERSION', '3.0.6' );
 
 /**
  * The plugin Database version.
@@ -60,7 +61,7 @@ define( 'THE_SEO_FRAMEWORK_VERSION', '2.9.4' );
  *
  * @since 2.7.0
  */
-define( 'THE_SEO_FRAMEWORK_DB_VERSION', '2941' );
+define( 'THE_SEO_FRAMEWORK_DB_VERSION', '3060' );
 
 /**
  * The plugin options database option_name.
@@ -182,7 +183,7 @@ function the_seo_framework_pre_load() {
 function the_seo_framework_test_server() {
 
 	//* Load on init action (manual FTP upload) or after plugin has been upgraded.
-	require_once( THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'plugin-test-server.php' );
+	require THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'plugin-test-server.php';
 
 	if ( get_option( 'the_seo_framework_tested_upgrade_version' ) >= THE_SEO_FRAMEWORK_DB_VERSION )
 		the_seo_framework_load_base_files();
@@ -200,7 +201,7 @@ function the_seo_framework_load_base_files() {
 	 * @since 1.0.0
 	 * @uses THE_SEO_FRAMEWORK_DIR_PATH
 	 */
-	require_once( THE_SEO_FRAMEWORK_DIR_PATH . 'load.php' );
+	require THE_SEO_FRAMEWORK_DIR_PATH . 'load.php';
 
 	/**
 	 * Load deprecated functions.
@@ -209,12 +210,12 @@ function the_seo_framework_load_base_files() {
 	 * @since 2.9.2 No longer called to improve performance.
 	 * @uses THE_SEO_FRAMEWORK_DIR_PATH_FUNCT
 	 */
-	// require_once( THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'deprecated.php' );
+	// require THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'deprecated.php';
 
 	/**
 	 * Load API files.
 	 * @since 2.1.6
 	 * @uses THE_SEO_FRAMEWORK_DIR_PATH_FUNCT
 	 */
-	require_once( THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'optionsapi.php' );
+	require THE_SEO_FRAMEWORK_DIR_PATH_FUNCT . 'optionsapi.php';
 }

@@ -30,12 +30,13 @@ class WPP_Settings {
         'widget_options' => array(
             'title' => '',
             'limit' => 10,
+            'offset' => 0,
             'range' => 'daily',
             'time_unit' => 'hour',
             'time_quantity' => 24,
             'freshness' => false,
             'order_by' => 'views',
-            'post_type' => 'post,page',
+            'post_type' => 'post',
             'pid' => '',
             'author' => '',
             'cat' => '',
@@ -104,8 +105,7 @@ class WPP_Settings {
                     'source' => 'featured',
                     'field' => '',
                     'resize' => false,
-                    'default' => '',
-                    'responsive' => false
+                    'default' => ''
                 ),
                 'log' => array(
                     'level' => 1,
@@ -113,9 +113,9 @@ class WPP_Settings {
                     'expires_after' => 180
                 ),
                 'cache' => array(
-                    'active' => false,
+                    'active' => true,
                     'interval' => array(
-                        'time' => 'hour',
+                        'time' => 'minute',
                         'value' => 1
                     )
                 ),
@@ -143,9 +143,9 @@ class WPP_Settings {
             return $options[ 'widget_options' ];
         }
 
-        if ( !$admin_options = get_site_option( 'wpp_settings_config' ) ) {
+        if ( !$admin_options = get_option( 'wpp_settings_config' ) ) {
             $admin_options = $options[ 'admin_options' ];
-            add_site_option( 'wpp_settings_config', $admin_options );
+            add_option( 'wpp_settings_config', $admin_options );
         }
         else {
             $options[ 'admin_options' ] = WPP_Helper::merge_array_r(

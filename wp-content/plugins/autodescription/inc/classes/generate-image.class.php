@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -118,6 +118,7 @@ class Generate_Image extends Generate_Url {
 		/**
 		 * Applies filters 'the_seo_framework_ld_json_breadcrumb_image' : string
 		 * @since 2.7.0
+		 * TODO deprecate filter and exchange with a suiting name.
 		 * @param string $image The current image.
 		 * @param int $id The page, post, product or term ID.
 		 * @param bool $singular Whether the ID is singular.
@@ -131,6 +132,7 @@ class Generate_Image extends Generate_Url {
 	 * Returns social image URL and sets $this->image_dimensions.
 	 *
 	 * @since 2.9.0
+	 * @since 3.0.6 Added attachment page compatibility.
 	 *
 	 * @todo listen to attached images within post.
 	 * @todo listen to archive images.
@@ -165,9 +167,14 @@ class Generate_Image extends Generate_Url {
 					goto end;
 			}
 
-			//* 3. Fetch image from featured.
+			//* 3.a. Fetch image from featured.
 			if ( $all_allowed || false === in_array( 'featured', $args['disallowed'], true ) ) {
 				if ( $image = $this->get_social_image_url_from_post_thumbnail( $args['post_id'], $args, true ) )
+					goto end;
+			}
+			//* 3.b. Fetch image from attachment page.
+			if ( $all_allowed || false === in_array( 'attachment', $args['disallowed'], true ) ) {
+				if ( $image = $this->get_social_image_url_from_attachment( $args['post_id'], $args, true ) )
 					goto end;
 			}
 		}
@@ -272,11 +279,16 @@ class Generate_Image extends Generate_Url {
 			 *    @param mixed $size The image size
 			 *    @param bool $icon Fetch Image icon
 			 *    @param bool 'skip_fallback' Whether to skip fallback images.
-			 *    @param array $disallowed Disallowed image types : {
+			 *    @param array $disallowed Disallowed image types : Allowed values {
 			 *        array (
-			 *            string 'featured'
-			 *            string 'header'
-			 *            string 'icon'
+			 *            'homemeta',
+			 *            'postmeta',
+			 *            'featured',
+			 *            'attachment',
+			 *            'option',
+			 *            'header',
+			 *            'logo',
+			 *            'icon',
 			 *        )
 			 *    }
 			 *    @param bool 'escape' Whether to escape output.
@@ -481,6 +493,32 @@ class Generate_Image extends Generate_Url {
 	}
 
 	/**
+	 * Returns the social image URL from an attachment page.
+	 *
+	 * @since 3.0.6
+	 *
+	 * @param int $id The post ID. Required.
+	 * @param array $args The image args.
+	 * @param bool $set_og_dimensions Whether to set Open Graph image dimensions.
+	 * @return string The attachment URL.
+	 */
+	public function get_social_image_url_from_attachment( $id, $args = array(), $set_og_dimensions = false ) {
+
+		if ( ! \wp_attachment_is_image( $id ) )
+			return '';
+
+		$args = $this->reparse_image_args( $args );
+		$args['get_the_real_ID'] = true;
+
+		$src = $this->parse_og_image( $id, $args, $set_og_dimensions );
+
+		if ( $src && $this->matches_this_domain( $src ) )
+			$src = $this->set_preferred_url_scheme( $src );
+
+		return $src;
+	}
+
+	/**
 	 * Fetches images id's from WooCommerce gallery
 	 *
 	 * @since 2.5.0
@@ -517,6 +555,7 @@ class Generate_Image extends Generate_Url {
 	 *                2. Now adds ID call to OG image called listener.
 	 * @since 2.9.0 : Added $set_og_dimension parameter
 	 * @since 2.9.3 : 4k baby.
+	 * @since 3.0.0 : Now sets preferred canonical URL scheme.
 	 *
 	 * @todo create formula to fetch transient.
 	 * @priority high 2.7.0
@@ -525,7 +564,7 @@ class Generate_Image extends Generate_Url {
 	 * @param int $id The attachment ID.
 	 * @param array $args The image args
 	 * @param bool $set_og_dimensions Whether to set OG dimensions.
-	 * @return string|empty Parsed image url or empty if already called
+	 * @return string Parsed image url or empty if already called
 	 */
 	public function parse_og_image( $id, $args = array(), $set_og_dimensions = false ) {
 
@@ -608,6 +647,9 @@ class Generate_Image extends Generate_Url {
 			$this->image_dimensions = $this->image_dimensions + array( $usage_id => array( 'width' => $w, 'height' => $h ) );
 		}
 
+		if ( $i && $this->matches_this_domain( $i ) )
+			$i = $this->set_preferred_url_scheme( $i );
+
 		return $i;
 	}
 
@@ -615,6 +657,7 @@ class Generate_Image extends Generate_Url {
 	 * Fetches site icon brought in WordPress 4.3
 	 *
 	 * @since 2.8.0
+	 * @since 3.0.0 : Now sets preferred canonical URL scheme.
 	 *
 	 * @param string|int $size The icon size, accepts 'full' and pixel values.
 	 * @param bool $set_og_dimensions Whether to set size for OG image. Always falls back to the current post ID.
@@ -649,6 +692,9 @@ class Generate_Image extends Generate_Url {
 			$icon = \get_site_icon_url( $size );
 		}
 
+		if ( $icon && $this->matches_this_domain( $icon ) )
+			$icon = $this->set_preferred_url_scheme( $icon );
+
 		return $icon;
 	}
 
@@ -656,6 +702,7 @@ class Generate_Image extends Generate_Url {
 	 * Fetches site logo brought in WordPress 4.5
 	 *
 	 * @since 2.8.0
+	 * @since 3.0.0 : Now sets preferred canonical URL scheme.
 	 *
 	 * @param bool $set_og_dimensions Whether to set size for OG image. Always falls back to the current post ID.
 	 * @return string URL site logo, not escaped.
@@ -683,6 +730,9 @@ class Generate_Image extends Generate_Url {
 			}
 		}
 
+		if ( $logo && $this->matches_this_domain( $logo ) )
+			$logo = $this->set_preferred_url_scheme( $logo );
+
 		return $logo;
 	}
 
@@ -691,6 +741,7 @@ class Generate_Image extends Generate_Url {
 	 * Also sets image dimensions. Falls back to current post ID for index.
 	 *
 	 * @since 2.7.0
+	 * @since 3.0.0 : Now sets preferred canonical URL scheme.
 	 *
 	 * @param bool $set_og_dimensions Whether to set size for OG image. Always falls back to the current post ID.
 	 * @return string The header image URL, not escaped.
@@ -707,6 +758,9 @@ class Generate_Image extends Generate_Url {
 			if ( $w && $h )
 				$this->image_dimensions = $this->image_dimensions + array( $this->get_the_real_ID() => array( 'width' => $w, 'height' => $h ) );
 		}
+
+		if ( $image && $this->matches_this_domain( $image ) )
+			$image = $this->set_preferred_url_scheme( $image );
 
 		return $image;
 	}

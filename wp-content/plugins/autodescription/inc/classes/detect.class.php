@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -44,6 +44,7 @@ class Detect extends Render {
 	/**
 	 * Determines if we're doing ajax.
 	 *
+	 * @todo use wp_doing_ajax() in a future version. Requires WP 4.7+.
 	 * @since 2.9.0
 	 * @staticvar bool $cache
 	 *
@@ -126,6 +127,7 @@ class Detect extends Render {
 	 * Filterable list of conflicting plugins.
 	 *
 	 * @since 2.6.0
+	 * @TODO consider removing "Header and Footer"
 	 * @credits JetPack for most code.
 	 *
 	 * @return array List of conflicting plugins.
@@ -147,7 +149,6 @@ class Detect extends Render {
 				'XML Sitemap & Google News feeds'      => 'xml-sitemap-feed/xml-sitemap.php',
 				'Google Sitemap by BestWebSoft'        => 'google-sitemap-plugin/google-sitemap-plugin.php',
 				'Simple Wp Sitemap'                    => 'simple-wp-sitemap/simple-wp-sitemap.php',
-				'Simple Sitemap'                       => 'simple-sitemap/simple-sitemap.php',
 				'XML Sitemaps'                         => 'xml-sitemaps/xml-sitemaps.php',
 			),
 			'open_graph' => array(
@@ -158,9 +159,7 @@ class Detect extends Render {
 				'Facebook Open Graph Meta Tags for WordPress' => 'wonderm00ns-simple-facebook-open-graph-tags/wonderm00n-open-graph.php',
 				'Facebook Thumb Fixer'                 => 'facebook-thumb-fixer/_facebook-thumb-fixer.php',
 				'Fedmichs Facebook Open Graph Meta'    => 'facebook-and-digg-thumbnail-generator/facebook-and-digg-thumbnail-generator.php',
-				'Header and Footer'                    => 'header-footer/plugin.php',
 				'NextGEN Facebook OG'                  => 'nextgen-facebook/nextgen-facebook.php',
-				'NextScripts SNAP'                     => 'social-networks-auto-poster-facebook-twitter-g/NextScripts_SNAP.php',
 				'Open Graph'                           => 'opengraph/opengraph.php',
 				'Open Graph Protocol Framework'        => 'open-graph-protocol-framework/open-graph-protocol-framework.php',
 				'Shareaholic2'                         => 'shareaholic/sexy-bookmarks.php',
@@ -251,7 +250,7 @@ class Detect extends Render {
 			}
 		}
 
-		//* No class, function or constant found to exist
+		//* No globals, constant, function, or class found to exist
 		return false;
 	}
 
@@ -801,7 +800,7 @@ class Detect extends Render {
 		static $sep_output = null;
 		static $seplocation_output = null;
 
-		if ( ! isset( $title_output ) || ! isset( $sep_output ) || ! isset( $seplocation_output ) ) {
+		if ( ! isset( $title_output, $sep_output, $seplocation_output ) ) {
 			//* Initiate caches, set up variables.
 
 			if ( '' === $title )
@@ -891,12 +890,13 @@ class Detect extends Render {
 	public function post_type_supports_inpost( $post_type = null ) {
 
 		if ( isset( $post_type ) && $post_type ) {
-			$supports = (array) \apply_filters( 'the_seo_framework_custom_post_type_support',
-				array(
-					'title',
-					'editor',
-				)
-			);
+			/**
+			 * Applies filters 'the_seo_framework_custom_post_type_support'
+			 * @since 2.3.5
+			 * @since 3.0.4 Default parameter now is `[]` instead of `['title','editor']`.
+			 * @param array $supports The required post type support, like 'title', 'editor'.
+			 */
+			$supports = (array) \apply_filters( 'the_seo_framework_custom_post_type_support', array() );
 
 			foreach ( $supports as $support ) {
 				if ( ! \post_type_supports( $post_type, $support ) ) {
@@ -924,15 +924,15 @@ class Detect extends Render {
 	 */
 	public function post_type_supports_custom_seo( $post_type = '' ) {
 
-		$post_type = $this->get_supported_post_type( true, $post_type );
-
-		if ( empty( $post_type ) )
-			return false;
-
 		static $supported = array();
 
 		if ( isset( $supported[ $post_type ] ) )
 			return $supported[ $post_type ];
+
+		$post_type = $this->get_supported_post_type( true, $post_type );
+
+		if ( empty( $post_type ) )
+			return $supported[ $post_type ] = false;
 
 		/**
 		 * We now support all posts that allow a title, content editor and excerpt.
@@ -940,7 +940,7 @@ class Detect extends Render {
 		 *
 		 * @since 2.3.5
 		 */
-		if ( \post_type_supports( $post_type, 'autodescription-meta' ) || $this->post_type_supports_inpost( $post_type ) )
+		if ( $this->post_type_supports_inpost( $post_type ) )
 			return $supported[ $post_type ] = true;
 
 		return $supported[ $post_type ] = false;
@@ -993,7 +993,7 @@ class Detect extends Render {
 		 * Applies filters 'the_seo_framework_supported_post_type' : string
 		 * @since 2.6.2
 		 *
-		 * @param string $post_type The supported post type. Is boolean false if not supported.
+		 * @param string|bool $post_type The supported post type. Is boolean false if not supported.
 		 * @param string $post_type_evaluated The evaluated post type.
 		 */
 		$post_type = (string) \apply_filters( 'the_seo_framework_supported_post_type', $post_type, $post_type_evaluated );
@@ -1140,6 +1140,13 @@ class Detect extends Render {
 
 		static $cache = null;
 
-		return isset( $cache ) ? $cache : '' !== $this->get_home_path();
+		if ( isset( $cache ) )
+			return $cache;
+
+		$parsed_url = \wp_parse_url( \get_option( 'home' ) );
+		if ( ! empty( $parsed_url['path'] ) && ltrim( $parsed_url['path'], ' \\/' ) )
+			$cache = true;
+
+		return $cache ?: $cache = false;
 	}
 }

@@ -53,15 +53,13 @@ function _bbpress_filter_order_keys( $current_keys = array() ) {
 function _bbpress_filter_pre_title( $title = '', $args = array(), $escape = true ) {
 
 	if ( \is_bbpress() ) {
-
 		if ( \bbp_is_topic_tag() ) {
-
-			$term = \get_queried_object();
-			$data = \the_seo_framework()->get_term_data( $term, $term->term_id );
+			$data = \the_seo_framework()->get_term_meta( \get_queried_object_id() );
 
 			if ( ! empty( $data['doctitle'] ) ) {
 				$title = $data['doctitle'];
 			} else {
+				$term = \get_queried_object();
 				$title = $term->name ?: \the_seo_framework()->untitled();
 			}
 		}
@@ -146,6 +144,7 @@ function _bbpress_filter_url_path( $path, $id = 0, $external = false ) {
  * This function fixes the Excerpt part.
  *
  * @since 2.9.0
+ * @since 3.0.4 : Default value for $max_char_length has been increased from 155 to 300.
  * @access private
  *
  * @param string $excerpt The excerpt to use.
@@ -154,14 +153,11 @@ function _bbpress_filter_url_path( $path, $id = 0, $external = false ) {
  * @param int $max_char_length Determines the maximum length of excerpt after trimming.
  * @return string The excerpt.
  */
-function _bbpress_filter_excerpt_generation( $excerpt = '', $page_id = 0, $term = '', $max_char_length = 155 ) {
+function _bbpress_filter_excerpt_generation( $excerpt = '', $page_id = 0, $term = '', $max_char_length = 300 ) {
 
 	if ( \is_bbpress() ) {
-
 		if ( \bbp_is_topic_tag() ) {
-
 			$term = \get_queried_object();
-
 			$description = $term->description ?: '';
 
 			//* Always overwrite.
@@ -190,12 +186,8 @@ function _bbpress_filter_excerpt_generation( $excerpt = '', $page_id = 0, $term 
 function _bbpress_filter_custom_field_description( $description = '', $args = array() ) {
 
 	if ( \is_bbpress() ) {
-
 		if ( \bbp_is_topic_tag() ) {
-
-			$term = \get_queried_object();
-			$data = \the_seo_framework()->get_term_data( $term, $term->term_id );
-
+			$data = \the_seo_framework()->get_term_meta( \get_queried_object_id() );
 			if ( ! empty( $data['description'] ) ) {
 				$description = $data['description'];
 			} else {
@@ -205,4 +197,31 @@ function _bbpress_filter_custom_field_description( $description = '', $args = ar
 	}
 
 	return $description;
+}
+
+\add_filter( 'the_seo_framework_do_adjust_archive_query', __NAMESPACE__ . '\_bbpress_filter_do_adjust_query', 10, 2 );
+/**
+ * Fixes bbPress exclusion of first reply.
+ *
+ * bbPress has a hard time maintaining WordPress' query after the original query.
+ * Reasons unknown.
+ * This function fixes the query alteration part.
+ *
+ * @since 3.0.3
+ * @access private
+ * @link <https://bbpress.trac.wordpress.org/ticket/2607> (regression)
+ *
+ * @param bool      $do       Whether to adjust the query.
+ * @param \WP_Query $wp_query The query. Passed by reference.
+ * @return bool
+ */
+function _bbpress_filter_do_adjust_query( $do, &$wp_query ) {
+
+	if ( \is_bbpress() && isset( $wp_query->query['post_type'] ) ) {
+		if ( in_array( 'reply', (array) $wp_query->query['post_type'], true ) ) {
+			$do = false;
+		}
+	}
+
+	return $do;
 }

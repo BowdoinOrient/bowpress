@@ -2,9 +2,10 @@
 Contributors: hcabrera
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=hcabrerab%40gmail%2ecom&lc=GB&item_name=WordPress%20Popular%20Posts%20Plugin&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG_global%2egif%3aNonHosted
 Tags: popular, posts, widget, popularity, top
-Requires at least: 4.1
-Tested up to: 4.8.2
-Stable tag: 4.0.3
+Requires at least: 4.7
+Tested up to: 4.9.8
+Requires PHP: 5.3
+Stable tag: 4.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,7 +24,7 @@ WordPress Popular Posts is a highly customizable widget that displays your most 
 * **Sorting options** - Order your popular list by comments, views (default) or average views per day!
 * **Use your own layout!** - WPP is flexible enough to let you customize the look and feel of your popular posts! (see [customizing WPP's HTML markup](https://github.com/cabrerahector/wordpress-popular-posts/wiki/5.-FAQ#how-can-i-use-my-own-html-markup-with-your-plugin) and [How to style WordPress Popular Posts](https://github.com/cabrerahector/wordpress-popular-posts/wiki/6.-Styling-the-list) for more.)
 * **Disqus support** - Sort your popular posts by Disqus comments count!
-* **WPML support!**
+* **Polylang & WPML 3.2+ support** - Show the translated version of your popular posts!
 * **WordPress Multisite support** - Each site on the network can have its own popular posts!
 
 = Other Features =
@@ -33,6 +34,8 @@ WordPress Popular Posts is a highly customizable widget that displays your most 
 * **[WP-PostRatings](http://wordpress.org/extend/plugins/wp-postratings/) support** - Show your visitors how your readers are rating your posts!
 
 **WordPress Popular Posts** is now also on [GitHub](https://github.com/cabrerahector/wordpress-popular-posts)!
+
+Looking for a Recent Posts widget just as featured-packed as WordPress Popular Posts? **Try [Recently](https://wordpress.org/plugins/recently/)**!
 
 == Installation ==
 
@@ -55,8 +58,9 @@ Please make sure your site meets the [minimum requirements](https://github.com/c
 
 1. Go to Appearance > Widgets, drag and drop the **WordPress Popular Posts** widget to your sidebar. Once you're done configuring it, hit the Save button.
 2. If you have a caching plugin installed on your site, flush its cache now so WPP can start tracking your site.
-3. Go to Appearance > Editor. Under "Templates", click on `header.php` and make sure that the `<?php wp_head(); ?>` tag is present (should be right before the closing `</head>` tag).
-4. (Optional, but highly recommended for large / high traffic sites) Enabling [Data Sampling](https://github.com/cabrerahector/wordpress-popular-posts/wiki/7.-Performance#data-sampling) and/or [Caching](https://github.com/cabrerahector/wordpress-popular-posts/wiki/7.-Performance#caching) might be a good idea. Check [here](https://github.com/cabrerahector/wordpress-popular-posts/wiki/7.-Performance) for more.
+3. If you have a security / firewall plugin installed on your site, make sure you [allow WPP access to the REST API](https://wordpress.org/support/topic/wpp-does-not-count-properly/#post-10411163) so it can start tracking your site.
+4. Go to Appearance > Editor. Under "Templates", click on `header.php` and make sure that the `<?php wp_head(); ?>` tag is present (should be right before the closing `</head>` tag).
+5. (Optional, but highly recommended for large / high traffic sites) Enabling [Data Sampling](https://github.com/cabrerahector/wordpress-popular-posts/wiki/7.-Performance#data-sampling) and/or [Caching](https://github.com/cabrerahector/wordpress-popular-posts/wiki/7.-Performance#caching) might be a good idea. Check [here](https://github.com/cabrerahector/wordpress-popular-posts/wiki/7.-Performance) for more.
 
 That's it!
 
@@ -82,81 +86,35 @@ The FAQ section has been moved [here](https://github.com/cabrerahector/wordpress
 4. WordPress Popular Posts Stats panel.
 
 == Changelog ==
-= 4.0.3 =
+= 4.1.2 =
 
-**This is a hotfix release.**
+- Enables [Data Caching](https://github.com/cabrerahector/wordpress-popular-posts/wiki/7.-Performance#caching) by default (new installs only).
+- The Parameters section (Settings > WordPress Popular Posts > Parameters) is now mobile-friendly.
+- Updated the documentation in the Parameters section.
+- Refactored WPP's caching mechanism into its own class.
+- Removed unused code.
 
-- Dashboard: escapes post titles to prevent potential XSS (props Delta!)
-- Restores ability to use a custom default thumbnail.
+= 4.1.1 =
 
-= 4.0.2 =
+**If you're using a caching plugin, flushing its cache right after installing / upgrading to this version is highly recommended.**
 
-**This is a hotfix release.**
+- Improves compatibility with Cloudflare's Rocket Loader.
+- Code cleanup.
+- Fixes a minor bug (plugin returning the wrong excerpt when a translation plugin is used).
+- Bumps minimum required PHP version to 5.3.
 
-- Dashboard: fixes thumbnail picker on HTTPS.
-- Adds the wpp_custom_html filter back.
+= 4.1.0 =
 
-= 4.0.1 =
+**If you're using a caching plugin, flushing its cache right after installing / upgrading to this version is highly recommended.**
 
-**This is a hotfix release.**
+- Adds support for the REST API.
+- Adds At-a-Glance stats.
+- Adds Today time range to Stats section.
+- Drops jQuery dependency on front-end (faster loading times!)
+- The plugin will no longer display debugging information unless WP_DEBUG is set to true.
+- Many minor bug fixes and improvements.
 
-- Fixes a warning message triggered on old PHP versions.
-- Fixes undefined default_thumbnail_sizes warning message.
-- Removes a hardcoded table prefix causing issues on sites that uses a different prefix than the stock one.
-
-= 4.0.0 =
-
-**If you're using a caching plugin, flushing its cache after installing / upgrading to this version is highly recommended.**
-
-- Plugin code refactored!
-- Dashboard section redesigned (now mobile-friendly, too!)
-- New Statistics chart and other goodies.
-- Adds ability to pick a Custom Time Range!
-- Adds ability to filter posts by other taxonomies than just categories!
-- Adds Relative Date Format.
-- Fixes error caused by changeset 41508 https://core.trac.wordpress.org/changeset/41508 (props hykw!)
-- Improves PHP7+ compatibility.
-- Improves compatibility with WP-SpamShield, WooCommerce, Polylang and WPML.
-- Drops qTranslate support (that plugin has been long removed from WordPress.org anyways.)
-- New content tags added: {img_url}, {taxonomy}.
-- New filters: wpp_post_class, wpp_post_exclude_terms.
-- French and German translation files became too outdated and so support has been dropped for now (want to help? Contact me!)
-- Tons of minor bug fixes and improvements.
-
-Also, see [Release notes](https://cabrerahector.com/development/wordpress-popular-posts-4-0-is-finally-out/).
-
-= 3.3.4 =
-- Attempt to convert tables to InnoDB during upgrade if other engine is being used.
-- Adds a check to prevent the upgrade process from running too many times.
-- Minor improvements and bug fixes.
-- Documentation updated.
-
-= 3.3.3 =
-- Fixes potential XSS exploit in WPP's admin dashboard.
-- Adds filter to set which post types should be tracked by WPP ([details](https://github.com/cabrerahector/wordpress-popular-posts/wiki/3.-Filters#wpp_trackable_post_types)).
-- Adds ability to select first attached image as thumbnail source (thanks, [@serglopatin](https://github.com/serglopatin)!)
-
-= 3.3.2 =
-- Fixes warning message: 'stream does not support seeking in...'
-- Removes excerpt HTML encoding.
-- Passes widget ID to the instance variable for customization.
-- Adds CSS class current.
-- Documentation cleanup.
-- Other minor bug fixes / improvements.
-
-= 3.3.1 =
-- Fixes undefined index notice.
-- Makes sure legacy tables are deleted on plugin upgrade.
-
-= 3.3.0 =
-- Adds the ability to limit the amount of data logged by WPP (see Settings > WordPress Popular Posts > Tools for more).
-- Adds Polylang support (thanks, [@Chouby](https://github.com/Chouby)!)
-- Removes post data from DB on deletion.
-- Fixes whitespaces from post_type argument (thanks, [@getdave](https://github.com/getdave)!)
-- WPP now handles SSL detection for images.
-- Removes legacy datacache and datacache_backup tables.
-- Adds Settings page advertisement support.
-- FAQ section has been moved over to Github.
+See the [Release notes](https://cabrerahector.com/wordpress/wordpress-popular-posts-4-1-is-here/) for more details!
 
 See [full changelog](https://github.com/cabrerahector/wordpress-popular-posts/blob/master/changelog.md).
 
@@ -165,5 +123,5 @@ See [full changelog](https://github.com/cabrerahector/wordpress-popular-posts/bl
 * Flame graphic by freevector/Vecteezy.com.
 
 == Upgrade Notice ==
-= 4.0 =
-If you're using a caching plugin, flush its cache before upgrading to v4.0.
+= 4.1.2 =
+If you're using a caching plugin, flushing its cache after upgrading to this version is recommended.

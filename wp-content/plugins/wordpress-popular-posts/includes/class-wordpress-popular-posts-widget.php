@@ -54,11 +54,14 @@ class WPP_Widget extends WP_Widget {
          */
         extract( $args, EXTR_SKIP );
 
+        $instance = WPP_Helper::merge_array_r(
+            WPP_Settings::$defaults[ 'widget_options' ],
+            (array) $instance
+        );
+
         $markup = ( $instance['markup']['custom_html'] || has_filter('wpp_custom_html') || has_filter('wpp_post') )
               ? 'custom'
               : 'regular';
-
-        echo "\n". "<!-- WordPress Popular Posts Plugin [W] [{$instance['range']}] [{$instance['order_by']}] [{$markup}]" . ( !empty($instance['pid']) ? " [PID]" : "" ) . ( !empty($instance['cat']) ? " [CAT]" : "" ) . ( !empty($instance['author']) ? " [UID]" : "" ) . " -->" . "\n";
 
         echo "\n" . $before_widget . "\n";
 
@@ -82,7 +85,7 @@ class WPP_Widget extends WP_Widget {
         $instance['widget_id'] = $widget_id;
 
         // Get posts
-        if ( $this->admin_options['tools']['ajax'] ) {
+        if ( $this->admin_options['tools']['ajax'] && !is_customize_preview() ) {
 
             if ( empty( $before_widget ) || !preg_match( '/id="[^"]*"/', $before_widget ) ) {
             ?>
@@ -91,33 +94,35 @@ class WPP_Widget extends WP_Widget {
             } else {
             ?>
             <script type="text/javascript">
-                /* jQuery is available, so proceed */
-                if ( window.jQuery ) {
+                document.addEventListener('DOMContentLoaded', function() {
+                    var wpp_widget_container = document.getElementById('<?php echo $widget_id; ?>');
 
-                    jQuery(document).ready(function($){
+                    if ( 'undefined' != typeof WordPressPopularPosts ) {
+                        WordPressPopularPosts.get(
+                            wpp_params.ajax_url + 'widget',
+                            'action=wpp_get_popular&id=<?php echo $this->number; ?>',
+                            function( response ){
+                                wpp_widget_container.innerHTML += JSON.parse( response ).widget;
 
-                        var widget_container = $('#<?php echo $widget_id; ?>');
-                        widget_container.append('<p class="wpp-loader"><span><?php _e( "Loading...", "wordpress-popular-posts" ); ?></span></p>');
+                                var event = null;
 
-                        $.get(
-                            '<?php echo admin_url('admin-ajax.php'); ?>',
-                            {
-                                action: 'wpp_get_popular',
-                                id: '<?php echo $this->number; ?>'
-                            }, function( response ){
-                                widget_container.children("p.wpp-loader").remove();
-                                widget_container.append(response);
+                                if ( 'function' === typeof(Event) ) {
+                                    event = new Event( "wpp-onload", {"bubbles": true, "cancelable": false} );
+                                } /* Fallback for older browsers */
+                                else {
+                                    if ( document.createEvent ) {
+                                        event = document.createEvent('Event');
+                                        event.initEvent( "wpp-onload", true, false );
+                                    }
+                                }
+
+                                if ( event ) {
+                                    wpp_widget_container.dispatchEvent( event );
+                                }
                             }
                         );
-
-                    });
-
-                } /* jQuery is not defined */
-                else {
-                    if ( window.console && window.console.log ) {
-                        window.console.log( 'WordPress Popular Posts: jQuery is not defined!' );
                     }
-                }
+                });
             </script>
             <?php
             }
@@ -207,10 +212,10 @@ class WPP_Widget extends WP_Widget {
         $ids = array_filter( explode( ",", rtrim(preg_replace( '|[^0-9,]|', '', $new_instance['uid'] ), ",") ), 'is_numeric' );
         // Got no valid IDs, clear
         if ( empty( $ids ) ) {
-            $instance['uid'] = '';
+            $instance['author'] = '';
         }
         else {
-            $instance['uid'] = implode( ",", $ids );
+            $instance['author'] = implode( ",", $ids );
         }
 
         $instance['shorten_title']['words'] = $new_instance['shorten_title-words'];
@@ -296,88 +301,33 @@ class WPP_Widget extends WP_Widget {
     }
 
     /**
-     * Returns HTML list via AJAX
+     * Returns HTML list.
      *
      * @since	2.3.3
      */
     public function get_popular( $instance = null ) {
-
-        if ( defined('DOING_AJAX') && DOING_AJAX ) {
-
-            if ( isset( $_GET['id'] ) && WPP_helper::is_number( $_GET['id'] ) ) {
-
-                $id = $_GET['id'];
-                $widget_instances = $this->get_settings();
-
-                if ( isset( $widget_instances[$id] ) ) {
-                    $instance = $widget_instances[$id];
-
-                    if ( !isset( $instance['widget_id'] ) ) {
-                        $instance['widget_id'] = $this->id;
-                    }
-                }
-
-            }
-
-        }
 
         if ( is_array( $instance ) && !empty( $instance ) ) {
 
             // Return cached results
             if ( $this->admin_options['tools']['cache']['active'] ) {
 
-                $transient_name = md5( json_encode($instance) );
-                $popular_posts = get_transient( $transient_name );
+                $key = md5( json_encode($instance) );
+                $popular_posts = WPP_Cache::get( $key );
 
                 if ( false === $popular_posts ) {
 
                     $popular_posts = new WPP_Query( $instance );
 
-                    switch( $this->admin_options['tools']['cache']['interval']['time'] ){
+                    $time_value = $this->admin_options['tools']['cache']['interval']['value']; // eg. 5
+                    $time_unit = $this->admin_options['tools']['cache']['interval']['time']; // eg. 'minute'
 
-                        case 'minute':
-                            $time = 60;
-                        break;
-
-                        case 'hour':
-                            $time = 60 * 60;
-                        break;
-
-                        case 'day':
-                            $time = 60 * 60 * 24;
-                        break;
-
-                        case 'week':
-                            $time = 60 * 60 * 24 * 7;
-                        break;
-
-                        case 'month':
-                            $time = 60 * 60 * 24 * 30;
-                        break;
-
-                        case 'year':
-                            $time = 60 * 60 * 24 * 365;
-                        break;
-
-                        $expiration = $time * $this->admin_options['tools']['cache']['interval']['value'];
-
-                        // Store transient
-                        set_transient( $transient_name, $popular_posts, $expiration );
-
-                        // Store transient in WPP transients array for garbage collection
-                        $wpp_transients = get_site_option('wpp_transients');
-
-                        if ( !$wpp_transients ) {
-                            $wpp_transients = array( $transient_name );
-                            add_site_option( 'wpp_transients', $wpp_transients );
-                        } else {
-                            if ( !in_array($transient_name, $wpp_transients) ) {
-                                $wpp_transients[] = $transient_name;
-                                update_site_option( 'wpp_transients', $wpp_transients );
-                            }
-                        }
-
-                    }
+                    WPP_Cache::set(
+                        $key,
+                        $popular_posts,
+                        $time_value,
+                        $time_unit
+                    );
 
                 }
 
@@ -392,9 +342,6 @@ class WPP_Widget extends WP_Widget {
             $output->output();
 
         }
-
-        if ( defined('DOING_AJAX') && DOING_AJAX )
-            wp_die();
 
     }
 

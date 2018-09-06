@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -79,17 +79,33 @@ class Post_Data extends Detect {
 	}
 
 	/**
-	 * Save the SEO settings when we save a post or page.
+	 * Saves the SEO settings when we save an attachment.
+	 *
+	 * This is a passthrough method for `inpost_seo_save()`.
+	 * Sanity check is handled at `save_custom_fields()`, which `inpost_seo_save()` uses.
+	 *
+	 * @since 3.0.6
+	 * @uses $this->inpost_seo_save()
+	 *
+	 * @param integer $post_id Post ID.
+	 * @return void
+	 */
+	public function inattachment_seo_save( $post_id ) {
+		$this->inpost_seo_save( $post_id, \get_post( $post_id ) );
+	}
+
+	/**
+	 * Saves the SEO settings when we save a post or page.
 	 * Some values get sanitized, the rest are pulled from identically named subkeys in the $_POST['autodescription'] array.
 	 *
 	 * @since 2.0.0
 	 * @since 2.9.3 : Added 'exclude_from_archive'.
+	 * @securitycheck 3.0.0 OK. NOTE: Check is done at save_custom_fields().
 	 * @uses $this->save_custom_fields() : Perform security checks and saves post meta / custom field data to a post or page.
 	 *
-	 * @param integer $post_id  Post ID.
-	 * @param object  $post     Post object.
-	 * @return mixed Returns post id if permissions incorrect, null if doing autosave, ajax or future post, false if update
-	 *               or delete failed, and true on success.
+	 * @param integer  $post_id Post ID.
+	 * @param \WP_Post $post    Post object.
+	 * @return void
 	 */
 	public function inpost_seo_save( $post_id, $post ) {
 
@@ -97,31 +113,41 @@ class Post_Data extends Detect {
 		if ( empty( $_POST['autodescription'] ) )
 			return;
 
+		$defaults = array(
+			'_genesis_title'          => '',
+			'_genesis_description'    => '',
+			'_genesis_canonical_uri'  => '',
+			'redirect'                => '', // Will be displayed in custom fields when set...
+			'_social_image_url'       => '',
+			'_social_image_id'        => 0,
+			'_genesis_noindex'        => 0,
+			'_genesis_nofollow'       => 0,
+			'_genesis_noarchive'      => 0,
+			'exclude_local_search'    => 0, // Will be displayed in custom fields when set...
+			'exclude_from_archive'    => 0, // Will be displayed in custom fields when set...
+			'_open_graph_title'       => '',
+			'_open_graph_description' => '',
+			'_twitter_title'          => '',
+			'_twitter_description'    => '',
+		);
+
 		/**
 		 * Merge user submitted options with fallback defaults
 		 * Passes through nonce at the end of the function.
 		 */
-		$data = \wp_parse_args( $_POST['autodescription'], array(
-			'_genesis_title'         => '',
-			'_genesis_description'   => '',
-			'_genesis_canonical_uri' => '',
-			'redirect'               => '',
-			'_social_image_url'      => '',
-			'_social_image_id'       => 0,
-			'_genesis_noindex'       => 0,
-			'_genesis_nofollow'      => 0,
-			'_genesis_noarchive'     => 0,
-			'exclude_local_search'   => 0,
-			'exclude_from_archive'   => 0,
-		) );
+		$data = \wp_parse_args( $_POST['autodescription'], $defaults );
 
 		foreach ( (array) $data as $key => $value ) :
 			switch ( $key ) :
 				case '_genesis_title' :
+				case '_open_graph_title' :
+				case '_twitter_title' :
 					$data[ $key ] = $this->s_title_raw( $value );
 					continue 2;
 
 				case '_genesis_description' :
+				case '_open_graph_description' :
+				case '_twitter_description' :
 					$data[ $key ] = $this->s_description_raw( $value );
 					continue 2;
 
@@ -132,7 +158,7 @@ class Post_Data extends Detect {
 					 * Also, they will only cause bugs.
 					 * Query parameters are also only used when no pretty permalinks are used. Which is bad.
 					 */
-					$data[ $key ] = $this->s_url( $value );
+					$data[ $key ] = $this->s_url_query( $value );
 					continue 2;
 
 				case '_social_image_id' :
@@ -174,13 +200,14 @@ class Post_Data extends Detect {
 	 * repeated checks against the nonce, request and permissions are avoided.
 	 *
 	 * @since 2.0.0
+	 * @securitycheck 3.0.0 OK.
 	 *
 	 * @thanks StudioPress (http://www.studiopress.com/) for some code.
 	 *
 	 * @param array    $data         Key/Value pairs of data to save in '_field_name' => 'value' format.
 	 * @param string   $nonce_action Nonce action for use with wp_verify_nonce().
 	 * @param string   $nonce_name   Name of the nonce to check for permissions.
-	 * @param WP_Post|integer $post  Post object or ID.
+	 * @param \WP_Post|integer $post  Post object or ID.
 	 * @return mixed Return null if permissions incorrect, doing autosave, ajax or future post, false if update or delete
 	 *               failed, and true on success.
 	 */
@@ -229,6 +256,57 @@ class Post_Data extends Detect {
 	}
 
 	/**
+	 * Saves primary term data for posts.
+	 *
+	 * @since 3.0.0
+	 * @securitycheck 3.0.0 OK.
+	 *
+	 * @param integer  $post_id Post ID.
+	 * @param \WP_Post $post    Post object.
+	 * @return void
+	 */
+	public function _save_inpost_primary_term( $post_id, $post ) {
+
+		//* Nonce is done at the end of this function.
+		if ( empty( $_POST['autodescription'] ) )
+			return;
+
+		$post_type = \get_post_type( $post_id ) ?: false;
+
+		if ( ! $post_type )
+			return;
+
+		/**
+		 * Don't save if WP is creating a revision (same as DOING_AUTOSAVE?)
+		 * @todo @see wp_is_post_revision(), which also returns the post revision ID...
+		 */
+		if ( 'revision' === $post_type )
+			return;
+
+		//* Check that the user is allowed to edit the post
+		if ( ! \current_user_can( 'edit_post', $post_id ) )
+			return;
+
+		$_taxonomies = $this->get_hierarchical_taxonomies_as( 'names', $post_type );
+		$values = array();
+
+		foreach ( $_taxonomies as $_taxonomy ) {
+			$_post_key = '_primary_term_' . $_taxonomy;
+			$values[ $_taxonomy ] = array(
+				'action' => $this->inpost_nonce_field . '_pt',
+				'name' => $this->inpost_nonce_name . '_pt_' . $_taxonomy,
+				'value' => isset( $_POST['autodescription'][ $_post_key ] ) ? \absint( $_POST['autodescription'][ $_post_key ] ) : false,
+			);
+		}
+
+		foreach ( $values as $t => $v ) {
+			if ( \wp_verify_nonce( $v['name'], $v['action'] ) ) {
+				$this->update_primary_term_id( $post_id, $t, $v['value'] );
+			}
+		}
+	}
+
+	/**
 	 * Fetches or parses the excerpt of the post.
 	 *
 	 * @since 1.0.0
@@ -265,7 +343,7 @@ class Post_Data extends Detect {
 	 *
 	 * @param int $the_id The Post ID.
 	 * @param int $tt_id The Taxonomy Term ID.
-	 * @return string|empty excerpt.
+	 * @return string The excerpt.
 	 */
 	public function fetch_excerpt( $the_id = '', $tt_id = '' ) {
 
@@ -299,7 +377,7 @@ class Post_Data extends Detect {
 	 * @param int $the_id The Post ID.
 	 * @param int $tt_id The Taxonomy Term ID
 	 * @param mixed $output The value type to return. Accepts OBJECT, ARRAY_A, or ARRAY_N
-	 * @return empty|array The Post Array.
+	 * @return string|array The Post Array.
 	 */
 	protected function fetch_post_by_id( $the_id = '', $tt_id = '', $output = ARRAY_A ) {
 
@@ -489,23 +567,161 @@ class Post_Data extends Detect {
 	 * Only works on singular pages.
 	 *
 	 * @since 2.8.0
+	 * @since 3.0.0 1. No longer checks for current query.
+	 *              2. Input parameter now default to null.
+	 *                 This currently doesn't affect how it works.
 	 *
-	 * @param int|object The post ID or WP Post object.
-	 * @return bool True if private, false otherwise.
+	 * @param int|null|\WP_Post The post ID or WP Post object.
+	 * @return bool True if protected, false otherwise.
 	 */
-	public function is_protected( $id = 0 ) {
-
-		if ( false === $this->is_singular() )
-			return false;
+	public function is_protected( $id = null ) {
 
 		$post = \get_post( $id, OBJECT );
+		$ret = false;
 
 		if ( isset( $post->post_password ) && '' !== $post->post_password ) {
-			return true;
+			$ret = true;
 		} elseif ( isset( $post->post_status ) && 'private' === $post->post_status ) {
-			return true;
+			$ret = true;
 		}
 
-		return false;
+		return $ret;
+	}
+
+	/**
+	 * Determines if the current post has a password.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int|null|\WP_Post The post ID or WP Post object.
+	 * @return bool True if private, false otherwise.
+	 */
+	public function is_password_protected( $id = null ) {
+
+		$post = \get_post( $id, OBJECT );
+		$ret = false;
+
+		if ( isset( $post->post_password ) && '' !== $post->post_password )
+			$ret = true;
+
+		return $ret;
+	}
+
+	/**
+	 * Determines if the current post is private.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int|null|\WP_Post The post ID or WP Post object.
+	 * @return bool True if private, false otherwise.
+	 */
+	public function is_private( $id = null ) {
+
+		$post = \get_post( $id, OBJECT );
+		$ret = false;
+
+		if ( isset( $post->post_status ) && 'private' === $post->post_status )
+			$ret = true;
+
+		return $ret;
+	}
+
+	/**
+	 * Returns list of post IDs that are excluded from search.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return array The excluded post IDs.
+	 */
+	public function get_ids_excluded_from_search() {
+
+		$cache = $this->get_excluded_ids_from_cache();
+		$ids = array();
+
+		if ( ! empty( $cache['search'] ) ) {
+			$ids = $cache['search'];
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Returns list of post IDs that are excluded from archive.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return array The excluded post IDs.
+	 */
+	public function get_ids_excluded_from_archive() {
+
+		$cache = $this->get_excluded_ids_from_cache();
+		$ids = array();
+
+		if ( ! empty( $cache['archive'] ) ) {
+			$ids = $cache['archive'];
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Returns the primary term for post.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int|null $post_id The post ID.
+	 * @param string   $taxonomy The taxonomy name.
+	 * @return \WP_Term|false The primary term. False if not set.
+	 */
+	public function get_primary_term( $post_id = null, $taxonomy = '' ) {
+
+		$primary_id = $this->get_primary_term_id( $post_id, $taxonomy );
+
+		if ( ! $primary_id )
+			return false;
+
+		$terms = \get_the_terms( $post_id, $taxonomy );
+		$primary_term = false;
+
+		foreach ( $terms as $term ) {
+			if ( $primary_id === (int) $term->term_id ) {
+				$primary_term = $term;
+				break;
+			}
+		}
+
+		return $primary_term;
+	}
+
+	/**
+	 * Returns the primary term ID for post.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int|null $post_id The post ID.
+	 * @param string   $taxonomy The taxonomy name.
+	 * @return int     The primary term ID. 0 if not set.
+	 */
+	public function get_primary_term_id( $post_id = null, $taxonomy = '' ) {
+		return (int) $this->get_custom_field( '_primary_term_' . $taxonomy, $post_id ) ?: 0;
+	}
+
+	/**
+	 * Updates the primary term ID for post.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int|null $post_id  The post ID.
+	 * @param string   $taxonomy The taxonomy name.
+	 * @param int      $value    The new value. If empty, it will delete the entry.
+	 * @return bool True on success, false on failure.
+	 */
+	public function update_primary_term_id( $post_id = null, $taxonomy = '', $value = 0 ) {
+		if ( empty( $value ) ) {
+			$success = \delete_post_meta( $post_id, '_primary_term_' . $taxonomy );
+		} else {
+			$success = \update_post_meta( $post_id, '_primary_term_' . $taxonomy, $value );
+		}
+		return $success;
 	}
 }

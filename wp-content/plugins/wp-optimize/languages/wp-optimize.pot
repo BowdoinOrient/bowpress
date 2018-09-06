@@ -1,4 +1,4 @@
-# Copyright (C) 2017 wp-optimize
+# Copyright (C) 2018 wp-optimize
 # This file is distributed under the same license as the wp-optimize package.
 msgid ""
 msgstr ""
@@ -7,7 +7,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2018-MO-DA HO:MI+ZONE\n"
 "Last-Translator: John Doe <mail@example.com>\n"
 "Language-Team: Team Updraft <mail@example.com>\n"
 "X-Poedit-Basepath: ..\n"
@@ -17,530 +17,940 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/includes/class-commands.php:86
+#: src/includes/class-commands.php:160, src/includes/class-commands.php:203
 msgid "No optimization was indicated."
 msgstr ""
 
-#: src/includes/class-updraft-php-logger.php:22
-msgid "Log events into PHP error log"
+#: src/includes/class-commands.php:312, src/includes/class-commands.php:321
+msgid "Please upload a valid settings file."
 msgstr ""
 
-#: src/includes/class-updraft-simple-history-logger.php:22
-msgid "Log events into Simple History plugin"
+#: src/includes/class-updraft-abstract-logger.php:79
+msgid "Placeholder"
 msgstr ""
 
-#: src/includes/class-wp-optimize-options.php:69
+#: src/includes/class-updraft-email-logger.php:26
+msgid "Log events to email"
+msgstr ""
+
+#: src/includes/class-updraft-email-logger.php:37
+msgid "Enter email for logs here"
+msgstr ""
+
+#: src/includes/class-updraft-php-logger.php:24
+msgid "Log events into the PHP error log"
+msgstr ""
+
+#: src/includes/class-updraft-ring-logger.php:24
+msgid "Store the most recent log entries in the WordPress database"
+msgstr ""
+
+#: src/includes/class-updraft-ring-logger.php:34
+msgid "How many last records store?"
+msgstr ""
+
+#: src/includes/class-wp-optimize-options.php:142
 msgid "Auto backup option updated."
 msgstr ""
 
-#: src/includes/class-wp-optimize-options.php:179
+#: src/includes/class-wp-optimize-options.php:248
 msgid "Settings updated."
 msgstr ""
 
-#: src/includes/class-wp-optimizer.php:110, src/includes/class-wp-optimizer.php:116
+#: src/includes/class-wp-optimizer.php:115, src/includes/class-wp-optimizer.php:121
 msgid "No such optimization"
 msgstr ""
 
-#: src/includes/class-wp-optimizer.php:383
+#: src/includes/class-wp-optimizer.php:454
 msgid "Comments have now been disabled on all current and previously published posts."
 msgstr ""
 
-#: src/includes/class-wp-optimizer.php:386
+#: src/includes/class-wp-optimizer.php:457
 msgid "Comments have now been enabled on all current and previously published posts."
 msgstr ""
 
-#: src/includes/class-wp-optimizer.php:393
+#: src/includes/class-wp-optimizer.php:464
 msgid "Trackbacks have now been disabled on all current and previously published posts."
 msgstr ""
 
-#: src/includes/class-wp-optimizer.php:397
+#: src/includes/class-wp-optimizer.php:467
 msgid "Trackbacks have now been enabled on all current and previously published posts."
 msgstr ""
 
-#: src/includes/wp-optimize-notices.php:31
-msgid "Make sure you backup as well as optimize your database"
-msgstr ""
-
-#: src/includes/wp-optimize-notices.php:32
-msgid "UpdraftPlus is the world's most trusted backup plugin from the owners of WP-Optimize"
+#: src/includes/wp-optimize-notices.php:41
+msgid "Make sure you backup before you optimize your database"
 msgstr ""
 
 #: src/includes/wp-optimize-notices.php:42
-msgid "Introducing UpdraftCentral - from the team behind WP-Optimize"
+msgid "UpdraftPlus is the world's most trusted backup plugin from the owners of WP-Optimize"
 msgstr ""
 
-#: src/includes/wp-optimize-notices.php:43
-msgid "UpdraftCentral is a highly efficient way to manage, update and backup multiple websites from one place."
+#: src/includes/wp-optimize-notices.php:52
+msgid "Save Time and Money. Manage multiple WordPress sites from one location."
 msgstr ""
 
 #: src/includes/wp-optimize-notices.php:53
+msgid "UpdraftCentral is a highly efficient way to take backup, update and manage multiple WP sites from one location."
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:63
 msgid "Like WP-Optimize and can spare one minute?"
 msgstr ""
 
-#: src/includes/wp-optimize-notices.php:54
+#: src/includes/wp-optimize-notices.php:64
 msgid "Please help WP-Optimize by giving a positive review at wordpress.org."
 msgstr ""
 
-#: src/optimizations/autodraft.php:30
-msgid "%d auto draft deleted"
-msgid_plural "%d auto drafts deleted"
+#: src/includes/wp-optimize-notices.php:85
+msgid "Find out more about our revolutionary new WordPress plugin."
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:93
+msgid "Perform optimizations while your visitors sleep"
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:94
+msgid "WP-Optimize Premium features an advanced scheduling system that allows you to run optimizations at the quietest time of day (or night)."
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:104
+msgid "Manage a multisite installation? Need extra control?"
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:105
+msgid "WP-Optimize Premium's multisite feature includes a locking system that restricts optimization commands to users with the right permissions."
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:115
+msgid "WP-Optimize Premium offers unparalleled choice and flexibility"
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:116
+msgid "Upgrade today to combine over a dozen optimization options."
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:126
+msgid "Remove unwanted images for better site performance."
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:127
+msgid "WP-Optimize Premium comes with a feature to easily remove orphaned images, or images that exceed a certain size from your website."
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:137
+msgid "MetaSlider: the world's #1 slider plugin from the makers of WP-Optimize"
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:138
+msgid "With MetaSlider, you can easily add style and flare with beautifully-designed sliders."
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:150
+msgid "Black Friday - 20% off WP-Optimize Premium until November 30th"
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:151, src/includes/wp-optimize-notices.php:164, src/includes/wp-optimize-notices.php:203
+msgid "To benefit, use this discount code:"
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:163
+msgid "Christmas sale - 20% off WP-Optimize Premium until December 25th"
+msgstr ""
+
+#: src/includes/wp-optimize-notices.php:202
+msgid "Summer sale - 20% off WP-Optimize Premium until July 31st"
+msgstr ""
+
+#: src/optimizations/attachments.php:30
+msgid "%s orphaned attachment deleted"
+msgid_plural "%s orphaned attachments deleted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/autodraft.php:42
-msgid "%d item removed from Trash"
-msgid_plural "%d items removed from Trash"
+#: src/optimizations/attachments.php:33, src/optimizations/attachments.php:73, src/optimizations/autodraft.php:28, src/optimizations/autodraft.php:63, src/optimizations/commentmeta.php:33, src/optimizations/commentmeta.php:90, src/optimizations/orphandata.php:16, src/optimizations/orphandata.php:45, src/optimizations/pingbacks.php:16, src/optimizations/pingbacks.php:44, src/optimizations/postmeta.php:20, src/optimizations/postmeta.php:48, src/optimizations/revisions.php:24, src/optimizations/revisions.php:59, src/optimizations/spam.php:48, src/optimizations/spam.php:117, src/optimizations/trackbacks.php:16, src/optimizations/trackbacks.php:44, src/optimizations/transient.php:30, src/optimizations/transient.php:160, src/optimizations/trash.php:31, src/optimizations/trash.php:94, src/optimizations/unapproved.php:24, src/optimizations/unapproved.php:65
+msgid "across %s site"
+msgid_plural "across %s sites"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/optimizations/attachments.php:67
+msgid "%s orphaned attachment found"
+msgid_plural "%s orphaned attachments found"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/optimizations/attachments.php:69
+msgid "No orphaned attachments found"
+msgstr ""
+
+#: src/optimizations/attachments.php:97, src/optimizations/attachments.php:107
+msgid "Remove orphaned attachments"
+msgstr ""
+
+#: src/optimizations/autodraft.php:25
+msgid "%s auto draft deleted"
+msgid_plural "%s auto drafts deleted"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/optimizations/autodraft.php:57
+msgid "%s auto draft post in your database"
+msgid_plural "%s auto draft posts in your database"
 msgstr[0] ""
 msgstr[1] ""
 
 #: src/optimizations/autodraft.php:59
-msgid "%d auto draft post in your database"
-msgid_plural "%d auto draft posts in your database"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/optimizations/autodraft.php:61
 msgid "No auto draft posts found"
 msgstr ""
 
-#: src/optimizations/autodraft.php:75
-msgid "%d trashed post in your database"
-msgid_plural "%d trashed posts in your database"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/optimizations/autodraft.php:77
-msgid "No trashed posts found"
-msgstr ""
-
-#: src/optimizations/autodraft.php:86
-msgid "Clean auto draft and trashed posts which are older than %d weeks"
-msgstr ""
-
-#: src/optimizations/autodraft.php:88
-msgid "Clean all auto-drafts and trashed posts"
+#: src/optimizations/autodraft.php:92
+msgid "Clean auto draft posts which are older than %s weeks"
 msgstr ""
 
 #: src/optimizations/autodraft.php:94
-msgid "Remove auto-drafts and trashed posts"
+msgid "Clean all auto-draft posts"
 msgstr ""
 
-#: src/optimizations/commentmeta.php:17
-msgid "%d unused comment metadata item removed"
-msgid_plural "%d unused comment metadata items removed"
+#: src/optimizations/autodraft.php:105
+msgid "Remove auto-draft posts"
+msgstr ""
+
+#: src/optimizations/commentmeta.php:29
+msgid "%s unused comment metadata item removed"
+msgid_plural "%s unused comment metadata items removed"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/commentmeta.php:27
-msgid "%d unused akismet comment metadata item removed"
-msgid_plural "%d unused akismet comment metadata items removed"
+#: src/optimizations/commentmeta.php:30
+msgid "%s unused akismet comment metadata item removed"
+msgid_plural "%s unused akismet comment metadata items removed"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/commentmeta.php:40
-msgid "%d orphaned comment meta data in your database"
-msgid_plural "%d orphaned comment meta data in your database"
+#: src/optimizations/commentmeta.php:78
+msgid "%s orphaned comment meta data in your database"
+msgid_plural "%s orphaned comment meta data in your database"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/commentmeta.php:42
+#: src/optimizations/commentmeta.php:80
 msgid "No orphaned comment meta data in your database"
 msgstr ""
 
-#: src/optimizations/commentmeta.php:50, src/optimizations/commentmeta.php:54
+#: src/optimizations/commentmeta.php:84
+msgid "%s unused Akismet comment meta rows in your database"
+msgid_plural "%s unused Akismet meta rows in your database"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/optimizations/commentmeta.php:86
+msgid "No Akismet comment meta rows in your database"
+msgstr ""
+
+#: src/optimizations/commentmeta.php:116, src/optimizations/commentmeta.php:120
 msgid "Clean comment meta data"
 msgstr ""
 
-#: src/optimizations/inactive-tags.php:17
-msgid "%d unused tag deleted"
-msgid_plural "%d unused tags deleted"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/optimizations/inactive-tags.php:24, src/optimizations/inactive-tags.php:29
+#: src/optimizations/inactive-tags.php:21
 msgid "Remove unused tags"
 msgstr ""
 
-#: src/optimizations/optimizetables.php:43
+#: src/optimizations/optimizetables.php:65
 msgid "Optimizing Table:"
 msgstr ""
 
-#: src/optimizations/optimizetables.php:52
+#: src/optimizations/optimizetables.php:80
 msgid "Total gain:"
 msgstr ""
 
-#: src/optimizations/optimizetables.php:56
-msgid "Tables using the InnoDB engine (%d) will not be optimized.  Other tables will be optimized (%d)."
+#: src/optimizations/optimizetables.php:88
+msgid "Other tables will be optimized (%s)."
 msgstr ""
 
-#: src/optimizations/optimizetables.php:58
-msgid "Tables will be optimized (%d)."
+#: src/optimizations/optimizetables.php:93
+msgid "Optimize InnoDB tables anyway."
 msgstr ""
 
-#: src/optimizations/optimizetables.php:64, src/optimizations/optimizetables.php:68
+#: src/optimizations/optimizetables.php:93
+msgid "Warning: you should read the FAQ on the risks of this operation first."
+msgstr ""
+
+#: src/optimizations/optimizetables.php:96
+msgid "Tables will be optimized (%s)."
+msgstr ""
+
+#: src/optimizations/optimizetables.php:101, src/optimizations/optimizetables.php:105
 msgid "Optimize database tables"
 msgstr ""
 
-#: src/optimizations/orphandata.php:15
-msgid "%d orphaned meta data deleted"
-msgid_plural "%d orphaned meta data deleted"
+#: src/optimizations/orphandata.php:13
+msgid "%s orphaned meta data deleted"
+msgid_plural "%s orphaned meta data deleted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/orphandata.php:29
-msgid "%d orphaned relationship data in your database"
-msgid_plural "%d orphaned relationship data in your database"
+#: src/optimizations/orphandata.php:39
+msgid "%s orphaned relationship data in your database"
+msgid_plural "%s orphaned relationship data in your database"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/orphandata.php:31
+#: src/optimizations/orphandata.php:41
 msgid "No orphaned relationship data in your database"
 msgstr ""
 
-#: src/optimizations/orphandata.php:38
+#: src/optimizations/orphandata.php:62
 msgid "Clean orphaned relationship data"
 msgstr ""
 
-#: src/optimizations/pingbacks.php:15
-msgid "%d pingback deleted"
-msgid_plural "%d pingbacks deleted"
+#: src/optimizations/pingbacks.php:13
+msgid "%s pingback deleted"
+msgid_plural "%s pingbacks deleted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/pingbacks.php:28
-msgid "%d Pingback found"
-msgid_plural "%d Pingbacks found"
+#: src/optimizations/pingbacks.php:38
+msgid "%s pingback found"
+msgid_plural "%s pingbacks found"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/pingbacks.php:30
+#: src/optimizations/pingbacks.php:40
 msgid "No pingbacks found"
 msgstr ""
 
-#: src/optimizations/pingbacks.php:37
+#: src/optimizations/pingbacks.php:61
 msgid "Remove pingbacks"
 msgstr ""
 
-#: src/optimizations/postmeta.php:18
-msgid "%d orphaned postmeta deleted"
-msgid_plural "%d orphaned postmeta deleted"
+#: src/optimizations/postmeta.php:17
+msgid "%s orphaned post meta data deleted"
+msgid_plural "%s orphaned post meta data deleted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/postmeta.php:31
-msgid "%d orphaned post meta data in your database"
-msgid_plural "%d orphaned postmeta in your database"
+#: src/optimizations/postmeta.php:42
+msgid "%s orphaned post meta data in your database"
+msgid_plural "%s orphaned post meta data in your database"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/postmeta.php:33
+#: src/optimizations/postmeta.php:44
 msgid "No orphaned post meta data in your database"
 msgstr ""
 
-#: src/optimizations/postmeta.php:41
+#: src/optimizations/postmeta.php:65
 msgid "Clean post meta data"
 msgstr ""
 
-#: src/optimizations/postmeta.php:46
+#: src/optimizations/postmeta.php:74
 msgid "Remove orphaned post meta"
 msgstr ""
 
-#: src/optimizations/revisions.php:26
-msgid "%d post revision deleted"
-msgid_plural "%d post revisions deleted"
+#: src/optimizations/repairtables.php:123
+msgid "No corrupted tables found"
+msgstr ""
+
+#: src/optimizations/repairtables.php:135
+msgid "Repair database tables"
+msgstr ""
+
+#: src/optimizations/revisions.php:21
+msgid "%s post revision deleted"
+msgid_plural "%s post revisions deleted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/revisions.php:44
-msgid "%d post revision in your database"
-msgid_plural "%d post revisions in your database"
+#: src/optimizations/revisions.php:53
+msgid "%s post revision in your database"
+msgid_plural "%s post revisions in your database"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/revisions.php:46
+#: src/optimizations/revisions.php:55
 msgid "No post revisions found"
 msgstr ""
 
-#: src/optimizations/revisions.php:55
+#: src/optimizations/revisions.php:81
 msgid "Clean post revisions which are older than %d weeks"
 msgstr ""
 
-#: src/optimizations/revisions.php:57
+#: src/optimizations/revisions.php:83
 msgid "Clean all post revisions"
 msgstr ""
 
-#: src/optimizations/revisions.php:63
+#: src/optimizations/revisions.php:88
 msgid "Remove auto revisions"
 msgstr ""
 
-#: src/optimizations/spam.php:29
-msgid "%d spam comment deleted"
-msgid_plural "%d spam comments deleted"
-msgstr[0] ""
-msgstr[1] ""
-
 #: src/optimizations/spam.php:43
-msgid "%d comment removed from Trash"
-msgid_plural "%d comments removed from Trash"
+msgid "%s spam comment deleted"
+msgid_plural "%s spam comments deleted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/spam.php:60
-msgid "%d spam comment found"
-msgid_plural "%d spam comments found"
+#: src/optimizations/spam.php:44
+msgid "%s comment removed from Trash"
+msgid_plural "%s comments removed from Trash"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/spam.php:60, src/optimizations/spam.php:76, src/optimizations/unapproved.php:45
+#: src/optimizations/spam.php:105
+msgid "%s spam comment found"
+msgid_plural "%s spam comments found"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/optimizations/spam.php:105, src/optimizations/spam.php:111
 msgid "Review"
 msgstr ""
 
-#: src/optimizations/spam.php:62
+#: src/optimizations/spam.php:107
 msgid "No spam comments found"
 msgstr ""
 
-#: src/optimizations/spam.php:76
-msgid "%d trashed comment found"
-msgid_plural "%d trashed comments found"
+#: src/optimizations/spam.php:111
+msgid "%s trashed comment found"
+msgid_plural "%s trashed comments found"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/spam.php:78
+#: src/optimizations/spam.php:113
 msgid "No trashed comments found"
 msgstr ""
 
-#: src/optimizations/spam.php:88
+#: src/optimizations/spam.php:157
 msgid "Remove spam and trashed comments which are older than %d weeks"
 msgstr ""
 
-#: src/optimizations/spam.php:90, src/optimizations/spam.php:95
+#: src/optimizations/spam.php:159, src/optimizations/spam.php:164
 msgid "Remove spam and trashed comments"
 msgstr ""
 
-#: src/optimizations/trackbacks.php:15
-msgid "%d trackback deleted"
-msgid_plural "%d trackbacks deleted"
+#: src/optimizations/trackbacks.php:13
+msgid "%s trackback deleted"
+msgid_plural "%s trackbacks deleted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/trackbacks.php:28
-msgid "%d Trackback found"
-msgid_plural "%d Trackbacks found"
+#: src/optimizations/trackbacks.php:38
+msgid "%s Trackback found"
+msgid_plural "%s Trackbacks found"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/trackbacks.php:30
+#: src/optimizations/trackbacks.php:40
 msgid "No trackbacks found"
 msgstr ""
 
-#: src/optimizations/trackbacks.php:37
+#: src/optimizations/trackbacks.php:58
 msgid "Remove trackbacks"
 msgstr ""
 
-#: src/optimizations/transient.php:33
-msgid "%d transient option deleted"
-msgid_plural "%d transient options deleted"
+#: src/optimizations/transient.php:27
+msgid "%s transient option deleted"
+msgid_plural "%s transient options deleted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/transient.php:60
-msgid "%d site-wide transient option deleted"
-msgid_plural "%d site-widetransient options deleted"
+#: src/optimizations/transient.php:70
+msgid "%s network-wide transient option deleted"
+msgid_plural "%s network-wide transient options deleted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/transient.php:117
-msgid "%d expired transient in your database"
-msgid_plural "%d expired transient in your database"
+#: src/optimizations/transient.php:154
+msgid "%s transient option found"
+msgid_plural "%s transient options found"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/transient.php:119
+#: src/optimizations/transient.php:156
 msgid "No transient options found"
 msgstr ""
 
-#: src/optimizations/transient.php:126, src/optimizations/transient.php:130
+#: src/optimizations/transient.php:167
+msgid "%d network-wide transient option found"
+msgid_plural "%d network-wide transient options found"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/optimizations/transient.php:169
+msgid "No site-wide transient options found"
+msgstr ""
+
+#: src/optimizations/transient.php:211, src/optimizations/transient.php:215
 msgid "Remove expired transient options"
 msgstr ""
 
-#: src/optimizations/unapproved.php:27
-msgid "%d unapproved comment deleted"
-msgid_plural "%d unapproved comments deleted"
+#: src/optimizations/trash.php:28
+msgid "%s post removed from Trash"
+msgid_plural "%s posts removed from Trash"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/unapproved.php:45
-msgid "%d unapproved comment found"
-msgid_plural "%d unapproved comments found"
+#: src/optimizations/trash.php:88
+msgid "%s trashed post in your database"
+msgid_plural "%s trashed posts in your database"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/optimizations/unapproved.php:47
+#: src/optimizations/trash.php:90
+msgid "No trashed posts found"
+msgstr ""
+
+#: src/optimizations/trash.php:124
+msgid "Clean trashed posts which are older than %d weeks"
+msgstr ""
+
+#: src/optimizations/trash.php:126
+msgid "Clean all trashed posts"
+msgstr ""
+
+#: src/optimizations/trash.php:136
+msgid "Remove trashed posts"
+msgstr ""
+
+#: src/optimizations/unapproved.php:21
+msgid "%s unapproved comment deleted"
+msgid_plural "%s unapproved comments deleted"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/optimizations/unapproved.php:59
+msgid "%s unapproved comment found"
+msgid_plural "%s unapproved comments found"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/optimizations/unapproved.php:61
 msgid "No unapproved comments found"
 msgstr ""
 
-#: src/optimizations/unapproved.php:55
+#: src/optimizations/unapproved.php:88
 msgid "Remove unapproved comments which are older than %d weeks"
 msgstr ""
 
-#: src/optimizations/unapproved.php:57, src/optimizations/unapproved.php:62
+#: src/optimizations/unapproved.php:90, src/optimizations/unapproved.php:95
 msgid "Remove unapproved comments"
 msgstr ""
 
-#: src/templates/admin-page-header.php:13
+#: src/templates/admin-page-header.php:5, src/templates/may-also-like.php:25
+msgid "Premium"
+msgstr ""
+
+#: src/templates/admin-page-header.php:11
 msgid "Home"
 msgstr ""
 
 #: src/templates/admin-page-header.php:15
-msgid "updraftplus.com"
-msgstr ""
-
-#: src/templates/admin-page-header.php:17
 msgid "News"
 msgstr ""
 
-#: src/templates/admin-page-header.php:19, src/templates/notices/thanks-for-using-main-dash.php:16
+#: src/templates/admin-page-header.php:17
 msgid "Twitter"
 msgstr ""
 
-#: src/templates/admin-page-header.php:21
+#: src/templates/admin-page-header.php:19
 msgid "Support"
 msgstr ""
 
-#: src/templates/admin-page-header.php:23
+#: src/templates/admin-page-header.php:21
 msgid "Newsletter sign-up"
 msgstr ""
 
-#: src/templates/admin-page-header.php:25
+#: src/templates/admin-page-header.php:23
 msgid "Lead developer"
 msgstr ""
 
-#: src/templates/admin-page-header.php:27
+#: src/templates/admin-page-header.php:25, src/templates/may-also-like.php:7
 msgid "FAQs"
 msgstr ""
 
-#: src/templates/admin-page-header.php:29
+#: src/templates/admin-page-header.php:27
 msgid "More plugins"
 msgstr ""
 
-#: src/templates/admin-settings.php:14
-msgid "General settings"
+#: src/templates/admin-settings-auto-cleanup.php:3
+msgid "Scheduled clean-up settings"
 msgstr ""
 
-#: src/templates/admin-settings.php:16
-msgid "Whether manually or on a schedule, these settings apply whenever a relevant optimization is run."
+#: src/templates/admin-settings-auto-cleanup.php:6
+msgid "Take control of clean-ups: Upgrade to Premium for a more powerful and flexible scheduler"
 msgstr ""
 
-#: src/templates/admin-settings.php:25
-msgid "Keep last %s weeks data"
+#: src/templates/admin-settings-auto-cleanup.php:12
+msgid "Enable scheduled clean-up and optimization (Beta feature)"
 msgstr ""
 
-#: src/templates/admin-settings.php:29
-msgid "This option will, where relevant, retain data from the chosen period, and remove any garbage data before that period."
-msgstr ""
-
-#: src/templates/admin-settings.php:29
-msgid "If the option is not active, then all garbage data will be removed."
-msgstr ""
-
-#: src/templates/admin-settings.php:29
-msgid "This will also affect Auto Clean-up process"
-msgstr ""
-
-#: src/templates/admin-settings.php:34
-msgid "Enable admin bar link"
-msgstr ""
-
-#: src/templates/admin-settings.php:37
-msgid "This option will put an WP-Optimize link on the top admin bar (default is off). Requires a second page refresh after saving the settings."
-msgstr ""
-
-#: src/templates/admin-settings.php:42
-msgid "Auto clean-up settings"
-msgstr ""
-
-#: src/templates/admin-settings.php:47
-msgid "Enable scheduled clean-up and optimization (Beta feature!)"
-msgstr ""
-
-#: src/templates/admin-settings.php:55
+#: src/templates/admin-settings-auto-cleanup.php:20
 msgid "Select schedule type (default is Weekly)"
 msgstr ""
 
-#: src/templates/admin-settings.php:60
+#: src/templates/admin-settings-auto-cleanup.php:25
 msgid "Daily"
 msgstr ""
 
-#: src/templates/admin-settings.php:61
+#: src/templates/admin-settings-auto-cleanup.php:26
 msgid "Weekly"
 msgstr ""
 
-#: src/templates/admin-settings.php:62
+#: src/templates/admin-settings-auto-cleanup.php:27
 msgid "Fortnightly"
 msgstr ""
 
-#: src/templates/admin-settings.php:63
+#: src/templates/admin-settings-auto-cleanup.php:28
 msgid "Monthly (approx. - every 30 days)"
 msgstr ""
 
-#: src/templates/admin-settings.php:107
-msgid "Enable email notification"
+#: src/templates/admin-settings-general.php:17
+msgid "General settings"
 msgstr ""
 
-#: src/templates/admin-settings.php:112
-msgid "Send email to"
+#: src/templates/admin-settings-general.php:19
+msgid "Whether manually or on a schedule, these settings apply whenever a relevant optimization is run."
 msgstr ""
 
-#: src/templates/admin-settings.php:119
+#: src/templates/admin-settings-general.php:28
+msgid "Keep last %s weeks data"
+msgstr ""
+
+#: src/templates/admin-settings-general.php:34
+msgid "This option will, where relevant, retain data from the chosen period, and remove any garbage data before that period."
+msgstr ""
+
+#: src/templates/admin-settings-general.php:34
+msgid "If the option is not active, then all garbage data will be removed."
+msgstr ""
+
+#: src/templates/admin-settings-general.php:34
+msgid "This will also affect Auto Clean-up process"
+msgstr ""
+
+#: src/templates/admin-settings-general.php:39
+msgid "Enable admin bar link"
+msgstr ""
+
+#: src/templates/admin-settings-general.php:42
+msgid "This option will put an WP-Optimize link on the top admin bar (default is off). Requires a second page refresh after saving the settings."
+msgstr ""
+
+#: src/templates/admin-settings-logging.php:3
 msgid "Logging settings"
 msgstr ""
 
-#: src/templates/admin-settings.php:150
+#: src/templates/admin-settings-logging.php:7
+msgid "Add logging destination"
+msgstr ""
+
+#: src/templates/admin-settings-logging.php:11
+msgid "Remember to save your settings so that your changes take effect."
+msgstr ""
+
+#: src/templates/admin-settings-logging.php:22
+msgid "Destination"
+msgstr ""
+
+#: src/templates/admin-settings-logging.php:23
+msgid "Options"
+msgstr ""
+
+#: src/templates/admin-settings-logging.php:24, src/templates/status-box-contents.php:11
+msgid "Status"
+msgstr ""
+
+#: src/templates/admin-settings-logging.php:25, src/templates/tables-body.php:81, src/templates/tables.php:28
+msgid "Actions"
+msgstr ""
+
+#: src/templates/admin-settings-logging.php:39, src/templates/admin-settings-logging.php:79
+msgid "Active"
+msgstr ""
+
+#: src/templates/admin-settings-logging.php:39
+msgid "Inactive"
+msgstr ""
+
+#: src/templates/admin-settings-logging.php:96
 msgid "Save settings"
 msgstr ""
 
-#: src/templates/admin-settings.php:164
+#: src/templates/admin-settings-sidebar.php:4
 msgid "Trackback/comments actions"
 msgstr ""
 
-#: src/templates/admin-settings.php:169
+#: src/templates/admin-settings-sidebar.php:9
 msgid "Trackbacks"
 msgstr ""
 
-#: src/templates/admin-settings.php:172
+#: src/templates/admin-settings-sidebar.php:12
 msgid "Use these buttons to enable or disable any future trackbacks on all your previously published posts."
 msgstr ""
 
-#: src/templates/admin-settings.php:175, src/templates/admin-settings.php:187
+#: src/templates/admin-settings-sidebar.php:15, src/templates/admin-settings-sidebar.php:27
 msgid "Enable"
 msgstr ""
 
-#: src/templates/admin-settings.php:177, src/templates/admin-settings.php:189
+#: src/templates/admin-settings-sidebar.php:17, src/templates/admin-settings-sidebar.php:29
 msgid "Disable"
 msgstr ""
 
-#: src/templates/admin-settings.php:183
+#: src/templates/admin-settings-sidebar.php:23
 msgid "Comments"
 msgstr ""
 
-#: src/templates/admin-settings.php:185
+#: src/templates/admin-settings-sidebar.php:25
 msgid "Use these buttons to enable or disable any future comments on all your previously published posts."
 msgstr ""
 
-#: src/templates/may-also-like.php:13
-msgid "UpdraftPlus newsletter"
+#: src/templates/may-also-like.php:3
+msgid "WP-Optimize free / premium comparison"
 msgstr ""
 
-#: src/templates/may-also-like.php:15
-msgid "here"
+#: src/templates/may-also-like.php:9
+msgid "Ask a pre-sales question"
 msgstr ""
 
-#: src/templates/may-also-like.php:43, src/templates/notices/thanks-for-using-main-dash.php:26, src/templates/notices/thanks-for-using-main-dash.php:30
-msgid "UpdraftPlus"
+#: src/templates/may-also-like.php:20, src/templates/may-also-like.php:25
+msgid "WP-Optimize"
+msgstr ""
+
+#: src/templates/may-also-like.php:20
+msgid "Free"
+msgstr ""
+
+#: src/templates/may-also-like.php:23
+msgid "WP-Optimize Premium"
+msgstr ""
+
+#: src/templates/may-also-like.php:31, src/templates/may-also-like.php:224
+msgid "Installed"
+msgstr ""
+
+#: src/templates/may-also-like.php:35, src/templates/may-also-like.php:228
+msgid "Upgrade now"
+msgstr ""
+
+#: src/templates/may-also-like.php:41, src/templates/may-also-like.php:42
+msgid "Auto-optimize database"
 msgstr ""
 
 #: src/templates/may-also-like.php:43
-msgid "a lot more"
+msgid "Optimizes without the need for manual queries"
+msgstr ""
+
+#: src/templates/may-also-like.php:46, src/templates/may-also-like.php:49, src/templates/may-also-like.php:59, src/templates/may-also-like.php:62, src/templates/may-also-like.php:72, src/templates/may-also-like.php:75, src/templates/may-also-like.php:85, src/templates/may-also-like.php:88, src/templates/may-also-like.php:98, src/templates/may-also-like.php:101, src/templates/may-also-like.php:111, src/templates/may-also-like.php:114, src/templates/may-also-like.php:127, src/templates/may-also-like.php:140, src/templates/may-also-like.php:153, src/templates/may-also-like.php:166, src/templates/may-also-like.php:179, src/templates/may-also-like.php:192, src/templates/may-also-like.php:205, src/templates/may-also-like.php:218
+msgid "Yes"
+msgstr ""
+
+#: src/templates/may-also-like.php:54, src/templates/may-also-like.php:55
+msgid "Scheduled clean-ups"
+msgstr ""
+
+#: src/templates/may-also-like.php:56
+msgid "Carries out scheduled clean-ups daily, weekly, fortnightly and monthly"
+msgstr ""
+
+#: src/templates/may-also-like.php:67, src/templates/may-also-like.php:68
+msgid "Displays database table statistics"
+msgstr ""
+
+#: src/templates/may-also-like.php:69
+msgid "Displays database table statistics to show how much space can be cleared"
+msgstr ""
+
+#: src/templates/may-also-like.php:80, src/templates/may-also-like.php:81
+msgid "Enables / disables trackbacks and comments"
+msgstr ""
+
+#: src/templates/may-also-like.php:82
+msgid "Enable or disable trackbacks and comments for all of your published posts"
+msgstr ""
+
+#: src/templates/may-also-like.php:93, src/templates/may-also-like.php:94
+msgid "Retains a set number of weeks' data during clean-ups"
+msgstr ""
+
+#: src/templates/may-also-like.php:95
+msgid "Choose how much historical data to retain, for extra safety."
+msgstr ""
+
+#: src/templates/may-also-like.php:106, src/templates/may-also-like.php:107
+msgid "Clean auto-draft posts"
+msgstr ""
+
+#: src/templates/may-also-like.php:108
+msgid "Automatically cleans up auto draft posts older than your chosen age"
+msgstr ""
+
+#: src/templates/may-also-like.php:119, src/templates/may-also-like.php:120, src/templates/may-also-like.php:158
+msgid "Multisite support"
+msgstr ""
+
+#: src/templates/may-also-like.php:121
+msgid "Optimize any site (or combination of sites) on your WordPress Multisite or network"
+msgstr ""
+
+#: src/templates/may-also-like.php:124, src/templates/may-also-like.php:137, src/templates/may-also-like.php:150, src/templates/may-also-like.php:163, src/templates/may-also-like.php:176, src/templates/may-also-like.php:189, src/templates/may-also-like.php:202, src/templates/may-also-like.php:215
+msgid "No"
+msgstr ""
+
+#: src/templates/may-also-like.php:132, src/templates/may-also-like.php:133
+msgid "Optimize individual tables"
+msgstr ""
+
+#: src/templates/may-also-like.php:134
+msgid "Perform optimizations on single tables"
+msgstr ""
+
+#: src/templates/may-also-like.php:145, src/templates/may-also-like.php:146
+msgid "Remove unwanted images"
+msgstr ""
+
+#: src/templates/may-also-like.php:147
+msgid "Remove images that have been orphaned or are no longer in use"
+msgstr ""
+
+#: src/templates/may-also-like.php:159
+msgid "Sophisticated scheduling"
+msgstr ""
+
+#: src/templates/may-also-like.php:160
+msgid "A more advanced scheduling system to make regular routine optimizations whenever you prefer"
+msgstr ""
+
+#: src/templates/may-also-like.php:171, src/templates/may-also-like.php:172
+msgid "Control with WP-CLI"
+msgstr ""
+
+#: src/templates/may-also-like.php:173
+msgid "Save time managing multiple sites from the WP command line"
+msgstr ""
+
+#: src/templates/may-also-like.php:184, src/templates/may-also-like.php:185
+msgid "Enhanced logging and reporting"
+msgstr ""
+
+#: src/templates/may-also-like.php:186
+msgid "Send log messages to three additional locations: Slack, Syslog and Simple History"
+msgstr ""
+
+#: src/templates/may-also-like.php:197, src/templates/may-also-like.php:198
+msgid "More choice and flexibility"
+msgstr ""
+
+#: src/templates/may-also-like.php:199
+msgid "Choose from a number of advanced options, like the ability to optimize individual DB tables"
+msgstr ""
+
+#: src/templates/may-also-like.php:210, src/templates/may-also-like.php:211
+msgid "Premium support"
+msgstr ""
+
+#: src/templates/may-also-like.php:212
+msgid "Get your specific queries addressed directly by our experts"
+msgstr ""
+
+#: src/templates/may-also-like.php:236
+msgid "Our other plugins"
+msgstr ""
+
+#: src/templates/may-also-like.php:253
+msgid "UpdraftPlus"
+msgstr ""
+
+#: src/templates/may-also-like.php:254
+msgid "UpdraftPlus – the ultimate protection for your site, hard work and business"
+msgstr ""
+
+#: src/templates/may-also-like.php:257
+msgid "If you’ve got a WordPress website, you need a backup."
+msgstr ""
+
+#: src/templates/may-also-like.php:260
+msgid "Hacking, server crashes, dodgy updates or simple user error can ruin everything."
+msgstr ""
+
+#: src/templates/may-also-like.php:263
+msgid "With UpdraftPlus, you can rest assured that if the worst does happen, it's no big deal. rather than losing everything, you can simply restore the backup and be up and running again in no time at all."
+msgstr ""
+
+#: src/templates/may-also-like.php:266
+msgid "You can also migrate your website with few clicks without hassle."
+msgstr ""
+
+#: src/templates/may-also-like.php:269
+msgid "With a long-standing reputation for excellence and outstanding reviews, it’s no wonder that UpdraftPlus is the world’s most popular WordPress backup plugin."
+msgstr ""
+
+#: src/templates/may-also-like.php:271, src/templates/may-also-like.php:290, src/templates/may-also-like.php:311, src/templates/may-also-like.php:328
+msgid "Try for free"
+msgstr ""
+
+#: src/templates/may-also-like.php:277
+msgid ""
+"UpdraftCentral Dashboard\n"
+""
+msgstr ""
+
+#: src/templates/may-also-like.php:279
+msgid "UpdraftCentral – save hours managing multiple WP sites from one place"
+msgstr ""
+
+#: src/templates/may-also-like.php:282
+msgid "If you manage a few WordPress sites, you need UpdraftCentral."
+msgstr ""
+
+#: src/templates/may-also-like.php:285
+msgid "UpdraftCentral is a powerful tool that allows you to efficiently manage, update, backup and even restore multiple websites from just one location. You can also manage users and comments on all the sites at once, and through its central login feature, you can access each WP-dashboard with a single click."
+msgstr ""
+
+#: src/templates/may-also-like.php:288
+msgid "With a wide range of useful features, including automated backup schedules and sophisticated one click updates, UpdraftCentral is sure to boost to your productivity and save you time."
+msgstr ""
+
+#: src/templates/may-also-like.php:296
+msgid "Meta Slider"
+msgstr ""
+
+#: src/templates/may-also-like.php:297
+msgid "MetaSlider - hold visitors’ attention to increase conversion and profits."
+msgstr ""
+
+#: src/templates/may-also-like.php:300
+msgid "With Metaslider, WordPress’ most popular slider plugin, you can add unique, SEO-optimizing slideshow to your blog or website in a matter of seconds!"
+msgstr ""
+
+#: src/templates/may-also-like.php:303
+msgid "Sliders instantly make a web-page more eye-catching and engaging."
+msgstr ""
+
+#: src/templates/may-also-like.php:306
+msgid "With Metaslider, creating them couldn’t be easier: simply select images from your WordPress Media Library, drag and drop them into place. You can then set the slide captions, links and SEO fields all from one page."
+msgstr ""
+
+#: src/templates/may-also-like.php:309
+msgid "Easily improve the look of your site, your conversion rate and bottom line."
+msgstr ""
+
+#: src/templates/may-also-like.php:316
+msgid "Keyy Two Factor Authentication"
+msgstr ""
+
+#: src/templates/may-also-like.php:317
+msgid "Keyy – instant &amp; secure logins with a wave of your phone"
+msgstr ""
+
+#: src/templates/may-also-like.php:320
+msgid "Keyy is a unique 2-factor authentication plugin that allows you to log in to your website with just a wave of your smartphone. It represents the ultimate UX, doing away with the need for usernames, passwords and other 2FA tokens."
+msgstr ""
+
+#: src/templates/may-also-like.php:323
+msgid "Using innovative RSA public-key cryptography, Keyy is highly secure and prevents password-based hacking risks such as brute-forcing, key-logging, shoulder-surfing and connection sniffing."
+msgstr ""
+
+#: src/templates/may-also-like.php:326
+msgid "Logging in with Keyy is simple. Once users have installed the app onto their smartphone and secured it using a fingerprint or 4-number pin, they just open the app, point it at the moving on-screen barcode and voila!"
 msgstr ""
 
 #: src/templates/notices/horizontal-notice.php:6
@@ -551,24 +961,28 @@ msgstr ""
 msgid "Dismiss"
 msgstr ""
 
-#: src/templates/notices/horizontal-notice.php:32
+#: src/templates/notices/horizontal-notice.php:31
 msgid "Get UpdraftCentral"
 msgstr ""
 
-#: src/templates/notices/horizontal-notice.php:34
+#: src/templates/notices/horizontal-notice.php:33
 msgid "Review WP-Optimize"
 msgstr ""
 
-#: src/templates/notices/horizontal-notice.php:36
+#: src/templates/notices/horizontal-notice.php:35
 msgid "Get UpdraftPlus"
 msgstr ""
 
-#: src/templates/notices/horizontal-notice.php:38
+#: src/templates/notices/horizontal-notice.php:37
 msgid "Sign up"
 msgstr ""
 
-#: src/templates/notices/horizontal-notice.php:40
+#: src/templates/notices/horizontal-notice.php:39
 msgid "Go there"
+msgstr ""
+
+#: src/templates/notices/horizontal-notice.php:41, src/templates/notices/horizontal-notice.php:43
+msgid "Find out more."
 msgstr ""
 
 #: src/templates/notices/thanks-for-using-main-dash.php:5
@@ -576,75 +990,43 @@ msgid "Dismiss (for %s months)"
 msgstr ""
 
 #: src/templates/notices/thanks-for-using-main-dash.php:7
-msgid "Thank you for using WP-Optimize, the world's most trusted WP optimization plugin!"
-msgstr ""
-
-#: src/templates/notices/thanks-for-using-main-dash.php:12
-msgid "Keep in touch!"
+msgid "Thank you for installing WP-Optimize!"
 msgstr ""
 
 #: src/templates/notices/thanks-for-using-main-dash.php:14
-msgid "Blog"
+msgid "Super-charge and secure your WordPress site with our other top plugins:"
 msgstr ""
 
-#: src/templates/notices/thanks-for-using-main-dash.php:15
-msgid "Newsletter"
+#: src/templates/notices/thanks-for-using-main-dash.php:18
+msgid "%s offers powerful extra features and flexibility, and WordPress multisite support."
+msgstr ""
+
+#: src/templates/notices/thanks-for-using-main-dash.php:18
+msgid "WP-Optimize Premium:"
+msgstr ""
+
+#: src/templates/notices/thanks-for-using-main-dash.php:22
+msgid "%s simplifies backups and restoration. It is the world’s highest ranking and most popular scheduled backup plugin, with over a million currently-active installs."
 msgstr ""
 
 #: src/templates/notices/thanks-for-using-main-dash.php:26
-msgid "UpdraftPlus - the #1 most-trusted WordPress backup/restore plugin"
-msgstr ""
-
-#: src/templates/notices/thanks-for-using-main-dash.php:26
-msgid "The team behind WP-Optimize also create WordPress's most trusted backup/restore plugin"
+msgid "%s is a highly efficient way to manage, optimize, update and backup multiple websites from one place."
 msgstr ""
 
 #: src/templates/notices/thanks-for-using-main-dash.php:30
-msgid "Hackers, user error and dodgy updates can all ruin your site."
+msgid "Keyy:"
 msgstr ""
 
 #: src/templates/notices/thanks-for-using-main-dash.php:30
-msgid "We recommend that you install %s, which can automatically backup to remote cloud storage like Dropbox so your backup is independent and safe."
+msgid "Simple & secure login with a wave of your phone"
 msgstr ""
 
-#: src/templates/notices/thanks-for-using-main-dash.php:30
-msgid "You can also restore a site with a couple of clicks."
+#: src/templates/notices/thanks-for-using-main-dash.php:34
+msgid "Add style and flare easily with beautifully-designed sliders with the #1 WP slider plugin"
 msgstr ""
 
-#: src/templates/notices/thanks-for-using-main-dash.php:32
-msgid "Many users of %s have switched to UpdraftPlus WordPress Backup."
-msgstr ""
-
-#: src/templates/notices/thanks-for-using-main-dash.php:32
-msgid "backup plugin comparison table"
-msgstr ""
-
-#: src/templates/notices/thanks-for-using-main-dash.php:39
-msgid "Do you manage multiple WordPress sites?"
-msgstr ""
-
-#: src/templates/notices/thanks-for-using-main-dash.php:39
-msgid "If so, take a look at %s, our remote site management solution. "
-msgstr ""
-
-#: src/templates/notices/thanks-for-using-main-dash.php:39
-msgid "Login securely, backup and update all your sites from one place."
-msgstr ""
-
-#: src/templates/notices/thanks-for-using-main-dash.php:39
-msgid "Available as a self-install plugin, or hosted for you from updraftplus.com"
-msgstr ""
-
-#: src/templates/notices/thanks-for-using-main-dash.php:44
-msgid "More quality plugins"
-msgstr ""
-
-#: src/templates/notices/thanks-for-using-main-dash.php:46
-msgid "Premium WooCommerce plugins"
-msgstr ""
-
-#: src/templates/notices/thanks-for-using-main-dash.php:47
-msgid "Free two-factor security plugin"
+#: src/templates/notices/thanks-for-using-main-dash.php:38
+msgid "Premium WooCommerce extensions"
 msgstr ""
 
 #: src/templates/optimizations-table.php:7
@@ -655,163 +1037,125 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
-#: src/templates/optimizations-table.php:62
+#: src/templates/optimizations-table.php:71
 msgid "Run optimization"
 msgstr ""
 
-#: src/templates/optimizations-table.php:64
+#: src/templates/optimizations-table.php:73
 msgid "Go"
 msgstr ""
 
-#: src/templates/optimize-table.php:12
-msgid "Backup before running optimizations"
-msgstr ""
-
-#: src/templates/optimize-table.php:28
+#: src/templates/optimize-table.php:6
 msgid "Warning: This operation is permanent. Continue?"
 msgstr ""
 
-#: src/templates/optimize-table.php:36
+#: src/templates/optimize-table.php:14
 msgid "Optimizations"
 msgstr ""
 
-#: src/templates/optimize-table.php:39, src/templates/optimize-table.php:73
-msgid "Warning:"
-msgstr ""
-
-#: src/templates/optimize-table.php:40
-msgid "It is best practice to always make a backup of your database before any major operation (optimizing, upgrading, etc.)."
-msgstr ""
-
-#: src/templates/optimize-table.php:42
-msgid "If you need a backup plugin, then we recommend UpdraftPlus."
-msgstr ""
-
-#: src/templates/optimize-table.php:45
+#: src/templates/optimize-table.php:17
 msgid "Run all selected optimizations"
 msgstr ""
 
-#: src/templates/optimize-table.php:49
-msgid "Take a backup with UpdraftPlus before optimizing"
+#: src/templates/optimize-table.php:26
+msgid "Warning:"
 msgstr ""
 
-#: src/templates/optimize-table.php:56
-msgid "Follow this link to install UpdraftPlus, to take a backup before optimization"
-msgstr ""
-
-#: src/templates/optimize-table.php:60
-msgid "UpdraftPlus needs to be updated to 1.12.33 or higher in order to backup the database before optimization."
-msgstr ""
-
-#: src/templates/optimize-table.php:60
-msgid "Please update UpdraftPlus to the latest version."
-msgstr ""
-
-#: src/templates/optimize-table.php:73
+#: src/templates/optimize-table.php:26
 msgid "Items marked in red perform more intensive database operations. In very rare cases, if your database server happened to crash or be forcibly powered down at the same time as an optimization operation was running, data might be corrupted. "
 msgstr ""
 
-#: src/templates/optimize-table.php:73
+#: src/templates/optimize-table.php:26
 msgid "You may wish to run a backup before optimizing."
 msgstr ""
 
-#: src/templates/status-box-contents.php:11
-msgid "Status"
-msgstr ""
-
-#: src/templates/status-box-contents.php:17
+#: src/templates/status-box-contents.php:16
 msgid "running on:"
 msgstr ""
 
-#: src/templates/status-box-contents.php:17
+#: src/templates/status-box-contents.php:16
 msgid "MySQL"
 msgstr ""
 
-#: src/templates/status-box-contents.php:23
-msgid "Last automatic optimization was at"
+#: src/templates/status-box-contents.php:25
+msgid "Last scheduled optimization was at"
 msgstr ""
 
-#: src/templates/status-box-contents.php:28
-msgid "There was no automatic optimization"
+#: src/templates/status-box-contents.php:30
+msgid "There was no scheduled optimization"
 msgstr ""
 
-#: src/templates/status-box-contents.php:36
+#: src/templates/status-box-contents.php:56
 msgid "Scheduled cleaning enabled"
 msgstr ""
 
-#: src/templates/status-box-contents.php:44
+#: src/templates/status-box-contents.php:68
 msgid "Next schedule:"
 msgstr ""
 
-#: src/templates/status-box-contents.php:49
+#: src/templates/status-box-contents.php:73
 msgid "Refresh"
 msgstr ""
 
-#: src/templates/status-box-contents.php:54
+#: src/templates/status-box-contents.php:77
 msgid "Scheduled cleaning disabled"
 msgstr ""
 
-#: src/templates/status-box-contents.php:61
+#: src/templates/status-box-contents.php:84
 msgid "Keeping last %s weeks data"
 msgstr ""
 
-#: src/templates/status-box-contents.php:64
+#: src/templates/status-box-contents.php:87
 msgid "Not keeping recent data"
 msgstr ""
 
-#: src/templates/status-box-contents.php:70
+#: src/templates/status-box-contents.php:93
 msgid "Current database size:"
 msgstr ""
 
-#: src/templates/status-box-contents.php:78
+#: src/templates/status-box-contents.php:100
 msgid "You have saved:"
 msgstr ""
 
-#: src/templates/status-box-contents.php:82
+#: src/templates/status-box-contents.php:104
 msgid "You can save around:"
 msgstr ""
 
-#: src/templates/status-box-contents.php:95
+#: src/templates/status-box-contents.php:117
 msgid "Total clean up overall:"
 msgstr ""
 
-#: src/templates/status-box-contents.php:103
+#: src/templates/status-box-contents.php:126
 msgid "Support and feedback"
 msgstr ""
 
-#: src/templates/status-box-contents.php:105
+#: src/templates/status-box-contents.php:128
 msgid "If you like WP-Optimize,"
 msgstr ""
 
-#: src/templates/status-box-contents.php:105
+#: src/templates/status-box-contents.php:128
 msgid "please give us a positive review, here."
 msgstr ""
 
-#: src/templates/status-box-contents.php:105
+#: src/templates/status-box-contents.php:128
 msgid "Or, if you did not like it,"
 msgstr ""
 
-#: src/templates/status-box-contents.php:105
+#: src/templates/status-box-contents.php:128
 msgid "please tell us why at this link."
 msgstr ""
 
-#: src/templates/status-box-contents.php:106
+#: src/templates/status-box-contents.php:129
 msgid "Support is available here."
 msgstr ""
 
-#: src/templates/tables-body.php:64
+#: src/templates/tables-body.php:67
 msgid "Total:"
 msgstr ""
 
-#: src/templates/tables-body.php:65
-msgid "%d Table"
-msgid_plural "%d Tables"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/templates/tables-body.php:66
-msgid "%d Record"
-msgid_plural "%d Records"
+#: src/templates/tables-body.php:68
+msgid "%s Table"
+msgid_plural "%s Tables"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -823,138 +1167,202 @@ msgstr ""
 msgid "Optimized all the tables found in the database."
 msgstr ""
 
-#: src/templates/tables.php:15
-msgid "No."
-msgstr ""
-
-#: src/templates/tables.php:16
-msgid "Table"
-msgstr ""
-
 #: src/templates/tables.php:17
-msgid "Records"
-msgstr ""
-
-#: src/templates/tables.php:18
-msgid "Data Size"
-msgstr ""
-
-#: src/templates/tables.php:19
-msgid "Index Size"
-msgstr ""
-
-#: src/templates/tables.php:20
-msgid "Type"
+msgid "Search for table"
 msgstr ""
 
 #: src/templates/tables.php:21
+msgid "No."
+msgstr ""
+
+#: src/templates/tables.php:22
+msgid "Table"
+msgstr ""
+
+#: src/templates/tables.php:23
+msgid "Records"
+msgstr ""
+
+#: src/templates/tables.php:24
+msgid "Data Size"
+msgstr ""
+
+#: src/templates/tables.php:25
+msgid "Index Size"
+msgstr ""
+
+#: src/templates/tables.php:26
+msgid "Type"
+msgstr ""
+
+#: src/templates/tables.php:27
 msgid "Overhead"
 msgstr ""
 
-#: src/templates/tables.php:29
-msgid "Total size of database:"
+#: src/templates/tables.php:36
+msgid "Tables not found."
 msgstr ""
 
 #: src/templates/tables.php:37
-msgid "Optimization results:"
-msgstr ""
-
-#: src/templates/tables.php:41
-msgid "Total space saved:"
+msgid "Total size of database:"
 msgstr ""
 
 #: src/templates/tables.php:48
-msgid "Optimization Possibility:"
+msgid "Optimization results:"
 msgstr ""
 
-#: src/templates/tables.php:51
-msgid "Total space that can be saved:"
+#: src/templates/tables.php:52
+msgid "Total space saved:"
 msgstr ""
 
-#: src/templates/tables.php:55
-msgid "Total space:"
+#: src/templates/take-a-backup.php:17
+msgid "Backup before running optimizations"
 msgstr ""
 
-#: src/templates/tables.php:61
-msgid "Total InnoDB tables:"
+#: src/templates/take-a-backup.php:64
+msgid "Take a backup with UpdraftPlus before doing this"
 msgstr ""
 
-#: src/templates/tables.php:64
-msgid "Total non-InnoDB tables:"
+#: src/templates/take-a-backup.php:71
+msgid "Follow this link to install UpdraftPlus, to take a backup before optimization"
 msgstr ""
 
-#: src/wp-optimize.php:280
+#: src/templates/take-a-backup.php:75
+msgid "UpdraftPlus needs to be updated to 1.12.33 or higher in order to backup the database before optimization."
+msgstr ""
+
+#: src/templates/take-a-backup.php:75
+msgid "Please update UpdraftPlus to the latest version."
+msgstr ""
+
+#: src/wp-optimize.php:268
+msgid "WP-Optimize (Free) has been de-activated, because WP-Optimize Premium is active."
+msgstr ""
+
+#: src/wp-optimize.php:278
+msgid "New feature: WP-Optimize Premium can now optimize all sites within a multisite install, not just the main one."
+msgstr ""
+
+#: src/wp-optimize.php:393
 msgid "Table information"
 msgstr ""
 
-#: src/wp-optimize.php:281, src/wp-optimize.php:427
+#: src/wp-optimize.php:393, src/wp-optimize.php:579
 msgid "Settings"
 msgstr ""
 
-#: src/wp-optimize.php:282
-msgid "Plugin family"
+#: src/wp-optimize.php:393
+msgid "Premium / Plugin family"
 msgstr ""
 
-#: src/wp-optimize.php:302
+#: src/wp-optimize.php:522
+msgid "Automatic backup before optimizations"
+msgstr ""
+
+#: src/wp-optimize.php:523
 msgid "An unexpected response was received."
 msgstr ""
 
-#: src/wp-optimize.php:303
+#: src/wp-optimize.php:524
 msgid "Optimization complete"
 msgstr ""
 
-#: src/wp-optimize.php:413
+#: src/wp-optimize.php:525
+msgid "Run optimizations"
+msgstr ""
+
+#: src/wp-optimize.php:526
+msgid "Cancel"
+msgstr ""
+
+#: src/wp-optimize.php:527
+msgid "Please, select settings file."
+msgstr ""
+
+#: src/wp-optimize.php:528
+msgid "Are you sure you want to remove this logging destination?"
+msgstr ""
+
+#: src/wp-optimize.php:529
+msgid "Before saving, you need to complete the currently incomplete settings (or remove them)."
+msgstr ""
+
+#: src/wp-optimize.php:530
+msgid "%s was not repaired. For more details, please check your logs configured in logging destinations settings."
+msgstr ""
+
+#: src/wp-optimize.php:560
 msgid "Optimize"
 msgstr ""
 
-#: src/wp-optimize.php:430
+#: src/wp-optimize.php:582
 msgid "Optimizer"
 msgstr ""
 
-#: src/wp-optimize.php:552
+#: src/wp-optimize.php:598
+msgid "Repair"
+msgstr ""
+
+#: src/wp-optimize.php:705
+msgid "Warning"
+msgstr ""
+
+#: src/wp-optimize.php:705
+msgid "WordPress has a number (%d) of scheduled tasks which are overdue. Unless this is a development site, this probably means that the scheduler in your WordPress install is not working."
+msgstr ""
+
+#: src/wp-optimize.php:705
+msgid "Read this page for a guide to possible causes and how to fix it."
+msgstr ""
+
+#: src/wp-optimize.php:772
 msgid "Error:"
 msgstr ""
 
-#: src/wp-optimize.php:552
+#: src/wp-optimize.php:772
 msgid "template not found"
 msgstr ""
 
-#: src/wp-optimize.php:611
+#: src/wp-optimize.php:824
 msgid "Automatic Operation Completed"
 msgstr ""
 
-#: src/wp-optimize.php:613
+#: src/wp-optimize.php:826
 msgid "Scheduled optimization was executed at"
 msgstr ""
 
-#: src/wp-optimize.php:614
-msgid "Recovered space"
-msgstr ""
-
-#: src/wp-optimize.php:615
+#: src/wp-optimize.php:827
 msgid "You can safely delete this email."
 msgstr ""
 
-#: src/wp-optimize.php:617
+#: src/wp-optimize.php:829
 msgid "Regards,"
 msgstr ""
 
-#: src/wp-optimize.php:618
+#: src/wp-optimize.php:830
 msgid "WP-Optimize Plugin"
 msgstr ""
 
-#: src/wp-optimize.php:644
+#: src/wp-optimize.php:852
 msgid "GB"
 msgstr ""
 
-#: src/wp-optimize.php:646
+#: src/wp-optimize.php:854
 msgid "MB"
 msgstr ""
 
-#: src/wp-optimize.php:648
+#: src/wp-optimize.php:856
 msgid "KB"
 msgstr ""
 
-#: src/wp-optimize.php:650
+#: src/wp-optimize.php:858
 msgid "bytes"
+msgstr ""
+
+#: src/wp-optimize.php:1250
+msgid "Only Network Administrator can activate WP-Optimize plugin."
+msgstr ""
+
+#: src/wp-optimize.php:1251
+msgid "go back"
 msgstr ""

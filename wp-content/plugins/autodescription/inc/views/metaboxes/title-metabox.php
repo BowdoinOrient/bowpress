@@ -106,14 +106,16 @@ switch ( $instance ) :
 
 		?>
 		<fieldset>
-			<legend><h4><?php esc_html_e( 'Document Title Separator', 'autodescription' ); ?></h4></legend>
+			<legend>
+				<h4><?php esc_html_e( 'Title Separator', 'autodescription' ); ?></h4>
+				<?php $this->description( __( 'If the title consists of two parts (original title and optional addition), then the separator will go in-between them.', 'autodescription' ) ); ?>
+			</legend>
 			<p id="tsf-title-separator" class="tsf-fields">
 			<?php foreach ( $title_separator as $name => $html ) { ?>
 				<input type="radio" name="<?php $this->field_name( 'title_seperator' ); ?>" id="<?php $this->field_id( 'title_seperator_' . $name ); ?>" value="<?php echo esc_attr( $name ); ?>" <?php checked( $this->get_field_value( 'title_seperator' ), $name ); ?> />
 				<label for="<?php $this->field_id( 'title_seperator_' . $name ); ?>" <?php echo in_array( $name, array( 'dash', 'pipe' ), true ) ? $recommended : ''; ?>><?php echo esc_html( $html ); ?></label>
 			<?php } ?>
 			</p>
-			<?php $this->description( __( 'If the title consists of two parts (original title and optional addition), then the separator will go in-between them.', 'autodescription' ) ); ?>
 		</fieldset>
 		<?php
 		break;
@@ -129,10 +131,10 @@ switch ( $instance ) :
 
 		?>
 		<fieldset>
-			<legend><h4><?php esc_html_e( 'Document Title Additions Location', 'autodescription' ); ?></h4></legend>
-
-			<?php $this->description( __( 'Determines which side the added title text will go on.', 'autodescription' ) ); ?>
-
+			<legend>
+				<h4><?php esc_html_e( 'Title Additions Location', 'autodescription' ); ?></h4>
+				<?php $this->description( __( 'This setting determines which side the added title text will go on.', 'autodescription' ) ); ?>
+			</legend>
 			<p id="tsf-title-location" class="tsf-fields">
 				<span class="tsf-toblock">
 					<input type="radio" name="<?php $this->field_name( 'title_location' ); ?>" id="<?php $this->field_id( 'title_location_left' ); ?>" value="left" <?php checked( $this->get_field_value( 'title_location' ), 'left' ); ?> />
@@ -151,42 +153,37 @@ switch ( $instance ) :
 			</p>
 			<?php $this->description( $home_page_has_option ); ?>
 		</fieldset>
-		<?php
 
-		//* Only add this option if the theme is doing it right.
-		if ( $this->can_manipulate_title() ) :
-			?>
-			<hr>
+		<hr>
 
-			<h4><?php esc_html_e( 'Remove Blogname from Title', 'autodescription' ); ?></h4>
-			<div id="tsf-title-additions-toggle">
-				<?php
-				$info = $this->make_info(
-					__( 'This might decouple your posts and pages from the rest of the website', 'autodescription' ),
-					'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#3',
-					false
-				);
-
-				$this->wrap_fields(
-					$this->make_checkbox(
-						'title_rem_additions',
-						esc_html__( 'Remove Blogname from title?', 'autodescription' ) . ' ' . $info,
-						'',
-						false
-					),
-					true
-				);
-				?>
-			</div>
+		<h4><?php esc_html_e( 'Remove Blogname from Title', 'autodescription' ); ?></h4>
+		<div id="tsf-title-additions-toggle">
 			<?php
-			$this->description( __( 'Only use this option if you are aware of its SEO effects.', 'autodescription' ), false );
-			echo ' ';
-			$this->description( $home_page_has_option, false );
-		endif;
+			$info = $this->make_info(
+				__( 'This might decouple your posts and pages from the rest of the website.', 'autodescription' ),
+				'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#3',
+				false
+			);
+
+			$this->wrap_fields(
+				$this->make_checkbox(
+					'title_rem_additions',
+					esc_html__( 'Remove Blogname from title?', 'autodescription' ) . ' ' . $info,
+					'',
+					false,
+					! $this->can_manipulate_title() // Only add this option if the theme is doing it right.
+				),
+				true
+			);
+			?>
+		</div>
+		<?php
+		$this->description( __( 'Only use this option if you are aware of its SEO effects.', 'autodescription' ), false );
+		echo ' ';
+		$this->description( $home_page_has_option, false );
 		break;
 
 	case 'the_seo_framework_title_metabox_prefixes' :
-
 		//* Get translated category label, if it exists. Otherwise, fallback to translation.
 		$term_labels = $this->get_tax_labels( 'category' );
 		$label = isset( $term_labels->singular_name ) ? $term_labels->singular_name : __( 'Category', 'autodescription' );
@@ -243,7 +240,7 @@ switch ( $instance ) :
 			</label>
 			<?php
 			$this->make_info(
-				__( "The prefix helps visitors and Search Engines determine what kind of page they're visiting", 'autodescription' ),
+				__( "The prefix helps visitors and search engines determine what kind of page they're visiting.", 'autodescription' ),
 				'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#3',
 				true
 			);
