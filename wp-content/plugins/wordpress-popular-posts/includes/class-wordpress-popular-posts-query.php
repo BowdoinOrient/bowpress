@@ -94,6 +94,8 @@ class WPP_Query {
             }
 
             // Get entries from these post types
+            $post_types = array( 'post', 'page' );
+
             if ( isset($this->options['post_type']) && !empty($this->options['post_type']) ) {
 
                 $post_types = explode( ",", $this->options['post_type'] );
@@ -188,6 +190,7 @@ class WPP_Query {
 
                     $post_ids = get_posts(
                         array(
+                            'post_type' => $post_types,
                             'posts_per_page' => -1,
                             'tax_query' => array(
                                 array(
@@ -342,7 +345,7 @@ class WPP_Query {
 
                     $table = "`{$wpdb->prefix}popularpostssummary` v";
                     $join = "LEFT JOIN `{$wpdb->posts}` p ON v.postid = p.ID";
-                    $where .= " AND v.last_viewed > DATE_SUB('{$now}', INTERVAL {$interval})";
+                    $where .= " AND v.view_datetime > DATE_SUB('{$now}', INTERVAL {$interval})";
                     $groupby = "GROUP BY v.postid";
 
                     // Order by views
@@ -390,7 +393,7 @@ class WPP_Query {
                     // Display views count, too
                     if ( isset($this->options['stats_tag']['views']) && $this->options['stats_tag']['views'] ) {
                         $fields .= ", IFNULL(v.pageviews, 0) AS pageviews";
-                        $join .= " LEFT JOIN (SELECT postid, SUM(pageviews) AS pageviews FROM `{$wpdb->prefix}popularpostssummary` WHERE last_viewed > DATE_SUB('{$now}', INTERVAL {$interval}) GROUP BY postid) v ON p.ID = v.postid";
+                        $join .= " LEFT JOIN (SELECT postid, SUM(pageviews) AS pageviews FROM `{$wpdb->prefix}popularpostssummary` WHERE view_datetime > DATE_SUB('{$now}', INTERVAL {$interval}) GROUP BY postid) v ON p.ID = v.postid";
                     }
 
                 }
@@ -399,6 +402,10 @@ class WPP_Query {
 
             // List only published, non password-protected posts
             $where .= " AND p.post_password = '' AND p.post_status = 'publish'";
+
+            if ( !empty($args) ) {
+                $where = $wpdb->prepare( $where, $args );
+            }
 
             $fields = apply_filters( 'wpp_query_fields', $fields, $this->options );
             $table = apply_filters( 'wpp_query_table', $table, $this->options );
@@ -410,7 +417,8 @@ class WPP_Query {
 
             // Finally, build the query
             $query = "SELECT {$fields} FROM {$table} {$join} {$where} {$groupby} {$orderby} {$limit};";
-            $this->query = ( !empty($args) && !has_filter('wpp_query_where') ) ? $wpdb->prepare( $query, $args ) : $query;
+            //$this->query = ( !empty($args) && !has_filter('wpp_query_where') ) ? $wpdb->prepare( $query, $args ) : $query;
+            $this->query = $query;
 
         }
 

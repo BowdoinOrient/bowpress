@@ -3,7 +3,7 @@
 /**
  * The admin-facing functionality of the plugin.
  *
- * @link       http://cabrerahector.com/
+ * @link       https://cabrerahector.com/
  * @since      4.0.0
  *
  * @package    WordPressPopularPosts
@@ -39,7 +39,7 @@ class WPP_Admin {
      * @var      string    $version    The current version of this plugin.
      */
     private $version;
-    
+
     /**
      * Administrative settings.
      *
@@ -47,7 +47,7 @@ class WPP_Admin {
      * @var		array
      */
     private $options = array();
-    
+
     /**
      * Slug of the plugin screen.
      *
@@ -68,10 +68,10 @@ class WPP_Admin {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $this->options = WPP_Settings::get( 'admin_options' );
-        
+
         // Delete old data on demand
         if ( 1 == $this->options['tools']['log']['limit'] ) {
-            
+
             if ( !wp_next_scheduled( 'wpp_cache_event' ) ) {
                 $tomorrow = time() + 86400;
                 $midnight  = mktime(
@@ -84,20 +84,20 @@ class WPP_Admin {
                 );
                 wp_schedule_event( $midnight, 'daily', 'wpp_cache_event' );
             }
-            
+
         } else {
             // Remove the scheduled event if exists
             if ( $timestamp = wp_next_scheduled( 'wpp_cache_event' ) ) {
                 wp_unschedule_event( $timestamp, 'wpp_cache_event' );
             }
-            
+
         }
-        
+
         // Allow WP themers / coders to override data sampling status (active/inactive)
         $this->options['tools']['sampling']['active'] = apply_filters( 'wpp_data_sampling', $this->options['tools']['sampling']['active'] );
 
     }
-    
+
     /**
      * Fired when a new blog is activated on WP Multisite.
      *
@@ -117,7 +117,7 @@ class WPP_Admin {
         restore_current_blog();
 
     } // end activate_new_site
-    
+
     /**
      * Fired when a blog is deleted on WP Multisite.
      *
@@ -129,13 +129,70 @@ class WPP_Admin {
     public function delete_site_data( $tables, $blog_id ){
 
         global $wpdb;
-        
+
         $tables[] = $wpdb->prefix . 'popularpostsdata';
         $tables[] = $wpdb->prefix . 'popularpostssummary';
-        
+
         return $tables;
 
     } // end delete_site_data
+
+    /**
+     * Display some statistics at the "At a Glance" box from the Dashboard.
+     *
+     * @since    4.1.0
+     */
+    public function at_a_glance_stats(){
+
+        global $wpdb;
+
+        $glances = array();
+        $args = array( 'post', 'page' );
+        $post_type_placeholders = '%s, %s';
+
+        if (
+            isset( $this->options['stats']['post_type'] ) 
+            && !empty( $this->options['stats']['post_type'] )
+        ) {
+            $args = array_map( 'trim', explode( ',', $this->options['stats']['post_type'] ) );
+            $post_type_placeholders = implode( ', ', array_fill( 0, count( $args ), '%s' ) );
+        }
+
+        $args[] = WPP_Helper::now();
+
+        $query = $wpdb->prepare(
+            "SELECT SUM(pageviews) AS total 
+            FROM `{$wpdb->prefix}popularpostssummary` v LEFT JOIN `{$wpdb->prefix}posts` p ON v.postid = p.ID 
+            WHERE p.post_type IN( {$post_type_placeholders} ) AND p.post_status = 'publish' AND p.post_password = '' AND v.view_datetime > DATE_SUB( %s, INTERVAL 1 HOUR );"
+            , $args
+        );
+
+        $total_views = $wpdb->get_var( $query );
+
+        $pageviews = sprintf(
+            _n( '1 view in the last hour', '%s views in the last hour', $total_views, 'wordpress-popular-posts' ),
+            number_format_i18n( $total_views )
+        );
+
+        if ( current_user_can('manage_options') ) {
+            $glances[] = '<a class="wpp-views-count" href="' . admin_url( 'options-general.php?page=wordpress-popular-posts' ) .'">' . $pageviews . '</a>';
+        }
+        else {
+            $glances[] = '<span class="wpp-views-count">' . $pageviews . '</a>';
+        }
+
+        return $glances;
+
+    }
+
+    /**
+     * Add custom inline CSS styles for At a Glance stats.
+     *
+     * @since    4.1.0
+     */
+    public function at_a_glance_stats_css(){
+        echo '<style>#dashboard_right_now a.wpp-views-count:before, #dashboard_right_now span.wpp-views-count:before { content: "\f177"; }</style>';
+    }
 
     /**
      * Register the stylesheets for the public-facing side of the site.
@@ -143,19 +200,19 @@ class WPP_Admin {
      * @since    4.0.0
      */
     public function enqueue_styles() {
-        
+
         if ( !isset( $this->plugin_screen_hook_suffix ) ) {
             return;
         }
 
         $screen = get_current_screen();
-        
+
         if ( isset( $screen->id ) && $screen->id == $this->plugin_screen_hook_suffix ) {
             wp_enqueue_style( 'font-awesome', plugin_dir_url( __FILE__ ) . 'css/vendor/font-awesome.min.css', array(), '4.7.0', 'all' );
             wp_enqueue_style( 'wpp-datepicker-theme', plugin_dir_url( __FILE__ ) . 'css/datepicker.css', array(), $this->version, 'all' );
             wp_enqueue_style( 'wordpress-popular-posts-admin-styles', plugin_dir_url( __FILE__ ) . 'css/admin.css', array(), $this->version, 'all' );
         }
-        
+
     }
 
     /**
@@ -164,67 +221,29 @@ class WPP_Admin {
      * @since    4.0.0
      */
     public function enqueue_scripts() {
-        
+
         if ( ! isset( $this->plugin_screen_hook_suffix ) ) {
             return;
         }
 
         $screen = get_current_screen();
-        
+
         if ( $screen->id == $this->plugin_screen_hook_suffix ) {
-            
-            wp_enqueue_script( 'thickbox' );
-            wp_enqueue_style( 'thickbox' );
-            wp_enqueue_script( 'media-upload' );
+
+            wp_enqueue_media();
             wp_enqueue_script( 'jquery-ui-datepicker' );
             wp_enqueue_script( 'chartjs', plugin_dir_url( __FILE__ ) . 'js/vendor/Chart.min.js', array(), $this->version );
             wp_enqueue_script( 'wpp-chart', plugin_dir_url( __FILE__ ) . 'js/chart.js', array('chartjs'), $this->version );
             wp_register_script( 'wordpress-popular-posts-admin-script', plugin_dir_url( __FILE__ ) . 'js/admin.js', array('jquery'), $this->version, true );
             wp_localize_script( 'wordpress-popular-posts-admin-script', 'wpp_admin_params', array(
+                'label_media_upload_button' => __( "Use this image", "wordpress-popular-posts" ),
                 'nonce' => wp_create_nonce( "wpp_admin_nonce" )
             ));
             wp_enqueue_script( 'wordpress-popular-posts-admin-script' );
-            
+
         }
-        
+
     }
-    
-    /**
-     * Hooks into getttext to change upload button text when uploader is called by WPP.
-     *
-     * @since	2.3.4
-     */
-    public function thickbox_setup() {
-
-        global $pagenow;
-        
-        if ( 'media-upload.php' == $pagenow || 'async-upload.php' == $pagenow ) {
-            add_filter( 'gettext', array( $this, 'replace_thickbox_text' ), 1, 3 );
-        }
-
-    } // end thickbox_setup
-
-    /**
-     * Replaces upload button text when uploader is called by WPP.
-     *
-     * @since	2.3.4
-     * @param	string	translated_text
-     * @param	string	text
-     * @param	string	domain
-     * @return	string
-     */
-    public function replace_thickbox_text( $translated_text, $text, $domain ) {
-
-        if ( 'Insert into Post' == $text ) {
-            $referer = strpos( wp_get_referer(), 'wpp_admin' );
-            if ( $referer != '' ) {
-                return __( 'Upload', 'wordpress-popular-posts' );
-            }
-        }
-
-        return $translated_text;
-
-    } // end replace_thickbox_text
 
     public function add_contextual_help(){
 
@@ -314,7 +333,7 @@ class WPP_Admin {
             return "INNER JOIN `{$wpdb->prefix}posts` p ON c.comment_post_ID = p.ID";
         }
 
-        return $table;
+        return $join;
 
     }
 
@@ -357,6 +376,12 @@ class WPP_Admin {
             case "last24hours":
             case "daily":
                 $interval = "24 HOUR";
+                break;
+
+            case "today":
+                $hours = date( 'H', strtotime($now) );
+                $minutes = $hours * 60 + (int) date( 'i', strtotime($now) );
+                $interval = "{$minutes} MINUTE";
                 break;
 
             case "last7days":
@@ -429,10 +454,10 @@ class WPP_Admin {
         }
 
         if ( $dates ) {
-            return $where . " AND v.last_viewed BETWEEN '{$dates[0]} 00:00:00' AND '{$dates[1]} 23:59:59' AND p.post_password = '' AND p.post_status = 'publish' ";
+            return $where . " AND v.view_datetime BETWEEN '{$dates[0]} 00:00:00' AND '{$dates[1]} 23:59:59' AND p.post_password = '' AND p.post_status = 'publish' ";
         }
 
-        return $where . " AND v.last_viewed  > DATE_SUB('{$now}', INTERVAL {$interval}) AND p.post_password = '' AND p.post_status = 'publish' ";
+        return $where . " AND v.view_datetime  > DATE_SUB('{$now}', INTERVAL {$interval}) AND p.post_password = '' AND p.post_status = 'publish' ";
 
     }
 
@@ -608,7 +633,7 @@ class WPP_Admin {
         remove_filter( 'wpp_query_limit', array( $this, 'chart_query_limit' ), 1 );
 
         if (
-            ( is_array($views_data) && !empty($views_data) ) 
+            ( is_array($views_data) && !empty($views_data) )
             || ( is_array($comments_data) && !empty($comments_data) )
         ) {
 
@@ -690,7 +715,7 @@ class WPP_Admin {
 
         if ( wp_verify_nonce( $nonce, 'wpp_admin_nonce' ) ) {
 
-            $valid_ranges = array( 'daily', 'last24hours', 'weekly', 'last7days', 'monthly', 'last30days', 'all', 'custom' );
+            $valid_ranges = array( 'today', 'daily', 'last24hours', 'weekly', 'last7days', 'monthly', 'last30days', 'all', 'custom' );
             $time_units = array( "MINUTE", "HOUR", "DAY" );
 
             $range = ( isset( $_GET['range'] ) && in_array( $_GET['range'], $valid_ranges ) ) ? $_GET['range'] : 'last7days';
@@ -703,7 +728,7 @@ class WPP_Admin {
             $admin_options['stats']['time_unit'] = $time_unit;
             $this->options = $admin_options;
 
-            update_site_option( 'wpp_settings_config', $this->options );
+            update_option( 'wpp_settings_config', $this->options );
 
             $response = array(
                 'status' => 'ok',
@@ -842,7 +867,7 @@ class WPP_Admin {
             $color_scheme = get_user_option( 'admin_color', $current_user->ID );
 
             if (
-                empty( $color_scheme ) 
+                empty( $color_scheme )
                 || !isset( $_wp_admin_css_colors[ $color_scheme ] )
             ) {
                 $color_scheme = 'fresh';
@@ -858,7 +883,7 @@ class WPP_Admin {
         return array( '#333', '#999', '#881111', '#a80000' );
 
     }
-    
+
     /**
      * Render the settings page for this plugin.
      *
@@ -867,7 +892,7 @@ class WPP_Admin {
     public function display_plugin_admin_page() {
         include_once( plugin_dir_path(__FILE__) . 'partials/admin.php' );
     }
-    
+
     /**
      * Registers Settings link on plugin description.
      *
@@ -881,7 +906,7 @@ class WPP_Admin {
         $plugin_file = 'wordpress-popular-posts/wordpress-popular-posts.php';
 
         if (
-            is_plugin_active( $plugin_file ) 
+            is_plugin_active( $plugin_file )
             && $plugin_file == $file
         ) {
             $links[] = '<a href="' . admin_url( 'options-general.php?page=wordpress-popular-posts' ) . '">' . __( 'Settings' ) . '</a>';
@@ -890,7 +915,7 @@ class WPP_Admin {
         return $links;
 
     }
-    
+
     /**
      * Register the WPP widget.
      *
@@ -899,7 +924,7 @@ class WPP_Admin {
     public function register_widget() {
         register_widget( 'WPP_Widget' );
     }
-    
+
     /**
      * Flushes post's cached thumbnail(s) when the image is changed.
      *
@@ -918,13 +943,13 @@ class WPP_Admin {
             $wpp_image = WPP_Image::get_instance();
 
             if ( $wpp_image->can_create_thumbnails() ) {
-            
+
                 $wpp_uploads_dir = $wpp_image->get_plugin_uploads_dir();
-                
+
                 if ( is_array($wpp_uploads_dir) && !empty($wpp_uploads_dir) ) {
-            
+
                     $files = glob( "{$wpp_uploads_dir['basedir']}/{$object_id}-featured-*.*" ); // get all related images
-                    
+
                     if ( is_array($files) && !empty($files) ) {
 
                         foreach( $files as $file ){ // iterate files
@@ -942,7 +967,7 @@ class WPP_Admin {
         }
 
     }
-    
+
     /**
      * Truncates thumbnails cache on demand.
      *
@@ -950,51 +975,51 @@ class WPP_Admin {
      * @global	object	wpdb
      */
     public function clear_thumbnails() {
-        
+
         $wpp_image = WPP_Image::get_instance();
 
         if ( $wpp_image->can_create_thumbnails() ) {
-        
+
             $wpp_uploads_dir = $wpp_image->get_plugin_uploads_dir();
-            
+
             if ( is_array($wpp_uploads_dir) && !empty($wpp_uploads_dir) ) {
-                
+
                 $token = isset( $_POST['token'] ) ? $_POST['token'] : null;
-                $key = get_site_option( "wpp_rand" );				
-                
+                $key = get_option( "wpp_rand" );
+
                 if (
-                    current_user_can( 'manage_options' ) 
+                    current_user_can( 'manage_options' )
                     && ( $token === $key )
                 ) {
-                    
+
                     if ( is_dir( $wpp_uploads_dir['basedir'] ) ) {
-                        
+
                         $files = glob( "{$wpp_uploads_dir['basedir']}/*" ); // get all related images
-                    
+
                         if ( is_array($files) && !empty($files) ) {
-    
+
                             foreach( $files as $file ){ // iterate files
                                 if ( is_file( $file ) ) {
                                     @unlink( $file ); // delete file
                                 }
                             }
-                            
+
                             echo 1;
-    
+
                         } else {
                             echo 2;
                         }
-                        
+
                     } else {
                         echo 3;
                     }
-                
+
                 } else {
                     echo 4;
                 }
-                
+
             }
-            
+
         } else {
             echo 3;
         }
@@ -1002,7 +1027,7 @@ class WPP_Admin {
         wp_die();
 
     }
-    
+
     /**
      * Truncates data and cache on demand.
      *
@@ -1013,46 +1038,46 @@ class WPP_Admin {
 
         $token = $_POST['token'];
         $clear = isset( $_POST['clear'] ) ? $_POST['clear'] : null;
-        $key = get_site_option( "wpp_rand" );
+        $key = get_option( "wpp_rand" );
 
         if (
-            current_user_can( 'manage_options' ) 
-            && ( $token === $key ) 
+            current_user_can( 'manage_options' )
+            && ( $token === $key )
             && $clear
         ) {
-            
+
             global $wpdb;
 
             // set table name
             $prefix = $wpdb->prefix . "popularposts";
 
             if ( $clear == 'cache' ) {
-                
+
                 if ( $wpdb->get_var("SHOW TABLES LIKE '{$prefix}summary'") ) {
-                    
+
                     $wpdb->query("TRUNCATE TABLE {$prefix}summary;");
                     $this->flush_transients();
-                    
+
                     echo 1;
-                    
+
                 } else {
                     echo 2;
                 }
-                
+
             } elseif ( $clear == 'all' ) {
-                
+
                 if ( $wpdb->get_var("SHOW TABLES LIKE '{$prefix}data'") && $wpdb->get_var("SHOW TABLES LIKE '{$prefix}summary'") ) {
-                    
+
                     $wpdb->query("TRUNCATE TABLE {$prefix}data;");
                     $wpdb->query("TRUNCATE TABLE {$prefix}summary;");
                     $this->flush_transients();
-                    
+
                     echo 1;
-                    
+
                 } else {
                     echo 2;
                 }
-                
+
             } else {
                 echo 3;
             }
@@ -1063,7 +1088,7 @@ class WPP_Admin {
         wp_die();
 
     }
-    
+
     /**
      * Deletes cached (transient) data.
      *
@@ -1072,19 +1097,19 @@ class WPP_Admin {
      */
     private function flush_transients() {
 
-        $wpp_transients = get_site_option( 'wpp_transients' );
+        $wpp_transients = get_option( 'wpp_transients' );
 
         if ( $wpp_transients && is_array( $wpp_transients ) && !empty( $wpp_transients ) ) {
-            
+
             for ( $t=0; $t < count( $wpp_transients ); $t++ )
                 delete_transient( $wpp_transients[$t] );
 
-            update_site_option( 'wpp_transients', array() );
-            
+            update_option( 'wpp_transients', array() );
+
         }
 
     }
-    
+
     /**
      * Purges post from data/summary tables.
      *
@@ -1112,11 +1137,11 @@ class WPP_Admin {
             // Delete from data table
             $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}popularpostsdata WHERE postid = %d;", $post_ID ) );
             // Delete from summary table
-            $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}popularpostssummary WHERE postid = %d;", $post_ID ) );				
+            $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}popularpostssummary WHERE postid = %d;", $post_ID ) );
         }
 
     }
-    
+
     /**
      * Purges old post data from summary table.
      *
@@ -1130,24 +1155,31 @@ class WPP_Admin {
         $wpdb->query( "DELETE FROM {$wpdb->prefix}popularpostssummary WHERE view_date < DATE_SUB('" . WPP_Helper::curdate() . "', INTERVAL {$this->options['tools']['log']['expires_after']} DAY);" );
 
     } // end purge_data
-    
+
     /**
      * Checks if an upgrade procedure is required.
      *
      * @since	2.4.0
      */
     public function upgrade_check(){
+        $this->upgrade_site();
+    } // end upgrade_check
 
+    /**
+     * Upgrades single site.
+     *
+     * @since 4.0.7
+     */
+    private function upgrade_site() {
         // Get WPP version
-        $wpp_ver = get_site_option( 'wpp_ver' );
+        $wpp_ver = get_option( 'wpp_ver' );
 
         if ( !$wpp_ver ) {
-            add_site_option( 'wpp_ver', $this->version );
+            add_option( 'wpp_ver', $this->version );
         } elseif ( version_compare( $wpp_ver, $this->version, '<' ) ) {
             $this->upgrade();
         }
-
-    } // end upgrade_check
+    }
 
     /**
      * On plugin upgrade, performs a number of actions: update WPP database tables structures (if needed),
@@ -1159,63 +1191,94 @@ class WPP_Admin {
      */
     private function upgrade() {
 
+        $now = WPP_Helper::now();
+
         // Keep the upgrade process from running too many times
-        if ( get_site_option('wpp_update') )
-            return;
-        
-        add_site_option( 'wpp_update', '1' );
+        if ( $wpp_update = get_option('wpp_update') ) {
+
+            $from_time = strtotime( $wpp_update );
+            $to_time = strtotime( $now );
+            $difference_in_minutes = round( abs( $to_time - $from_time ) / 60, 2 );
+
+            // Upgrade flag is still valid, abort
+            if ( $difference_in_minutes <= 15 )
+                return;
+
+            // Upgrade flag expired, delete it and continue
+            delete_option( 'wpp_update' );
+
+        }
+
+        add_option( 'wpp_update', $now );
 
         global $wpdb;
 
         // Set table name
         $prefix = $wpdb->prefix . "popularposts";
 
+        // Update data table structure and indexes
+        $dataFields = $wpdb->get_results( "SHOW FIELDS FROM {$prefix}data;" );
+        foreach ( $dataFields as $column ) {
+            if ( "day" == $column->Field ) {
+                $wpdb->query( "ALTER TABLE {$prefix}data ALTER COLUMN day DROP DEFAULT;" );
+            }
+
+            if ( "last_viewed" == $column->Field ) {
+                $wpdb->query( "ALTER TABLE {$prefix}data ALTER COLUMN last_viewed DROP DEFAULT;" );
+            }
+        }
+
+        // Update summary table structure and indexes
+        $summaryFields = $wpdb->get_results( "SHOW FIELDS FROM {$prefix}summary;" );
+        foreach ( $summaryFields as $column ) {
+            if ( "last_viewed" == $column->Field ) {
+                $wpdb->query( "ALTER TABLE {$prefix}summary CHANGE last_viewed view_datetime datetime NOT NULL, ADD KEY view_datetime (view_datetime);" );
+            }
+
+            if ( "view_date" == $column->Field ) {
+                $wpdb->query( "ALTER TABLE {$prefix}summary ALTER COLUMN view_date DROP DEFAULT;" );
+            }
+
+            if ( "view_datetime" == $column->Field ) {
+                $wpdb->query( "ALTER TABLE {$prefix}summary ALTER COLUMN view_datetime DROP DEFAULT;" );
+            }
+        }
+
+        $summaryIndexes = $wpdb->get_results( "SHOW INDEX FROM {$prefix}summary;" );
+        foreach( $summaryIndexes as $index ) {
+            if ( 'ID_date' == $index->Key_name ) {
+                $wpdb->query( "ALTER TABLE {$prefix}summary DROP INDEX ID_date;" );
+            }
+
+            if ( 'last_viewed' == $index->Key_name ) {
+                $wpdb->query( "ALTER TABLE {$prefix}summary DROP INDEX last_viewed;" );
+            }
+        }
+
         // Validate the structure of the tables, create missing tables / fields if necessary
         WPP_Activator::track_new_site();
 
-        // If summary is empty, import data from popularpostsdatacache
-        if ( !$wpdb->get_var( "SELECT COUNT(*) FROM {$prefix}summary" ) ) {
-
-            // popularpostsdatacache table is still there
-            if ( $wpdb->get_var( "SHOW TABLES LIKE '{$prefix}datacache'" ) ) {
-
-                $sql = "
-                INSERT INTO {$prefix}summary (postid, pageviews, view_date, last_viewed)
-                SELECT id, pageviews, day_no_time, day
-                FROM {$prefix}datacache
-                GROUP BY day_no_time, id
-                ORDER BY day_no_time DESC";
-
-                $result = $wpdb->query( $sql );
-
-            }
-
-        }
-        
-        // Deletes old caching tables, if found
-        $wpdb->query( "DROP TABLE IF EXISTS {$prefix}datacache, {$prefix}datacache_backup;" );
-
         // Check storage engine
         $storage_engine_data = $wpdb->get_var( "SELECT `ENGINE` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA`='{$wpdb->dbname}' AND `TABLE_NAME`='{$prefix}data';" );
-        
+
         if ( 'InnoDB' != $storage_engine_data ) {
             $wpdb->query( "ALTER TABLE {$prefix}data ENGINE=InnoDB;" );
         }
-        
+
         $storage_engine_summary = $wpdb->get_var( "SELECT `ENGINE` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA`='{$wpdb->dbname}' AND `TABLE_NAME`='{$prefix}summary';" );
-        
+
         if ( 'InnoDB' != $storage_engine_summary ) {
             $wpdb->query( "ALTER TABLE {$prefix}summary ENGINE=InnoDB;" );
         }
 
         // Update WPP version
-        update_site_option( 'wpp_ver', $this->version );
-        
+        update_option( 'wpp_ver', $this->version );
+
         // Remove upgrade flag
-        delete_site_option( 'wpp_update' );
+        delete_option( 'wpp_update' );
 
     } // end __upgrade
-    
+
     /**
      * Checks if the technical requirements are met.
      *
@@ -1229,8 +1292,8 @@ class WPP_Admin {
 
         global $wp_version;
 
-        $php_min_version = '5.2';
-        $wp_min_version = '4.1';
+        $php_min_version = '5.3';
+        $wp_min_version = '4.7';
         $php_current_version = phpversion();
         $errors = array();
 
@@ -1251,7 +1314,7 @@ class WPP_Admin {
         return $errors;
 
     } // end check_requirements
-    
+
     /**
      * Outputs error messages to wp-admin.
      *
@@ -1268,7 +1331,7 @@ class WPP_Admin {
             unset($_GET['activate']);
 
         printf(
-            __('<div class="error"><p>%1$s</p><p><i>%2$s</i> has been <strong>deactivated</strong>.</p></div>', 'wordpress-popular-posts'),
+            __('<div class="notice notice-error"><p>%1$s</p><p><i>%2$s</i> has been <strong>deactivated</strong>.</p></div>', 'wordpress-popular-posts'),
             join( '</p><p>', $errors ),
             'WordPress Popular Posts'
         );

@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -54,7 +54,7 @@ class Core {
 	 */
 	final public function __set( $name, $value ) {
 		/**
-		 * For now, no deprecation is being handled; as no properties are deprecated.
+		 * For now, no deprecation is being handled; as no properties have been deprecated.
 		 */
 		$this->_deprecated_function( 'the_seo_framework()->' . \esc_html( $name ), 'unknown' );
 
@@ -76,7 +76,7 @@ class Core {
 
 		switch ( $name ) :
 			case 'pagehook' :
-				$this->_deprecated_function( 'the_seo_framework()->' . \esc_html( $name ), '2.7.0', 'the_seo_framework()->seo_settings_page_hook' );
+				$this->_deprecated_function( 'the_seo_framework()->pagehook', '2.7.0', 'the_seo_framework()->seo_settings_page_hook' );
 				return $this->seo_settings_page_hook;
 				break;
 
@@ -115,12 +115,9 @@ class Core {
 	 * Latest Class. Doesn't have parent.
 	 */
 	protected function __construct() {
-
-		\add_action( 'current_screen', array( $this, 'post_type_support' ), 0 );
-
 		if ( $this->the_seo_framework_debug ) {
 
-			$debug_instance = \The_SEO_Framework\Debug::get_instance();
+			$debug_instance = Debug::get_instance();
 
 			\add_action( 'the_seo_framework_do_before_output', array( $debug_instance, 'set_debug_query_output_cache' ) );
 			\add_action( 'admin_footer', array( $debug_instance, 'debug_screens' ) );
@@ -140,9 +137,8 @@ class Core {
 	protected function clean_response_header() {
 
 		if ( $level = ob_get_level() ) {
-			while ( $level ) {
+			while ( $level-- ) {
 				ob_end_clean();
-				$level--;
 			}
 			return true;
 		}
@@ -160,7 +156,7 @@ class Core {
 	 *
 	 * @param string $view The file name.
 	 * @param array $args The arguments to be supplied within the file name.
-	 * 		Each array key is converted to a variable with its value attached.
+	 *              Each array key is converted to a variable with its value attached.
 	 * @param string $instance The instance suffix to call back upon.
 	 */
 	public function get_view( $view, array $args = array(), $instance = 'main' ) {
@@ -170,7 +166,7 @@ class Core {
 
 		$file = THE_SEO_FRAMEWORK_DIR_PATH_VIEWS . $view . '.php';
 
-		include( $file );
+		include $file;
 	}
 
 	/**
@@ -207,40 +203,12 @@ class Core {
 	}
 
 	/**
-	 * Adds post type support for The SEO Framework.
-	 *
-	 * @since 2.1.6
-	 */
-	public function post_type_support() {
-
-		$defaults = array(
-			'post',
-			'page',
-			'product',
-			'forum',
-			'topic',
-			'jetpack-testimonial',
-			'jetpack-portfolio',
-		);
-
-		/**
-		 * Applies filters the_seo_framework_supported_post_types : Array The supported post types.
-		 * @since 2.3.1
-		 */
-		$post_types = (array) \apply_filters( 'the_seo_framework_supported_post_types', $defaults );
-
-		$types = \wp_parse_args( $defaults, $post_types );
-
-		foreach ( $types as $type ) {
-			\add_post_type_support( $type, array( 'autodescription-meta' ) );
-		}
-	}
-
-	/**
 	 * Adds link from plugins page to SEO Settings page.
 	 *
 	 * @since 2.2.8
 	 * @since 2.9.2 : Added TSFEM link.
+	 * @since 3.0.0 : 1. Shortened names.
+	 *                2. Added noreferrer to the external links.
 	 *
 	 * @param array $links The current links.
 	 * @return array The plugin links.
@@ -250,9 +218,9 @@ class Core {
 		$tsf_links = array();
 
 		if ( $this->load_options )
-			$tsf_links['settings'] = '<a href="' . \esc_url( \admin_url( 'admin.php?page=' . $this->seo_settings_page_slug ) ) . '">' . \esc_html__( 'SEO Settings', 'autodescription' ) . '</a>';
+			$tsf_links['settings'] = '<a href="' . \esc_url( \admin_url( 'admin.php?page=' . $this->seo_settings_page_slug ) ) . '">' . \esc_html__( 'Settings', 'autodescription' ) . '</a>';
 
-		$tsf_links['home'] = '<a href="' . \esc_url( 'https://theseoframework.com/' ) . '" rel="noopener" target="_blank">' . \esc_html_x( 'Plugin Home', 'As in: The Plugin Home Page', 'autodescription' ) . '</a>';
+		$tsf_links['home'] = '<a href="' . \esc_url( 'https://theseoframework.com/' ) . '" rel="noreferrer noopener" target="_blank">' . \esc_html_x( 'Home', 'As in: The Plugin Home Page', 'autodescription' ) . '</a>';
 
 		/**
 		 * These are weak checks.
@@ -261,7 +229,7 @@ class Core {
 		if ( ! defined( 'TSF_EXTENSION_MANAGER_VERSION' ) ) {
 			$tsfem = \get_plugins( '/the-seo-framework-extension-manager' );
 			if ( empty( $tsfem ) )
-				$tsf_links['tsfem'] = '<a href="' . \esc_url( \__( 'https://wordpress.org/plugins/the-seo-framework-extension-manager/', 'autodescription' ) ) . '" rel="noopener" target="_blank">' . \esc_html_x( 'Extensions', 'Plugin extensions', 'autodescription' ) . '</a>';
+				$tsf_links['tsfem'] = '<a href="' . \esc_url( \__( 'https://wordpress.org/plugins/the-seo-framework-extension-manager/', 'autodescription' ) ) . '" rel="noreferrer noopener" target="_blank">' . \esc_html_x( 'Extensions', 'Plugin extensions', 'autodescription' ) . '</a>';
 		}
 
 		return array_merge( $tsf_links, $links );
@@ -289,6 +257,7 @@ class Core {
 	 * Also loads scripts and styles if out of The SEO Framework's context.
 	 *
 	 * @since 2.6.0
+	 * @since 3.0.6 The messages are no longer auto-styled to "strong".
 	 *
 	 * @param string $message The notice message. Expected to be escaped if $escape is false.
 	 * @param string $type The notice type : 'updated', 'error', 'warning'. Expected to be escaped.
@@ -301,9 +270,6 @@ class Core {
 		if ( empty( $message ) )
 			return '';
 
-		if ( $escape )
-			$message = \esc_html( $message );
-
 		//* Make sure the scripts are loaded.
 		$this->init_admin_scripts( true );
 
@@ -314,7 +280,7 @@ class Core {
 
 		$notice = '<div class="notice ' . \esc_attr( $type ) . ' tsf-notice ' . $a11y . '"><p>';
 		$notice .= '<a class="hide-if-no-js tsf-dismiss" title="' . \esc_attr__( 'Dismiss', 'autodescription' ) . '"></a>';
-		$notice .= '<strong>' . $message . '</strong>';
+		$notice .= $escape ? \esc_html( $message ) : $message;
 		$notice .= '</p></div>';
 
 		return $notice;
@@ -572,16 +538,30 @@ class Core {
 	/**
 	 * Returns the minimum role required to adjust settings.
 	 *
-	 * Applies filter 'the_seo_framework_settings_capability' : string
-	 * This filter changes the minimum role for viewing and editing the plugin's settings.
-	 *
-	 * @since 2.6.0
-	 * @access private
+	 * @since 3.0.0
 	 *
 	 * @return string The minimum required capability for SEO Settings.
 	 */
-	public function settings_capability() {
+	public function get_settings_capability() {
+		/**
+		 * Applies filters 'the_seo_framework_settings_capability'
+		 *
+		 * @since 2.6.0
+		 * @string $capability The user capability required to adjust settings.
+		 */
 		return (string) \apply_filters( 'the_seo_framework_settings_capability', 'manage_options' );
+	}
+
+	/**
+	 * Determines if the current user can do settings.
+	 * Not cached as it's imposing security functionality.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool
+	 */
+	public function can_access_settings() {
+		return \current_user_can( $this->get_settings_capability() );
 	}
 
 	/**
@@ -612,7 +592,7 @@ class Core {
 	 *
 	 * @param bool $guess : If true, the timezone will be guessed from the
 	 * WordPress core gmt_offset option.
-	 * @return string|empty PHP Timezone String.
+	 * @return string PHP Timezone String. May be empty (thus invalid).
 	 */
 	public function get_timezone_string( $guess = false ) {
 
@@ -657,6 +637,7 @@ class Core {
 	 * Sets and resets the timezone.
 	 *
 	 * @since 2.6.0
+	 * @since 3.0.6 Now uses the old timezone string when a new one can't be generated.
 	 *
 	 * @param string $tzstring Optional. The PHP Timezone string. Best to leave empty to always get a correct one.
 	 * @link http://php.net/manual/en/timezones.php
@@ -677,7 +658,7 @@ class Core {
 			return date_default_timezone_set( $old_tz );
 
 		if ( empty( $tzstring ) )
-			$tzstring = $this->get_timezone_string( true );
+			$tzstring = $this->get_timezone_string( true ) ?: $old_tz;
 
 		return date_default_timezone_set( $tzstring );
 	}
@@ -708,6 +689,28 @@ class Core {
 			return date( $format, strtotime( $time . ' GMT' ) );
 
 		return '';
+	}
+
+	/**
+	 * Returns timestamp format based on timestamp settings.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return string The timestamp format used in PHP date.
+	 */
+	public function get_timestamp_format() {
+		return '1' === $this->get_option( 'timestamps_format' ) ? 'Y-m-d\TH:iP' : 'Y-m-d';
+	}
+
+	/**
+	 * Determines if time is used in the timestamp format.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return bool True if time is used. False otherwise.
+	 */
+	public function uses_time_in_timestamp_format() {
+		return '1' === $this->get_option( 'timestamps_format' );
 	}
 
 	/**
@@ -783,6 +786,9 @@ class Core {
 	 * @since 2.8.0
 	 * @since 2.9.0 Now adds a little more relative softness based on rel_lum.
 	 * @since 2.9.2 (Typo): Renamed from 'get_relatitve_fontcolor' to 'get_relative_fontcolor'.
+	 * @since 3.0.4 : Now uses WCAG's relative luminance formula
+	 * @link https://www.w3.org/TR/2008/REC-WCAG20-20081211/#visual-audio-contrast-contrast
+	 * @link https://www.w3.org/WAI/GL/wiki/Relative_luminance
 	 *
 	 * @param string $hex The 3 to 6 character RGB hex. '#' prefix is supported.
 	 * @return string The hexadecimal RGB relative font color, without '#' prefix.
@@ -802,41 +808,41 @@ class Core {
 		$g = hexdec( $hex[1] );
 		$b = hexdec( $hex[2] );
 
-		//* Convert to sRGB for relative luminance.
-		$sr = 0.2125 * $r;
-		$sg = 0.7154 * $g;
-		$sb = 0.0721 * $b;
-		$rel_lum = 1 - ( $sr + $sg + $sb ) / 255;
+		$get_relative_luminance = function( $v ) {
+			//= Convert to 0~1 value.
+			$v = $v / 255;
 
-		//* Convert to relative intvals between 1 and 0 for L from HSL
-		// $rr = $r / 255;
-		// $rg = $g / 255;
-		// $rb = $b / 255;
-		// $luminance = ( min( $rr, $rg, $rb ) + max( $rr, $rg, $rb ) ) / 2;
+			if ( $v > .03928 ) {
+				$lum = pow( ( $v + .055 ) / 1.055, 2.4 );
+			} else {
+				$lum = $v / 12.92;
+			}
+			return $lum;
+		};
 
-		//* Get perceptive luminance (greyscale) according to W3C.
-		$gr = 0.2989 * $r;
-		$gg = 0.5870 * $g;
-		$gb = 0.1140 * $b;
-		$per_lum = 1 - ( $gr + $gg + $gb ) / 255;
+		//* Use sRGB for relative luminance.
+		$sr = 0.2126 * $get_relative_luminance( $r );
+		$sg = 0.7152 * $get_relative_luminance( $g );
+		$sb = 0.0722 * $get_relative_luminance( $b );
+		$rel_lum = ( $sr + $sg + $sb );
 
-		//* Invert colors if they hit luminance boundaries.
+		//= Invert colors if they hit luminance boundaries.
 		if ( $rel_lum < 0.5 ) {
-			//* Build dark. Add softness.
-			$gr = $gr * $per_lum / 8 / 0.2989 + 8 * 0.2989 / $rel_lum;
-			$gg = $gg * $per_lum / 8 / 0.5870 + 8 * 0.5870 / $rel_lum;
-			$gb = $gb * $per_lum / 8 / 0.1140 + 8 * 0.1140 / $rel_lum;
+			//* Build dark greyscale.
+			$gr = 255 - ( $r * 0.2989 / 8 ) * $rel_lum;
+			$gg = 255 - ( $g * 0.5870 / 8 ) * $rel_lum;
+			$gb = 255 - ( $b * 0.1140 / 8 ) * $rel_lum;
 		} else {
-			//* Build light. Add (subtract) softness.
-			$gr = 255 - $gr * $per_lum / 8 * 0.2989 - 8 * 0.2989 / $rel_lum;
-			$gg = 255 - $gg * $per_lum / 8 * 0.5870 - 8 * 0.5870 / $rel_lum;
-			$gb = 255 - $gb * $per_lum / 8 * 0.1140 - 8 * 0.1140 / $rel_lum;
+			//* Build light greyscale.
+			$gr = ( $r * 0.2989 / 8 ) * $rel_lum;
+			$gg = ( $g * 0.5870 / 8 ) * $rel_lum;
+			$gb = ( $b * 0.1140 / 8 ) * $rel_lum;
 		}
 
-		//* Complete hexvals.
-		$retr = str_pad( dechex( $gr ), 2, '0', STR_PAD_LEFT );
-		$retg = str_pad( dechex( $gg ), 2, '0', STR_PAD_LEFT );
-		$retb = str_pad( dechex( $gb ), 2, '0', STR_PAD_LEFT );
+		//* Build RGB hex.
+		$retr = str_pad( dechex( round( $gr ) ), 2, '0', STR_PAD_LEFT );
+		$retg = str_pad( dechex( round( $gg ) ), 2, '0', STR_PAD_LEFT );
+		$retb = str_pad( dechex( round( $gb ) ), 2, '0', STR_PAD_LEFT );
 
 		return $retr . $retg . $retb;
 	}
@@ -851,8 +857,7 @@ class Core {
 	 * @since 2.9.0 : 1. Removed word boundary requirement for strong.
 	 *                2. Now accepts regex count their numeric values in string.
 	 *                3. Fixed header 1~6 calculation.
-	 * @since 2.9.3 : 1. Added $args parameter.
-	 *                2. TODO It now uses substr_replace instead of str_replace to prevent duplicated replacements.
+	 * @since 2.9.3 : Added $args parameter.
 	 * @link https://wordpress.org/plugins/about/readme.txt
 	 *
 	 * @param string $text The text that might contain markdown. Expected to be escaped.

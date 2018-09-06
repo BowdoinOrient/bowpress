@@ -3,10 +3,10 @@
  * Fired when the plugin is uninstalled.
  *
  * @package   WordpressPopularPosts
- * @author    Hector Cabrera <hcabrerab@gmail.com>
+ * @author    Hector Cabrera <me@cabrerahector.com>
  * @license   GPL-2.0+
- * @link      http://cabrerahector.com
- * @copyright 2013 Hector Cabrera
+ * @link      https://cabrerahector.com
+ * @copyright 2008-2018 Hector Cabrera
  */
 
 // If uninstall, not called from WordPress, then exit
@@ -27,10 +27,11 @@ if ( function_exists( 'is_multisite' ) && is_multisite() ) {
         switch_to_blog( $blog_id );
 
         // Delete plugin's options
-        delete_site_option( 'wpp_ver' );
-        delete_site_option( 'wpp_settings_config' );
-        delete_site_option( 'wpp_rand' );
-        delete_site_option( 'wpp_transients' );
+        delete_option( 'wpp_ver' );
+        delete_option( 'wpp_update' );
+        delete_option( 'wpp_settings_config' );
+        delete_option( 'wpp_rand' );
+        delete_option( 'wpp_transients' );
 
         // delete tables
         uninstall();
@@ -47,6 +48,7 @@ if ( function_exists( 'is_multisite' ) && is_multisite() ) {
 
     // Delete plugin's options
     delete_option( 'wpp_ver' );
+    delete_option( 'wpp_update' );
     delete_option( 'wpp_settings_config' );
     delete_option( 'wpp_rand' );
     delete_option( 'wpp_transients' );
@@ -60,7 +62,7 @@ if ( function_exists( 'is_multisite' ) && is_multisite() ) {
 }
 
 function delete_thumb_cache() {
-    $wp_upload_dir = wp_upload_dir();
+    $wp_upload_dir = wp_get_upload_dir();
 
     if ( is_dir( $wp_upload_dir['basedir'] . "/wordpress-popular-posts" ) ) {
         $files = glob( $wp_upload_dir['basedir'] . "/wordpress-popular-posts/*" ); // get all file names

@@ -11,7 +11,7 @@ $language = $this->google_language();
 //* Fetch Term ID and taxonomy.
 $term_id = $object->term_id;
 $taxonomy = $object->taxonomy;
-$data = $this->get_term_data( $object, $term_id );
+$data = $this->get_term_meta( $object->term_id );
 
 $title = isset( $data['doctitle'] ) ? $data['doctitle'] : '';
 $description = isset( $data['description'] ) ? $data['description'] : '';
@@ -26,15 +26,9 @@ $generated_doctitle_args = array(
 	'get_custom_field' => false,
 );
 
-$generated_description_args = array(
-	'id' => $term_id,
-	'taxonomy' => $taxonomy,
-	'get_custom_field' => false,
-);
-
 //* Generate title and description.
 $generated_doctitle = $this->title( '', '', '', $generated_doctitle_args );
-$generated_description = $this->generate_description( '', $generated_description_args );
+$generated_description = $this->get_generated_description( $term_id );
 
 $blog_name = $this->get_blogname();
 $add_additions = $this->add_title_additions();
@@ -66,8 +60,40 @@ $desc_len_parsed = html_entity_decode( $description_len );
 $title_placeholder = $generated_doctitle;
 $description_placeholder = $generated_description;
 
+$robots_settings = array(
+	'noindex' => array(
+		'value' => $noindex,
+		'info' => $this->make_info(
+			__( 'This tells search engines not to show this page in their search results.', 'autodescription' ),
+			'https://support.google.com/webmasters/answer/93710?hl=' . $language,
+			false
+		),
+	),
+	'nofollow' => array(
+		'value' => $nofollow,
+		'info' => $this->make_info(
+			__( 'This tells search engines not to follow links on this page.', 'autodescription' ),
+			'https://support.google.com/webmasters/answer/96569?hl=' . $language,
+			false
+		),
+	),
+	'noarchive' => array(
+		'value' => $noarchive,
+		'info' => $this->make_info(
+			__( 'This tells search engines not to follow links on this page.', 'autodescription' ),
+			'https://support.google.com/webmasters/answer/79812?hl=' . $language,
+			false
+		),
+	),
+);
+
 ?>
-<h3><?php printf( esc_html__( '%s SEO Settings', 'autodescription' ), esc_html( $type ) ); ?></h3>
+<h3>
+	<?php
+	/* translators: %s = Term type */
+	printf( esc_html__( '%s SEO Settings', 'autodescription' ), esc_html( $type ) );
+	?>
+</h3>
 
 <table class="form-table">
 	<tbody>
@@ -83,61 +109,86 @@ $description_placeholder = $generated_description;
 		<tr class="form-field">
 			<th scope="row" valign="top">
 				<label for="autodescription-meta[doctitle]">
-					<strong><?php printf( esc_html__( '%s Title', 'autodescription' ), esc_html( $type ) ); ?></strong>
-					<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#3' ); ?>" target="_blank" title="<?php esc_attr_e( 'Recommended Length: 50 to 55 characters', 'autodescription' ); ?>">[?]</a>
+					<strong>
+						<?php
+						/* translators: %s = Term type */
+						printf( esc_html__( '%s Title', 'autodescription' ), esc_html( $type ) );
+						?>
+					</strong>
 				</label>
+				<?php
+				$this->get_option( 'display_character_counter' )
+					and $this->output_character_counter_wrap( 'autodescription-meta[doctitle]', $tit_len_parsed );
+				$this->get_option( 'display_pixel_counter' )
+					and $this->output_pixel_counter_wrap( 'autodescription-meta[doctitle]', 'title' );
+				?>
 			</th>
 			<td>
 				<div id="tsf-title-wrap">
-					<input name="autodescription-meta[doctitle]" id="autodescription-meta[doctitle]" type="text" placeholder="<?php echo esc_attr( $title_placeholder ) ?>" value="<?php echo esc_attr( $title ); ?>" size="40" autocomplete=off />
-					<span id="tsf-title-offset" class="hide-if-no-js"></span><span id="tsf-title-placeholder" class="hide-if-no-js"></span>
+					<input name="autodescription-meta[doctitle]" id="autodescription-meta[doctitle]" type="text" placeholder="<?php echo esc_attr( $title_placeholder ); ?>" value="<?php echo esc_attr( $title ); ?>" size="40" autocomplete=off />
+					<?php $this->output_js_title_elements(); ?>
 				</div>
-				<p class="description tsf-counter">
-					<?php printf( esc_html__( 'Characters Used: %s', 'autodescription' ), '<span id="autodescription-meta[doctitle]_chars">' . esc_html( mb_strlen( $tit_len_parsed ) ) . '</span>' ); ?>
-					<span class="hide-if-no-js tsf-ajax"></span>
-				</p>
 			</td>
 		</tr>
 
 		<tr class="form-field">
 			<th scope="row" valign="top">
 				<label for="autodescription-meta[description]">
-					<strong><?php printf( esc_html__( '%s Meta Description', 'autodescription' ), esc_html( $type ) ); ?></strong>
-					<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#1' ); ?>" target="_blank" title="<?php esc_attr_e( 'Recommended Length: 145 to 155 characters', 'autodescription' ); ?>">[?]</a>
+					<strong>
+						<?php
+						/* translators: %s = Term type */
+						printf( esc_html__( '%s Meta Description', 'autodescription' ), esc_html( $type ) );
+						?>
+					</strong>
 				</label>
+				<?php
+				$this->get_option( 'display_character_counter' )
+					and $this->output_character_counter_wrap( 'autodescription-meta[description]', $desc_len_parsed );
+				$this->get_option( 'display_pixel_counter' )
+					and $this->output_pixel_counter_wrap( 'autodescription-meta[description]', 'description' );
+				?>
 			</th>
 			<td>
 				<textarea name="autodescription-meta[description]" id="autodescription-meta[description]" placeholder="<?php echo esc_attr( $description_placeholder ); ?>" rows="5" cols="50" class="large-text"><?php echo esc_html( $description ); ?></textarea>
-				<p class="description tsf-counter">
-					<?php printf( esc_html__( 'Characters Used: %s', 'autodescription' ), '<span id="autodescription-meta[description]_chars">' . esc_html( mb_strlen( $desc_len_parsed ) ) . '</span>' ); ?>
-					<span class="hide-if-no-js tsf-ajax"></span>
-				</p>
+				<?php echo $this->output_js_description_elements(); ?>
 			</td>
 		</tr>
 
 		<tr>
 			<th scope="row" valign="top"><?php esc_html_e( 'Robots Meta Settings', 'autodescription' ); ?></th>
 			<td>
-				<label for="autodescription-meta[noindex]"><input name="autodescription-meta[noindex]" id="autodescription-meta[noindex]" type="checkbox" value="1" <?php checked( $noindex ); ?> />
-					<?php printf( esc_html__( 'Apply %s to this term?', 'autodescription' ), $this->code_wrap( 'noindex' ) ); ?>
-					<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/93710?hl=' . $language ); ?>" target="_blank" title="<?php printf( esc_attr__( 'Tell Search Engines not to show this page in their search results', 'autodescription' ) ); ?>">[?]</a>
-				</label>
+				<?php
+				foreach ( $robots_settings as $type => $data ) :
+					?>
+					<p>
+						<?php
+						vprintf(
+							'<label for="%1$s"><input name="%1$s" id="%1$s" type="checkbox" value="1" %2$s />%3$s</label>',
+							array(
+								sprintf( 'autodescription-meta[%s]', esc_attr( $type ) ),
+								checked( $data['value'], true, false ),
+								vsprintf(
+									'%s %s',
+									array(
+										sprintf(
+											/* translators: %s = noindex/nofollow/noarchive */
+											esc_html__( 'Apply %s to this term?', 'autodescription' ),
+											//= Already escaped.
+											$this->code_wrap( $type )
+										),
+										//= Already escaped.
+										$data['info'],
+									)
+								),
+							)
+						);
+						?>
+					</p>
+					<?php
+				endforeach;
 
-				<br>
-
-				<label for="autodescription-meta[nofollow]"><input name="autodescription-meta[nofollow]" id="autodescription-meta[nofollow]" type="checkbox" value="1" <?php checked( $nofollow ); ?> />
-					<?php printf( esc_html__( 'Apply %s to this term?', 'autodescription' ), $this->code_wrap( 'nofollow' ) ); ?>
-					<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/96569?hl=' . $language ); ?>" target="_blank" title="<?php printf( esc_attr__( 'Tell Search Engines not to follow links on this page', 'autodescription' ) ); ?>">[?]</a>
-				</label>
-
-				<br>
-
-				<label for="autodescription-meta[noarchive]"><input name="autodescription-meta[noarchive]" id="autodescription-meta[noarchive]" type="checkbox" value="1" <?php checked( $noarchive ); ?> />
-					<?php printf( esc_html__( 'Apply %s to this term?', 'autodescription' ), $this->code_wrap( 'noarchive' ) ); ?>
-					<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/79812?hl=' . $language ); ?>" target="_blank" title="<?php printf( esc_attr__( 'Tell Search Engines not to save a cached copy of this page', 'autodescription' ) ); ?>">[?]</a>
-				</label>
-
-				<?php // Saved flag, if set then it won't fetch for Genesis meta anymore ?>
+				// Output saved flag, if set then it won't fetch alternative meta anymore.
+				?>
 				<label class="hidden" for="autodescription-meta[saved_flag]">
 					<input name="autodescription-meta[saved_flag]" id="autodescription-meta[saved_flag]" type="checkbox" value="1" checked='checked' />
 				</label>

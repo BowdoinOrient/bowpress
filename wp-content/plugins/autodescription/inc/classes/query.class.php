@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -53,7 +53,7 @@ class Query extends Compat {
 	 */
 	public function can_cache_query() {
 
-		static $cache = null;
+		static $cache;
 
 		if ( isset( $cache ) )
 			return $cache;
@@ -61,7 +61,29 @@ class Query extends Compat {
 		if ( isset( $GLOBALS['wp_query']->query ) || isset( $GLOBALS['current_screen'] ) )
 			return $cache = true;
 
-		$this->_doing_it_wrong( __METHOD__, "You've initiated a method that uses queries too early.", '2.9.0' );
+		$this->do_query_error_notice( __METHOD__ );
+
+		return false;
+	}
+
+	/**
+	 * Outputs a doing it wrong notice if an error occurs in the current query.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string $method The original error method, from 2.9.0.
+	 */
+	protected function do_query_error_notice( $method ) {
+
+		$message = "You've initiated a method that uses queries too early.";
+
+		$trace = @debug_backtrace( DEBUG_BACKTRACE_PROVIDE_OBJECT, 4 );
+		if ( ! empty( $trace[3] ) ) {
+			$message .= ' - In file: ' . $trace[3]['file'];
+			$message .= ' - On line: ' . $trace[3]['line'];
+		}
+
+		$this->_doing_it_wrong( $method, \esc_html( $message ), '2.9.0' );
 
 		//* Backtrace debugging.
 		if ( $this->the_seo_framework_debug ) {
@@ -73,8 +95,6 @@ class Query extends Compat {
 				$_more = false;
 			}
 		}
-
-		return false;
 	}
 
 	/**
@@ -185,6 +205,7 @@ class Query extends Compat {
 	 *
 	 * @since 2.6.0
 	 * @since 2.6.6 Moved from class The_SEO_Framework_Term_Data.
+	 * @securitycheck 3.0.0 OK.
 	 *
 	 * @return int Term ID.
 	 */
@@ -203,7 +224,7 @@ class Query extends Compat {
 		 * through global $current_screen. Will output 'Invalid taxonomy' on try.
 		 */
 		if ( ! empty( $_GET['tag_ID'] ) ) {
-			//* WordPress 4.5+
+			//* WordPress 4.5+.
 			$term_id = $_GET['tag_ID'];
 		} elseif ( ! empty( $_GET['term_id'] ) ) {
 			//* Older WordPress versions.
@@ -216,6 +237,18 @@ class Query extends Compat {
 		);
 
 		return $term_id;
+	}
+
+	/**
+	 * Returns the current taxonomy, if any.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return string The queried taxonomy type.
+	 */
+	public function get_current_taxonomy() {
+		$_object = \get_queried_object();
+		return ! empty( $_object->taxonomy ) ? $_object->taxonomy : '';
 	}
 
 	/**
@@ -424,7 +457,7 @@ class Query extends Compat {
 		$pfp = (int) \get_option( 'page_for_posts' );
 
 		if ( $this->has_page_on_front() ) {
-			if ( $id === $pfp && false === \is_archive() ) {
+			if ( $id && $id === $pfp && false === \is_archive() ) {
 				$is_blog_page = true;
 			} elseif ( \is_home() ) {
 				$is_blog_page = true;
@@ -1153,11 +1186,11 @@ class Query extends Compat {
 
 	/**
 	 * Fetches the number of the current page.
-	 * Fetches global $paged through Query Var to prevent conflicts.
+	 * Fetches global $paged through Query var to prevent conflicts.
 	 *
 	 * @since 2.6.0
 	 *
-	 * @return int $paged
+	 * @return int $paged Always a positive number.
 	 */
 	public function paged() {
 
@@ -1210,12 +1243,12 @@ class Query extends Compat {
 	 *        Must always be inside a single array when $value_to_set is set. @see $this->set_query_cache()
 	 *        Must always be separated parameters otherwise.
 	 * @return mixed : {
-	 * 		mixed The cached value if set and $value_to_set is null.
-	 *		null If the query can't be cached yet, or when no value has been set.
-	 *		If $value_to_set is set : {
-	 *			true If the value is being set for the first time.
-	 *			false If the value has been set and $value_to_set is being overwritten.
-	 * 		}
+	 *    mixed The cached value if set and $value_to_set is null.
+	 *       null If the query can't be cached yet, or when no value has been set.
+	 *       If $value_to_set is set : {
+	 *          true If the value is being set for the first time.
+	 *          false If the value has been set and $value_to_set is being overwritten.
+	 *       }
 	 * }
 	 */
 	public function get_query_cache( $key, $value_to_set = null ) {
@@ -1263,8 +1296,8 @@ class Query extends Compat {
 	 * @param mixed $value_to_set If null, no cache will be set.
 	 * @param mixed $hash Extra arguments, that will be used to generate an alternative cache key.
 	 * @return bool : {
-	 *		true If the value is being set for the first time.
-	 *		false If the value has been set and $value_to_set is being overwritten.
+	 *    true If the value is being set for the first time.
+	 *    false If the value has been set and $value_to_set is being overwritten.
 	 * }
 	 */
 	public function set_query_cache( $key, $value_to_set ) {

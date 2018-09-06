@@ -71,10 +71,12 @@ class WPP_Output {
                 $this->options
             );
 
+            $this->output = "\n" . "<!-- WordPress Popular Posts" . ( WP_DEBUG ? ' v' . WPP_VER : '' ) . " -->" . "\n";
+
             // Allow WP themers / coders access to raw data
             // so they can build their own output
             if ( has_filter( 'wpp_custom_html' ) ) {
-                $this->output = apply_filters( 'wpp_custom_html', $this->data, $this->options );
+                $this->output .= apply_filters( 'wpp_custom_html', $this->data, $this->options );
                 return;
             }
 
@@ -143,7 +145,7 @@ class WPP_Output {
         $postID = $post_object->id;
 
         // Permalink
-        $permalink = get_permalink( $postID );
+        $permalink = $this->get_permalink( $post_object );
 
         // Thumbnail
         $post_thumbnail = $this->get_thumbnail( $post_object );
@@ -255,6 +257,26 @@ class WPP_Output {
 
         return apply_filters( 'wpp_post', $post, $post_object, $this->options );
 
+    }
+
+    /**
+     * Return the permalink.
+     * 
+     * @since   4.0.12
+     * @access  private
+     * @param   object  $post_object
+     * @return  string
+     */
+    private function get_permalink( stdClass $post_object ) {
+
+        $translate = WPP_translate::get_instance();
+        $trid = $translate->get_object_id( $post_object->id, get_post_type( $post_object->id ) );
+
+        if ( $post_object->id != $trid ) {
+            return get_permalink( $trid );
+        }
+
+        return get_permalink( $post_object->id );
     }
 
     /**
@@ -612,7 +634,7 @@ class WPP_Output {
 
                 $excerpt = ( empty($the_post->post_excerpt) )
                   ? $the_post->post_content
-                  : $post_object->post_excerpt;
+                  : $the_post->post_excerpt;
             }
             else {
                 $excerpt = ( empty( $post_object->post_excerpt ) )
@@ -673,8 +695,8 @@ class WPP_Output {
 
         $rating = '';
 
-        if ( function_exists('the_ratings') && $this->options['rating'] ) {
-            $rating = the_ratings( 'span', $post_object->id, false );
+        if ( function_exists('the_ratings_results') && $this->options['rating'] ) {
+            $rating = the_ratings_results( $post_object->id );
         }
 
         return $rating;

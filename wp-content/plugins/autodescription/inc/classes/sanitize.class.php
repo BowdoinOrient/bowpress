@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -46,6 +46,7 @@ class Sanitize extends Admin_Pages {
 	 * Never run a sensitive function when it's returning false. This means no nonce can be verified.
 	 *
 	 * @since 2.7.0
+	 * @securitycheck 3.0.0 OK.
 	 * @staticvar bool $verified.
 	 *
 	 * @return bool True if verified and matches. False if can't verify.
@@ -81,6 +82,7 @@ class Sanitize extends Admin_Pages {
 	 * Handles settings field update POST actions.
 	 *
 	 * @since 2.8.0
+	 * @since 3.0.6 Now updates db version, too.
 	 *
 	 * @return void Early if nonce failed.
 	 */
@@ -100,6 +102,19 @@ class Sanitize extends Admin_Pages {
 		//* Flush transients after options have changed.
 		\add_action( "update_option_{$this->settings_field}", array( $this, 'delete_main_cache' ) );
 		\add_action( "update_option_{$this->settings_field}", array( $this, 'reinitialize_rewrite' ), 11 );
+		\add_action( "update_option_{$this->settings_field}", array( $this, 'update_db_version' ), 12 );
+	}
+
+	/**
+	 * Updates the database version to the defined one.
+	 *
+	 * This prevents errors when users go back to an earlier version, where options
+	 * might be different from a future one.
+	 *
+	 * @since 3.0.6
+	 */
+	public function update_db_version() {
+		\update_option( 'the_seo_framework_upgraded_db_version', THE_SEO_FRAMEWORK_DB_VERSION );
 	}
 
 	/**
@@ -197,6 +212,9 @@ class Sanitize extends Admin_Pages {
 				'alter_search_query',
 				'alter_archive_query',
 
+				'display_pixel_counter',
+				'display_character_counter',
+
 				'cache_meta_description',
 				'cache_meta_schema',
 				'cache_sitemap',
@@ -211,7 +229,6 @@ class Sanitize extends Admin_Pages {
 				'description_additions',
 				'description_blogname',
 
-				'noodp',
 				'noydir',
 
 				'category_noindex',
@@ -263,13 +280,6 @@ class Sanitize extends Admin_Pages {
 				'post_publish_time',
 				'post_modify_time',
 
-				'page_publish_time',
-				'page_modify_time',
-
-				'home_modify_time',
-				'home_publish_time',
-
-				'noodp',
 				'noydir',
 
 				'knowledge_logo',
@@ -282,13 +292,11 @@ class Sanitize extends Admin_Pages {
 				'source_the_feed',
 
 				'ld_json_searchbox',
-				'ld_json_sitename',
 				'ld_json_breadcrumbs',
 
 				'sitemaps_output',
 				'sitemaps_robots',
 				'sitemaps_modified',
-				'sitemap_timestamps',
 				'sitemap_styles',
 				'sitemap_logo',
 			)
@@ -301,6 +309,14 @@ class Sanitize extends Admin_Pages {
 				'social_image_fb_id',
 				'homepage_social_image_id',
 				'knowledge_logo_id',
+			)
+		);
+
+		$this->add_option_filter(
+			's_numeric_string',
+			$this->settings_field,
+			array(
+				'timestamps_format',
 			)
 		);
 
@@ -333,15 +349,12 @@ class Sanitize extends Admin_Pages {
 			's_url',
 			$this->settings_field,
 			array(
-				'facebook_publisher',
-				'facebook_author',
-
 				'knowledge_facebook',
 				'knowledge_twitter',
 				'knowledge_gplus',
 				'knowledge_instagram',
 				'knowledge_youtube',
-			//	'knowledge_myspace',
+				//	'knowledge_myspace',
 				'knowledge_pinterest',
 				'knowledge_soundcloud',
 				'knowledge_tumblr',
@@ -356,6 +369,15 @@ class Sanitize extends Admin_Pages {
 				'social_image_fb_url',
 				'homepage_social_image_url',
 				'knowledge_logo_url',
+			)
+		);
+
+		$this->add_option_filter(
+			's_facebook_profile',
+			$this->settings_field,
+			array(
+				'facebook_publisher',
+				'facebook_author',
 			)
 		);
 
@@ -549,25 +571,25 @@ class Sanitize extends Admin_Pages {
 			's_knowledge_type'        => array( $this, 's_knowledge_type' ),
 			's_alter_query_type'      => array( $this, 's_alter_query_type' ),
 			's_one_zero'              => array( $this, 's_one_zero' ),
+			's_numeric_string'        => array( $this, 's_numeric_string' ),
 			's_no_html'               => array( $this, 's_no_html' ),
 			's_no_html_space'         => array( $this, 's_no_html_space' ),
 			's_absint'                => array( $this, 's_absint' ),
 			's_safe_html'             => array( $this, 's_safe_html' ),
 			's_url'                   => array( $this, 's_url' ),
 			's_url_query'             => array( $this, 's_url_query' ),
+			's_facebook_profile'      => array( $this, 's_facebook_profile' ),
 			's_twitter_name'          => array( $this, 's_twitter_name' ),
 			's_twitter_card'          => array( $this, 's_twitter_card' ),
 			's_canonical_scheme'      => array( $this, 's_canonical_scheme' ),
 		);
 
 		/**
-		 * Filter the available sanitization filter types.
+		 * Applies filters the_seo_framework_available_sanitizer_filters
 		 *
 		 * @since 2.2.2
-		 *
-		 * Applies filters the_seo_framework_available_sanitizer_filters : array
-		 * 		@param array $default_filters Array with keys of sanitization types,
-		 *		and values of the filter function name as a callback
+		 * @param array $default_filters Array with keys of sanitization types,
+		 *              and values of the filter function name as a callback
 		 */
 		return (array) \apply_filters( 'the_seo_framework_available_sanitizer_filters', $default_filters );
 	}
@@ -924,14 +946,15 @@ class Sanitize extends Admin_Pages {
 	 * @return string 'in_query' or 'post_query'
 	 */
 	public function s_alter_query_type( $new_value ) {
-
 		switch ( $new_value ) {
 			case 'in_query' :
 			case 'post_query' :
 				return (string) $new_value;
+				break;
 
 			default :
 				return 'in_query';
+				break;
 		}
 	}
 
@@ -948,6 +971,21 @@ class Sanitize extends Admin_Pages {
 	 */
 	public function s_one_zero( $new_value ) {
 		return (int) (bool) $new_value;
+	}
+
+	/**
+	 * Returns a numeric string, like '0', '1', '2'.
+	 *
+	 * Uses double casting. First, we cast to integer, then to string.
+	 * Rounds floats down. Converts non-numeric inputs to '0'.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param mixed $new_value Should ideally be an integer.
+	 * @return string An integer as string.
+	 */
+	public function s_numeric_string( $new_value ) {
+		return (string) (int) $new_value;
 	}
 
 	/**
@@ -990,13 +1028,12 @@ class Sanitize extends Admin_Pages {
 	}
 
 	/**
-	 * Makes URLs safe.
+	 * Makes URLs safe and removes query args.
 	 *
 	 * @since 2.2.2
 	 * @since 2.8.0 Method is now public.
 	 *
 	 * @param string $new_value String, a URL, possibly unsafe.
-	 * @param boolean/sphaghetti $flush Whether to flush to transient.
 	 * @return string String a safe URL without Query Arguments.
 	 */
 	public function s_url( $new_value ) {
@@ -1012,7 +1049,7 @@ class Sanitize extends Admin_Pages {
 	}
 
 	/**
-	 * Makes URLs safe and removes query args.
+	 * Makes URLs safe, maintaining queries.
 	 *
 	 * @since 2.2.8
 	 * @since 2.8.0 Method is now public.
@@ -1056,6 +1093,8 @@ class Sanitize extends Admin_Pages {
 	 *
 	 * @since 2.2.2
 	 * @since 2.8.0 Method is now public.
+	 * @since 3.0.0: 1. Now removes '@' from the URL path.
+	 *               2. Now removes spaces and tabs.
 	 *
 	 * @param string $new_value String with potentially wrong Twitter username.
 	 * @return string String with 'correct' Twitter username
@@ -1063,23 +1102,53 @@ class Sanitize extends Admin_Pages {
 	public function s_twitter_name( $new_value ) {
 
 		if ( empty( $new_value ) )
-			return (string) $new_value;
+			return '';
 
 		$profile = trim( strip_tags( $new_value ) );
+		$profile = $this->s_relative_url( $profile );
+		$profile = rtrim( $profile, ' /' );
 
-		if ( 'http' === substr( $profile, 0, 4 ) ) {
-			$parsed_url = \wp_parse_url( $profile );
-			$path = isset( $parsed_url['path'] ) ? str_replace( '/', '', $parsed_url['path'] ) : '';
-			$profile = $path ? '@' . $path : '';
-
-			return (string) $profile;
-		}
-
-		if ( '@' !== substr( $profile, 0, 1 ) ) {
+		if ( '@' !== substr( $profile, 0, 1 ) )
 			$profile = '@' . $profile;
+
+		return str_replace( array( ' ', "\t" ), '', $profile );
+	}
+
+	/**
+	 * Parses Facebook profile URLs. Exchanges URLs for Facebook's.
+	 *
+	 * @since 2.2.2
+	 * @since 2.8.0 Method is now public.
+	 * @since 3.0.6 Now allows a sole query argument when profile.php is used.
+	 *
+	 * @param string $new_value String with potentially wrong Facebook profile URL.
+	 * @return string String with 'correct' Facebook profile URL.
+	 */
+	public function s_facebook_profile( $new_value ) {
+
+		if ( empty( $new_value ) )
+			return '';
+
+		$link = trim( strip_tags( $new_value ) );
+
+		$link = 'https://www.facebook.com/' . $this->s_relative_url( $link );
+		$link = rtrim( $link, ' /' );
+
+		if ( strpos( $link, 'profile.php' ) ) {
+			//= Gets query parameters.
+			$q = strtok( substr( $link, strpos( $link, '?' ) ), '?' );
+			parse_str( $q, $r );
+			if ( isset( $r['id'] ) ) {
+				$link = 'https://www.facebook.com/profile.php?id=' . \absint( $r['id'] );
+				$link = $this->s_url_query( $link );
+			} else {
+				$link = '';
+			}
+		} else {
+			$link = $this->s_url( $link );
 		}
 
-		return (string) $profile;
+		return $link;
 	}
 
 	/**
@@ -1131,6 +1200,7 @@ class Sanitize extends Admin_Pages {
 	 *
 	 * @since 2.2.4
 	 * @since 2.8.0 Method is now public.
+	 * @since 3.0.6 Noqueries is now disabled by default.
 	 *
 	 * @param string $new_value String with potentially unwanted redirect URL.
 	 * @return string The Sanitized Redirect URL
@@ -1141,24 +1211,22 @@ class Sanitize extends Admin_Pages {
 
 		if ( $url ) :
 
-			$allow_external = $this->allow_external_redirect();
-
 			/**
 			 * Sanitize the redirect URL to only a relative link and removes first slash
 			 * @requires WP 4.1.0 and up to prevent adding upon itself.
 			 */
-			if ( ! $allow_external )
+			if ( ! $this->allow_external_redirect() )
 				$url = $this->s_relative_url( $url );
 
 			//* URL pattern excluding path.
-			$pattern 	= '/'
-						. '((((http)(s)?)?)\:)?' // 1: maybe http: https:
-						. '(\/\/)?'              // 2: maybe slash slash
-						. '((www.)?)'            // 3: maybe www.
-						. '(.*\.[a-zA-Z0-9]*)'   // 4: any legal domain with tld
-						. '(?:\/)?'              // 5: trailing slash
-						. '/'
-						;
+			$pattern = '/'
+			         . '((((http)(s)?)?)\:)?' // 1: maybe http: https:
+			         . '(\/\/)?'              // 2: maybe slash slash
+			         . '((www.)?)'            // 3: maybe www.
+			         . '(.*\.[a-zA-Z0-9]*)'   // 4: any legal domain with tld
+			         . '(?:\/)?'              // 5: maybe trailing slash
+			         . '/'
+			         ;
 
 			//* If link is relative, make it full again
 			if ( ! preg_match( $pattern, $url ) ) {
@@ -1174,13 +1242,13 @@ class Sanitize extends Admin_Pages {
 				 * @param array : { 'url' => The full URL built from $path, 'scheme' => The preferred scheme }
 				 * @param string $path the URL path.
 				 */
-				$filter = (array) \apply_filters( 'the_seo_framework_sanitize_redirect_args', array(), $path );
+				$custom_sanitize = (array) \apply_filters( 'the_seo_framework_sanitize_redirect_args', array(), $path );
 
-				if ( $filter ) {
-					$url = $filter['url'];
-					$scheme = $filter['scheme'];
+				if ( $custom_sanitize ) {
+					$url = $custom_sanitize['url'];
+					$scheme = $custom_sanitize['scheme'];
 				} else {
-					$url = $this->the_home_url_from_cache( true ) . ltrim( $path, ' /' );
+					$url = \trailingslashit( $this->get_homepage_permalink() ) . ltrim( $path, ' /' );
 					$scheme = $this->is_ssl() ? 'https' : 'http';
 				}
 
@@ -1192,22 +1260,25 @@ class Sanitize extends Admin_Pages {
 		endif;
 
 		/**
-		 * Applies filters the_seo_framework_301_noqueries : bool remove query args from 301
+		 * Applies filters 'the_seo_framework_301_noqueries'
+		 *
 		 * @since 2.5.0
+		 * @since 3.0.6 Now false by default.
+		 * @param bool $noqueries
 		 */
-		$noqueries = (bool) \apply_filters( 'the_seo_framework_301_noqueries', true );
+		$noqueries = (bool) \apply_filters( 'the_seo_framework_301_noqueries', false );
 
 		/**
 		 * Remove queries from the URL
 		 *
-		 * Returns plain Home URL if $allow_external is set to false and only a query has been supplied
+		 * Returns plain Home URL if $this->allow_external_redirect() is set to false and only a query has been supplied
 		 * But that's okay. The URL was rogue anyway :)
 		 */
 		if ( $noqueries ) {
 			/**
 			 * Remove query args
 			 *
-			 * @see The_SEO_Framework_Sanitize::s_url
+			 * @see The_SEO_Framework\Sanitize::s_url
 			 * @since 2.2.4
 			 */
 			$new_value = $this->s_url( $url );
@@ -1215,7 +1286,7 @@ class Sanitize extends Admin_Pages {
 			/**
 			 * Allow query string parameters. XSS safe.
 			 */
-			$new_value = \esc_url_raw( $url );
+			$new_value = $this->s_url_query( $url );
 		}
 
 		//* Save url

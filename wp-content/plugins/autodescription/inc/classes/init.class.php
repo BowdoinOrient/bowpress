@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -48,15 +48,23 @@ class Init extends Query {
 		parent::__construct();
 
 		/**
-		 * Applies filters 'the_seo_framework_load_options' : Boolean Allows the options page to be removed
+		 * Applies filters 'the_seo_framework_load_options'
+		 * Allows the options page to be removed
+		 *
 		 * @since 2.2.2
+		 *
+		 * @param bool $load_options
 		 */
 		$this->load_options = (bool) \apply_filters( 'the_seo_framework_load_options', true );
 
 		/**
-		 * Applies filters 'the_seo_framework_use_object_cache' : bool
+		 * Applies filters 'the_seo_framework_use_object_cache'
+		 * Enables object caching usage.
+		 *
 		 * @since 2.4.3
 		 * @since 2.8.0 : Uses method $this->use_object_cache() as default.
+		 *
+		 * @param bool $use_object_cache
 		 */
 		$this->use_object_cache = (bool) \apply_filters( 'the_seo_framework_use_object_cache', $this->use_object_cache() );
 
@@ -70,6 +78,9 @@ class Init extends Query {
 
 	/**
 	 * Runs the plugin on the front-end.
+	 *
+	 * To overwrite any of the filters, use (n>0):
+	 * `add_action( 'init', callback, n );`
 	 *
 	 * @since 1.0.0
 	 * @since 2.8.0 Silently deprecated. Displaying legacy roots.
@@ -130,6 +141,9 @@ class Init extends Query {
 
 		//* Add query strings for sitemap rewrite.
 		\add_filter( 'query_vars', array( $this, 'enqueue_sitemap_query_vars' ), 1, 1 );
+
+		//* Adjust category link to accommodate primary term.
+		\add_filter( 'post_link_category', array( $this, '_adjust_post_link_category' ), 10, 3 );
 	}
 
 	/**
@@ -159,8 +173,16 @@ class Init extends Query {
 		//* Initialize caching actions.
 		$this->init_admin_caching_actions();
 
+		//= Initialize profile fields.
+		$this->init_profile_fields();
+
+		//= Initialize term meta filters and actions.
+		$this->initialize_term_meta();
+
 		//* Save post data.
 		\add_action( 'save_post', array( $this, 'inpost_seo_save' ), 1, 2 );
+		\add_action( 'edit_attachment', array( $this, 'inattachment_seo_save' ), 1 );
+		\add_action( 'save_post', array( $this, '_save_inpost_primary_term' ), 1, 2 );
 
 		//* Enqueues admin scripts.
 		\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ), 0, 1 );
@@ -196,6 +218,9 @@ class Init extends Query {
 
 			//* Enqueue Inpost meta boxes.
 			\add_action( 'add_meta_boxes', array( $this, 'add_inpost_seo_box_init' ), 5 );
+
+			//* Enqueue Inpost primary term template.
+			\add_action( 'admin_footer', array( $this, '_include_primary_term_selector_template' ) );
 
 			//* Enqueue Taxonomy meta output.
 			\add_action( 'current_screen', array( $this, 'add_taxonomy_seo_box_init' ), 10 );
@@ -331,7 +356,7 @@ class Init extends Query {
 	 *
 	 * @param string|array $args the arguments that will be passed onto the callback.
 	 * @param bool $before if the header actions should be before or after the SEO Frameworks output
-	 * @return string|empty The filter output.
+	 * @return string The filter output.
 	 */
 	public function header_actions( $args = '', $before = true ) {
 
@@ -372,6 +397,7 @@ class Init extends Query {
 	 *
 	 * @since 1.0.0
 	 * @since 2.8.0 Cache is busted on each new release.
+	 * @since 3.0.0 Now converts timezone if needed.
 	 */
 	public function html_output() {
 
@@ -424,6 +450,9 @@ class Init extends Query {
 						. $this->yandex_site_output()
 						. $this->pint_site_output();
 			else :
+				$set_timezone = $this->uses_time_in_timestamp_format() && ( $this->output_published_time() || $this->output_modified_time() );
+				$set_timezone and $this->set_timezone();
+
 				$output = $this->the_description()
 						. $this->og_image()
 						. $this->og_locale()
@@ -451,6 +480,8 @@ class Init extends Query {
 						. $this->bing_site_output()
 						. $this->yandex_site_output()
 						. $this->pint_site_output();
+
+				$set_timezone and $this->reset_timezone();
 			endif;
 
 			$after_actions = $this->header_actions( '', false );
@@ -527,24 +558,22 @@ class Init extends Query {
 			return;
 		}
 
-		$allow_external = $this->allow_external_redirect();
-
 		/**
 		 * Applies filters 'the_seo_framework_redirect_status_code' : Absolute integer.
 		 *
 		 * @since 2.8.0
 		 *
-		 * @param unsigned int $redirect_type
+		 * @param int <unsigned> $redirect_type
 		 */
 		$redirect_type = \absint( \apply_filters( 'the_seo_framework_redirect_status_code', 301 ) );
 
 		if ( $redirect_type > 399 || $redirect_type < 300 )
 			$this->_doing_it_wrong( __METHOD__, 'You should use 3xx HTTP Status Codes. Recommended 301 and 302.', '2.8.0' );
 
-		if ( false === $allow_external ) {
-			//= Only HTTP/HTTPS and internal URLs are allowed.
-			$url = $this->set_url_scheme( $url, 'relative' );
-			$url = $this->add_url_host( $url );
+		if ( ! $this->allow_external_redirect() ) {
+			//= Only HTTP/HTTPS and home URLs are allowed.
+			$path = $this->set_url_scheme( $url, 'relative' );
+			$url = \trailingslashit( $this->get_home_host() ) . ltrim( $path, ' /' );
 			$scheme = $this->is_ssl() ? 'https' : 'http';
 
 			\wp_safe_redirect( $this->set_url_scheme( $url, $scheme ), $redirect_type );
@@ -590,29 +619,28 @@ class Init extends Query {
 		if ( false === $output ) :
 			$output = '';
 
-			$parsed_home_url = \wp_parse_url( rtrim( $this->the_home_url_from_cache(), ' /\\' ) );
+			$parsed_home_url = \wp_parse_url( rtrim( \get_home_url(), ' /\\' ) );
 			$home_path = ! empty( $parsed_home_url['path'] ) ? \esc_attr( $parsed_home_url['path'] ) : '';
 
 			if ( $this->is_subdirectory_installation() || $home_path ) {
 				$output .= '# This is an invalid robots.txt location.' . "\r\n";
-				$output .= '# Please visit: ' . \esc_url( trailingslashit( $this->set_preferred_url_scheme( $this->get_home_host() ) ) . 'robots.txt' ) . "\r\n";
+				$output .= '# Please visit: ' . \esc_url( \trailingslashit( $this->set_preferred_url_scheme( $this->get_home_host() ) ) . 'robots.txt' ) . "\r\n";
 				$output .= "\r\n";
 			}
-
-			/**
-			 * Apply filters the_seo_framework_robots_txt_pre & the_seo_framework_robots_txt_pro : string
-			 * Adds custom cacheable lines.
-			 * Don't forget to add line breaks ( "\r\n" || PHP_EOL )
-			 *
-			 * @since 2.5.0
-			 */
-			$pre = (string) \apply_filters( 'the_seo_framework_robots_txt_pre', '' );
-			$pro = (string) \apply_filters( 'the_seo_framework_robots_txt_pro', '' );
 
 			$site_url = \wp_parse_url( \site_url() );
 			$site_path = ( ! empty( $site_url['path'] ) ) ? \esc_attr( $site_url['path'] ) : '';
 
-			$output .= $pre;
+			/**
+			 * Applies filters 'the_seo_framework_robots_txt_pre'
+			 * Don't forget to add line breaks ( "\r\n" || PHP_EOL )
+			 *
+			 * @since 2.5.0
+			 *
+			 * @param string $pre
+			 */
+			$output .= (string) \apply_filters( 'the_seo_framework_robots_txt_pre', '' );
+
 			//* Output defaults
 			$output .= "User-agent: *\r\n";
 			$output .= "Disallow: $site_path/wp-admin/\r\n";
@@ -627,7 +655,13 @@ class Init extends Query {
 				$output .= "Disallow: $home_path/*?*\r\n";
 			}
 
-			$output .= $pro;
+			/**
+			 * Applies filters 'the_seo_framework_robots_txt_pro'
+			 * Don't forget to add line breaks ( "\r\n" || PHP_EOL )
+			 *
+			 * @param string $pro
+			 */
+			$output .= (string) \apply_filters( 'the_seo_framework_robots_txt_pro', '' );
 
 			//* Add extra whitespace and sitemap full URL
 			if ( $this->can_do_sitemap_robots( true ) )
@@ -691,8 +725,11 @@ class Init extends Query {
 	 * Alters search query.
 	 *
 	 * @since 2.9.4
+	 * @since 3.0.0 Exchanged meta query for post__not_in query.
+	 * @see Twenty Fourteen theme @source \Featured_Content::pre_get_posts()
+	 * @access private
 	 *
-	 * @param WP_Query $wp_query The WP_Query instance.
+	 * @param \WP_Query $wp_query The WP_Query instance.
 	 * @return void Early if no search query is found.
 	 */
 	public function _alter_search_query_in( $wp_query ) {
@@ -706,70 +743,7 @@ class Init extends Query {
 			if ( $this->is_archive_query_adjustment_blocked( $wp_query ) )
 				return;
 
-			$meta_query = $wp_query->get( 'meta_query' );
-
-			//* Convert to array. Unset it if it's empty.
-			if ( ! is_array( $meta_query ) )
-				$meta_query = $meta_query ? (array) $meta_query : array();
-
-			/**
-			 * Exclude posts with exclude_local_search option on.
-			 *
-			 * Query is faster when the global relation is not set. Defaults to AND.
-			 * Query is faster when no value is set. Defaults to 'IS NULL' because
-			 *       of 'compare'. Having no effect whatsoever as it's an exclusion.
-			 */
-			$meta_query[] = array(
-				'key'      => 'exclude_local_search',
-				'type'     => 'NUMERIC',
-				'compare'  => 'NOT EXISTS',
-			);
-
-			$wp_query->set( 'meta_query', $meta_query );
-		}
-	}
-
-	/**
-	 * Alters archive query.
-	 *
-	 * @since 2.9.4
-	 * @access private
-	 *
-	 * @param WP_Query $wp_query The WP_Query instance.
-	 * @return void Early if query alteration is useless or blocked.
-	 */
-	public function _alter_archive_query_in( $wp_query ) {
-
-		if ( $wp_query->is_archive || $wp_query->is_home ) {
-			if ( $this->is_archive_query_adjustment_blocked( $wp_query ) )
-				return;
-
-			$meta_query = $wp_query->get( 'meta_query' );
-
-			//* Convert to array. Unset it if it's empty.
-			if ( ! is_array( $meta_query ) )
-				$meta_query = $meta_query ? (array) $meta_query : array();
-
-			/**
-			 * Exclude posts with exclude_from_archive option on.
-			 *
-			 * Query is faster when the global relation is not set. Defaults to AND.
-			 * Query is faster when no value is set. Defaults to 'IS NULL' because
-			 *       of 'compare'. Having no effect whatsoever as it's an exclusion.
-			 */
-			$meta_query[] = array(
-				'key'      => 'exclude_from_archive',
-				'type'     => 'NUMERIC',
-				'compare'  => 'NOT EXISTS',
-			);
-
-			$wp_query->set( 'meta_query', $meta_query );
-		}
-
-		/* @TODO exchange above with this 3.0+
-		if ( ! empty( $wp_query->is_archive ) || ! empty( $wp_query->is_home ) ) {
-
-			$excluded = $this->get_exclude_from_archive_ids_cache();
+			$excluded = $this->get_ids_excluded_from_search();
 
 			if ( ! $excluded )
 				return;
@@ -783,7 +757,39 @@ class Init extends Query {
 
 			$wp_query->set( 'post__not_in', $excluded );
 		}
-		*/
+	}
+
+	/**
+	 * Alters archive query.
+	 *
+	 * @since 2.9.4
+	 * @since 3.0.0 Exchanged meta query for post__not_in query.
+	 * @see Twenty Fourteen theme @source \Featured_Content::pre_get_posts()
+	 * @access private
+	 *
+	 * @param \WP_Query $wp_query The WP_Query instance.
+	 * @return void Early if query alteration is useless or blocked.
+	 */
+	public function _alter_archive_query_in( $wp_query ) {
+
+		if ( $wp_query->is_archive || $wp_query->is_home ) {
+			if ( $this->is_archive_query_adjustment_blocked( $wp_query ) )
+				return;
+
+			$excluded = $this->get_ids_excluded_from_archive();
+
+			if ( ! $excluded )
+				return;
+
+			$post__not_in = $wp_query->get( 'post__not_in' );
+
+			if ( ! empty( $post__not_in ) ) {
+				$excluded = array_merge( (array) $post__not_in, $excluded );
+				$excluded = array_unique( $excluded );
+			}
+
+			$wp_query->set( 'post__not_in', $excluded );
+		}
 	}
 
 	/**
@@ -793,7 +799,7 @@ class Init extends Query {
 	 * @access private
 	 *
 	 * @param array    $posts The array of retrieved posts.
-	 * @param WP_Query $wp_query The WP_Query instance.
+	 * @param \WP_Query $wp_query The WP_Query instance.
 	 * @return array $posts
 	 */
 	public function _alter_search_query_post( $posts, $wp_query ) {
@@ -821,7 +827,7 @@ class Init extends Query {
 	 * @access private
 	 *
 	 * @param array    $posts The array of retrieved posts.
-	 * @param WP_Query $wp_query The WP_Query instance.
+	 * @param \WP_Query $wp_query The WP_Query instance.
 	 * @return array $posts
 	 */
 	public function _alter_archive_query_post( $posts, $wp_query ) {
@@ -847,7 +853,7 @@ class Init extends Query {
 	 *
 	 * @since 2.9.4
 	 *
-	 * @param WP_Query $wp_query WP_Query object. Passed by reference.
+	 * @param \WP_Query $wp_query WP_Query object. Passed by reference.
 	 * @return bool
 	 */
 	protected function is_archive_query_adjustment_blocked( &$wp_query ) {

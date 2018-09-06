@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -30,7 +30,7 @@ defined( 'ABSPATH' ) or die;
  *
  * @since 2.8.0
  */
-class Inpost extends Doing_It_Right {
+class Inpost extends Profile {
 
 	/**
 	 * Add inpost SEO Bar through a filter.
@@ -60,13 +60,13 @@ class Inpost extends Doing_It_Right {
 	public $inpost_nonce_field;
 
 	/**
-	 * Constructor, load parent constructor
+	 * Constructor, load parent constructor and sets up variables.
 	 */
 	protected function __construct() {
 		parent::__construct();
 
-		$this->inpost_nonce_name = 'the_seo_framework_inpost_seo_settings';
-		$this->inpost_nonce_field = 'the_seo_framework_inpost';
+		$this->inpost_nonce_name = 'tsf_inpost_seo_settings';
+		$this->inpost_nonce_field = 'tsf_inpost_nonce';
 
 		/**
 		 * Applies filters bool|string the_seo_framework_inpost_seo_bar :
@@ -81,14 +81,13 @@ class Inpost extends Doing_It_Right {
 		 * }
 		 */
 		$this->inpost_seo_bar = \apply_filters( 'the_seo_framework_inpost_seo_bar', false );
-
 	}
 
 	/**
-	 * Inpost setting nav tab wrappers.
-	 * Outputs Tabs and settings content.
+	 * Outputs in-post flex navigational wrapper and its content.
 	 *
 	 * @since 2.9.0
+	 * @since 3.0.0: Converted to view.
 	 *
 	 * @param string $id The Nav Tab ID
 	 * @param array $tabs the tab content {
@@ -100,103 +99,10 @@ class Inpost extends Doing_It_Right {
 	 *    )
 	 * }
 	 * @param string $version the The SEO Framework version for debugging. May be emptied.
-	 * @param bool $use_tabs Whether to output tabs, only works when $tabs is greater than 1.
+	 * @param bool $use_tabs Whether to output tabs, only works when $tabs count is greater than 1.
 	 */
 	public function inpost_flex_nav_tab_wrapper( $id, $tabs = array(), $version = '2.3.6', $use_tabs = true ) {
-
-		//* Whether tabs are active.
-		$use_tabs = $use_tabs && count( $tabs ) > 1;
-
-		/**
-		 * Start navigational tabs.
-		 *
-		 * Don't output navigation if $use_tabs is false and the amount of tabs is 1 or lower.
-		 */
-		if ( $use_tabs ) :
-			?>
-			<div class="tsf-flex tsf-flex-nav-tab-wrapper tsf-flex-hide-if-no-js" id="<?php echo \esc_attr( 'tsf-flex-' . $id . '-tabs-wrapper' ); ?>">
-				<div class="tsf-flex tsf-flex-nav-tab-inner">
-					<?php
-					$count = 1;
-					foreach ( $tabs as $tab => $value ) :
-						$dashicon = isset( $value['dashicon'] ) ? $value['dashicon'] : '';
-						$label_name = isset( $value['name'] ) ? $value['name'] : '';
-
-						$wrapper_id = \esc_attr( 'tsf-flex-nav-tab-' . $tab );
-						$wrapper_active = 1 === $count ? ' tsf-flex-nav-tab-active' : '';
-
-						$input_checked = 1 === $count ? 'checked' : '';
-						$input_id = \esc_attr( 'tsf-flex-' . $id . '-tab-' . $tab );
-						$input_name = \esc_attr( 'tsf-flex-' . $id . '-tabs' );
-
-						//= All output below is escaped.
-						?>
-						<div class="tsf-flex tsf-flex-nav-tab tsf-flex<?php echo $wrapper_active; ?>" id="<?php echo $wrapper_id; ?>">
-							<input type="radio" class="tsf-flex-nav-tab-radio" id="<?php echo $input_id; ?>" name="<?php echo $input_name; ?>" <?php echo $input_checked; ?>>
-							<label for="<?php echo $input_id; ?>" class="tsf-flex tsf-flex-nav-tab-label">
-								<?php
-								echo $dashicon ? '<span class="tsf-flex dashicons dashicons-' . \esc_attr( $dashicon ) . ' tsf-flex-nav-dashicon"></span>' : '';
-								echo $label_name ? '<span class="tsf-flex tsf-flex-nav-name">' . \esc_attr( $label_name ) . '</span>' : '';
-								?>
-							</label>
-						</div>
-						<?php
-
-						$count++;
-					endforeach;
-					?>
-				</div>
-			</div>
-			<?php
-		endif;
-
-		/**
-		 * Start Content.
-		 *
-		 * The content is relative to the navigation, and uses CSS to become visible.
-		 */
-		$count = 1;
-		foreach ( $tabs as $tab => $value ) :
-
-			$radio_id = \esc_attr( 'tsf-flex-' . $id . '-tab-' . $tab . '-content' );
-			$radio_class = \esc_attr( 'tsf-flex-' . $id . '-tabs-content' );
-
-			//* Current tab for JS.
-			$current_class = 1 === $count ? ' tsf-flex-tab-content-active' : '';
-
-			?>
-			<div class="tsf-flex tsf-flex-tab-content <?php echo \esc_attr( $radio_class . $current_class ); ?>" id="<?php echo \esc_attr( $radio_id ); ?>" >
-				<?php
-				//* No-JS tabs.
-				if ( $use_tabs ) :
-					$dashicon = isset( $value['dashicon'] ) ? $value['dashicon'] : '';
-					$label_name = isset( $value['name'] ) ? $value['name'] : '';
-
-					?>
-					<div class="tsf-flex tsf-flex-hide-if-js tsf-flex-tabs-content-no-js">
-						<div class="tsf-flex tsf-flex-nav-tab tsf-flex-tab-no-js">
-							<span class="tsf-flex tsf-flex-nav-tab">
-								<?php echo $dashicon ? '<span class="tsf-flex dashicons dashicons-' . \esc_attr( $dashicon ) . ' tsf-flex-nav-dashicon"></span>' : ''; ?>
-								<?php echo $label_name ? '<span class="tsf-flex tsf-flex-nav-name">' . \esc_attr( $label_name ) . '</span>' : ''; ?>
-							</span>
-						</div>
-					</div>
-					<?php
-				endif;
-
-				$callback = isset( $value['callback'] ) ? $value['callback'] : '';
-
-				if ( $callback ) {
-					$params = isset( $value['args'] ) ? $value['args'] : '';
-					//* Should already be escaped.
-					echo $this->call_function( $callback, $version, $params );
-				}
-				?>
-			</div>
-			<?php
-
-			$count++;
-		endforeach;
+		$this->get_view( 'inpost/wrap', get_defined_vars() );
 	}
 
 	/**
@@ -267,8 +173,8 @@ class Inpost extends Doing_It_Right {
 
 			if ( $labels ) :
 				//* Title and type are used interchangeably.
-				$title = isset( $labels->singular_name ) ? $labels->singular_name : $labels->name;
-				$args = array( $title, 'is_post_page' );
+				$label = isset( $labels->singular_name ) ? $labels->singular_name : $labels->name;
+				$args = array( $label, 'is_post_page' );
 
 				/**
 				 * Applies filters 'the_seo_framework_metabox_id' : string
@@ -297,14 +203,35 @@ class Inpost extends Doing_It_Right {
 
 				/**
 				 * High priority, this box is seen right below the post/page edit screen.
+				 *
 				 * Applies filters 'the_seo_framework_metabox_priority' : string
 				 * @since 2.6.0
 				 * @param string $default Accepts 'high', 'default', 'low'
 				 */
 				$priority = (string) \apply_filters( 'the_seo_framework_metabox_priority', 'high' );
 
+				if ( $this->is_front_page_by_id( $this->get_the_real_ID() ) ) {
+					if ( $this->can_access_settings() ) {
+						$schema = \is_rtl() ? '%2$s - %1$s' : '%1$s - %2$s';
+						$title = sprintf(
+							$schema,
+							\__( 'Homepage SEO Settings', 'autodescription' ),
+							$this->make_info(
+								\__( 'The SEO Settings take precedence over these settings.', 'autodescription' ),
+								$this->seo_settings_page_url(),
+								false
+							)
+						);
+					} else {
+						$title = \__( 'Homepage SEO Settings', 'autodescription' );
+					}
+				} else {
+					/* translators: %s = Post Type */
+					$title = sprintf( \__( '%s SEO Settings', 'autodescription' ), $label );
+				}
+
 				/* translators: %s = Post type name */
-				\add_meta_box( $id, sprintf( \__( '%s SEO Settings', 'autodescription' ), $title ), array( $this, 'pre_seo_box' ), $post_type, $context, $priority, $args );
+				\add_meta_box( $id, $title, array( $this, 'pre_seo_box' ), $post_type, $context, $priority, $args );
 			endif;
 		endif;
 	}
@@ -354,7 +281,7 @@ class Inpost extends Doing_It_Right {
 		$is_term = false;
 
 		// Args are passed.
-		if ( is_array( $args ) && isset( $args['args'] ) ) {
+		if ( isset( $args['args'] ) ) {
 			$args_split = $args['args'];
 
 			//* The post type callback arg (translated)
@@ -474,22 +401,46 @@ class Inpost extends Doing_It_Right {
 	}
 
 	/**
+	 * Outputs Primary Term nonce tempalte.
+	 *
+	 * @since 3.0.0
+	 * @access private
+	 */
+	public function _include_primary_term_selector_template() {
+		if ( $this->is_post_edit() )
+			$this->get_view( 'templates/inpost/primary-term-selector', array() );
+	}
+
+	/**
 	 * Fills in input variables by call for general tabs.
 	 *
 	 * Placeholder method that's used prior to upgrade merge 2.9 -> 3.0+.
 	 * Do not use. It will take a little too much time to perfect this.
 	 *
 	 * @since 2.9.0
+	 * @since 3.0.4 Added caching.
 	 * @access private
+	 * @staticvar $cache
 	 * @ignore
 	 * @todo Remove and refactor caller.
 	 *
-	 * @param int $tit_len_parsed. Passed by reference.
+	 * @param string $tit_len_parsed. Passed by reference.
 	 * @param string $doctitle_placeholder. Passed by reference.
-	 * @param int $desc_len_parsed. Passed by reference.
+	 * @param string $desc_len_parsed. Passed by reference.
 	 * @param string $description_placeholder. Passed by reference.
+	 * @return void
 	 */
 	public function _get_inpost_general_tab_vars( &$tit_len_parsed, &$doctitle_placeholder, &$desc_len_parsed, &$description_placeholder ) {
+
+		static $cache = array();
+
+		if ( ! empty( $cache ) ) {
+			//! Overwrites variables passed by reference via variable variables.
+			foreach ( $cache as $k => $v ) {
+				$$k = $v;
+			}
+			return;
+		}
 
 		$post_id = $this->get_the_real_ID();
 		$is_static_frontpage = $this->is_static_frontpage( $post_id );
@@ -506,11 +457,12 @@ class Inpost extends Doing_It_Right {
 				'get_custom_field' => false,
 			);
 
-			$generated_description_args = array(
-				'id' => $post_id,
-				'is_home' => true,
-				'get_custom_field' => true,
-			);
+			$_home_desc_from_option = $this->get_option( 'homepage_description' );
+			if ( $_home_desc_from_option ) {
+				$generated_description = $this->escape_description( $_home_desc_from_option );
+			} else {
+				$generated_description = $this->get_generated_description( $post_id );
+			}
 		} elseif ( $this->is_blog_page( $post_id ) ) {
 			//* Page for posts.
 			$generated_doctitle_args = array(
@@ -518,24 +470,16 @@ class Inpost extends Doing_It_Right {
 				'meta' => true,
 				'get_custom_field' => false,
 			);
-
-			$generated_description_args = array(
-				'id' => $post_id,
-				'page_for_posts' => true,
-			);
+			$generated_description = $this->get_generated_description( $post_id );
 		} else {
 			$generated_doctitle_args = array(
 				'placeholder' => true,
 				'meta' => true,
 				'get_custom_field' => false,
 			);
-
-			$generated_description_args = array(
-				'id' => $post_id,
-			);
+			$generated_description = $this->get_generated_description( $post_id );
 		}
 		$generated_doctitle = $this->title( '', '', '', $generated_doctitle_args );
-		$generated_description = $this->generate_description_from_id( $generated_description_args );
 
 		/**
 		 * Start Title vars
@@ -549,7 +493,12 @@ class Inpost extends Doing_It_Right {
 		 */
 		if ( $is_static_frontpage ) {
 			if ( $this->get_option( 'homepage_tagline' ) ) {
-				$tit_len_pre = $title ? $title . ' | ' . $this->get_blogdescription() : $generated_doctitle;
+				$_blogdescription = $this->get_blogdescription();
+				if ( $_blogdescription ) {
+					$tit_len_pre = $title ? $title . ' | ' . $_blogdescription : $generated_doctitle;
+				} else {
+					$tit_len_pre = $title ? $title : $generated_doctitle;
+				}
 			} else {
 				$tit_len_pre = $title ?: $generated_doctitle;
 			}
@@ -568,37 +517,13 @@ class Inpost extends Doing_It_Right {
 		}
 
 		/**
-		 * Start Description vars
-		 */
-
-		//* Fetch description from option.
-		$description = $this->get_custom_field( '_genesis_description' );
-
-		/**
-		 * Calculate current description length
-		 *
-		 * Reworked.
-		 * @since 2.3.4
-		 */
-		if ( $is_static_frontpage ) {
-			//* The homepage description takes precedence.
-			if ( $description ) {
-				$desc_len_pre = $this->get_option( 'homepage_description' ) ?: $description;
-			} else {
-				$desc_len_pre = $this->get_option( 'homepage_description' ) ?: $generated_description;
-			}
-		} else {
-			$desc_len_pre = $description ?: $generated_description;
-		}
-
-		/**
 		 * Convert to what Google outputs.
 		 *
 		 * This will convert e.g. &raquo; to a single length character.
 		 * @since 2.3.4
 		 */
 		$tit_len_parsed = html_entity_decode( $tit_len_pre );
-		$desc_len_parsed = html_entity_decode( $desc_len_pre );
+		$desc_len_parsed = html_entity_decode( $this->get_description( $post_id ) );
 
 		/**
 		 * Generate static placeholder for when title or description is emptied
@@ -608,5 +533,7 @@ class Inpost extends Doing_It_Right {
 		 */
 		$doctitle_placeholder = $generated_doctitle;
 		$description_placeholder = $generated_description;
+
+		$cache = compact( 'tit_len_parsed', 'doctitle_placeholder', 'desc_len_parsed', 'description_placeholder' );
 	}
 }

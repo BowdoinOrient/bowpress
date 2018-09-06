@@ -240,6 +240,12 @@ class Advanced_Excerpt {
 		}
 
 		$text = get_the_content( '' );
+
+		// remove shortcodes
+		if ( $no_shortcode ) {
+			$text = strip_shortcodes( $text );
+		}
+
 		$text = apply_filters( 'the_content', $text );
 
 		// add our filter back in

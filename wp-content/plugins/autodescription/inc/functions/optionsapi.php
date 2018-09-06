@@ -1,7 +1,7 @@
 <?php
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -136,7 +136,6 @@ function the_seo_framework_options_pagehook() {
 	return null;
 }
 
-
 /**
  * Fetch an option from The SEO Framework.
  *
@@ -179,6 +178,8 @@ function the_seo_framework_title_from_cache( $title = null ) {
  * Fetch description from cache. Only works within Loop.
  *
  * @since 2.4.2
+ * @deprecated
+ * @since 3.0.6 Silently deprecated.
  *
  * @param bool $social Fetch social description.
  * @return string|null The current page description.
@@ -205,7 +206,7 @@ function the_seo_framework_the_url_from_cache() {
 	$theseoframework = the_seo_framework();
 
 	if ( isset( $theseoframework ) )
-		return $theseoframework->the_url_from_cache();
+		return $theseoframework->get_current_canonical_url();
 
 	return null;
 }

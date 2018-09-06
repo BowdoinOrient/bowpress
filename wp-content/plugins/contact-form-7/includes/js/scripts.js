@@ -46,12 +46,16 @@
 		var $form = $( form );
 
 		$form.submit( function( event ) {
-			if ( typeof window.FormData !== 'function' ) {
-				return;
+			if ( ! wpcf7.supportHtml5.placeholder ) {
+				$( '[placeholder].placeheld', $form ).each( function( i, n ) {
+					$( n ).val( '' ).removeClass( 'placeheld' );
+				} );
 			}
 
-			wpcf7.submit( $form );
-			event.preventDefault();
+			if ( typeof window.FormData === 'function' ) {
+				wpcf7.submit( $form );
+				event.preventDefault();
+			}
 		} );
 
 		$( '.wpcf7-submit', $form ).after( '<span class="ajax-loader"></span>' );
@@ -193,10 +197,6 @@
 
 		$( '.ajax-loader', $form ).addClass( 'is-active' );
 
-		$( '[placeholder].placeheld', $form ).each( function( i, n ) {
-			$( n ).val( '' );
-		} );
-
 		wpcf7.clearResponse( $form );
 
 		var formData = new FormData( $form.get( 0 ) );
@@ -237,6 +237,7 @@
 		var ajaxSuccess = function( data, status, xhr, $form ) {
 			detail.id = $( data.into ).attr( 'id' );
 			detail.status = data.status;
+			detail.apiResponse = data;
 
 			var $message = $( '.wpcf7-response-output', $form );
 
@@ -255,6 +256,12 @@
 
 					wpcf7.triggerEvent( data.into, 'invalid', detail );
 					break;
+				case 'acceptance_missing':
+					$message.addClass( 'wpcf7-acceptance-missing' );
+					$form.addClass( 'unaccepted' );
+
+					wpcf7.triggerEvent( data.into, 'unaccepted', detail );
+					break;
 				case 'spam':
 					$message.addClass( 'wpcf7-spam-blocked' );
 					$form.addClass( 'spam' );
@@ -268,30 +275,32 @@
 
 					wpcf7.triggerEvent( data.into, 'spam', detail );
 					break;
+				case 'aborted':
+					$message.addClass( 'wpcf7-aborted' );
+					$form.addClass( 'aborted' );
+
+					wpcf7.triggerEvent( data.into, 'aborted', detail );
+					break;
 				case 'mail_sent':
 					$message.addClass( 'wpcf7-mail-sent-ok' );
 					$form.addClass( 'sent' );
 
-					if ( data.onSentOk ) {
-						$.each( data.onSentOk, function( i, n ) { eval( n ) } );
-					}
-
 					wpcf7.triggerEvent( data.into, 'mailsent', detail );
 					break;
 				case 'mail_failed':
-				case 'acceptance_missing':
-				default:
 					$message.addClass( 'wpcf7-mail-sent-ng' );
 					$form.addClass( 'failed' );
 
 					wpcf7.triggerEvent( data.into, 'mailfailed', detail );
+					break;
+				default:
+					var customStatusClass = 'custom-'
+						+ data.status.replace( /[^0-9a-z]+/i, '-' );
+					$message.addClass( 'wpcf7-' + customStatusClass );
+					$form.addClass( customStatusClass );
 			}
 
 			wpcf7.refill( $form, data );
-
-			if ( data.onSubmit ) {
-				$.each( data.onSubmit, function( i, n ) { eval( n ) } );
-			}
 
 			wpcf7.triggerEvent( data.into, 'submit', detail );
 
@@ -299,11 +308,15 @@
 				$form.each( function() {
 					this.reset();
 				} );
+
+				wpcf7.toggleSubmit( $form );
 			}
 
-			$form.find( '[placeholder].placeheld' ).each( function( i, n ) {
-				$( n ).val( $( n ).attr( 'placeholder' ) );
-			} );
+			if ( ! wpcf7.supportHtml5.placeholder ) {
+				$form.find( '[placeholder].placeheld' ).each( function( i, n ) {
+					$( n ).val( $( n ).attr( 'placeholder' ) );
+				} );
+			}
 
 			$message.html( '' ).append( data.message ).slideDown( 'fast' );
 			$message.attr( 'role', 'alert' );
@@ -380,13 +393,16 @@
 
 		$submit.prop( 'disabled', false );
 
-		$( 'input:checkbox.wpcf7-acceptance', $form ).each( function() {
-			var $a = $( this );
+		$( '.wpcf7-acceptance', $form ).each( function() {
+			var $span = $( this );
+			var $input = $( 'input:checkbox', $span );
 
-			if ( $a.hasClass( 'wpcf7-invert' ) && $a.is( ':checked' )
-			|| ! $a.hasClass( 'wpcf7-invert' ) && ! $a.is( ':checked' ) ) {
-				$submit.prop( 'disabled', true );
-				return false;
+			if ( ! $span.hasClass( 'optional' ) ) {
+				if ( $span.hasClass( 'invert' ) && $input.is( ':checked' )
+				|| ! $span.hasClass( 'invert' ) && ! $input.is( ':checked' ) ) {
+					$submit.prop( 'disabled', true );
+					return false;
+				}
 			}
 		} );
 	};
@@ -441,6 +457,13 @@
 				type: 'GET',
 				url: wpcf7.apiSettings.getRoute(
 					'/contact-forms/' + wpcf7.getId( $form ) + '/refill' ),
+				beforeSend: function( xhr ) {
+					var nonce = $form.find( ':input[name="_wpnonce"]' ).val();
+
+					if ( nonce ) {
+						xhr.setRequestHeader( 'X-WP-Nonce', nonce );
+					}
+				},
 				dataType: 'json'
 			} ).done( function( data, status, xhr ) {
 				if ( data.captcha ) {

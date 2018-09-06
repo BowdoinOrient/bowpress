@@ -5,86 +5,155 @@ if (!defined('WPO_VERSION')) die('No direct access allowed');
 class WP_Optimization_spam extends WP_Optimization {
 
 	public $available_for_auto = true;
+	
 	public $auto_default = true;
+
 	public $setting_default = true;
+
 	public $available_for_saving = true;
-	public $ui_sort_order = 3000;
+
+	public $ui_sort_order = 3500;
 
 	protected $dom_id = 'clean-comments';
+
 	protected $setting_id = 'spams';
+
 	protected $auto_id = 'spams';
 
-	public function optimize() {
+	private $processed_spam_count;
 
-        $clean = "DELETE FROM `".$this->wpdb->comments."` WHERE comment_approved = 'spam'";
-				
-		if ($this->retention_enabled == 'true') {
-			$clean .= ' and comment_date < NOW() - INTERVAL ' . $this->retention_period . ' WEEK';
-		}
+	private $processed_trash_count;
 
-		$clean .= ';';
+	private $found_spam_count;
 
-		$comments = $this->query($clean);
+	private $found_trash_count;
 
-        $info_message = sprintf(_n('%d spam comment deleted', '%d spam comments deleted', $comments, 'wp-optimize'), number_format_i18n($comments));
-
-        $this->logger->info($info_message);
-		$this->register_output($info_message);
-
-		// Possible enhancement: query trashed comments and cleanup metadata
-		$clean = "DELETE FROM `".$this->wpdb->comments."` WHERE comment_approved = 'trash'";
-				
-		if ($this->retention_enabled == 'true') {
-			$clean .= ' and comment_date < NOW() - INTERVAL ' . $this->retention_period . ' WEEK';
-		}
-		$clean .= ';';
-		$commentstrash = $this->query($clean);
-
-        $info_message = sprintf(_n('%d comment removed from Trash', '%d comments removed from Trash', $commentstrash, 'wp-optimize'), number_format_i18n($commentstrash));
-
-        $this->logger->info($info_message);
-		$this->register_output($info_message);
+	/**
+	 * Do actions before optimize() function.
+	 */
+	public function before_optimize() {
+		$this->processed_spam_count = 0;
+		$this->processed_trash_count = 0;
 	}
-	
+
+	/**
+	 * Do actions after optimize() function.
+	 */
+	public function after_optimize() {
+		$message = sprintf(_n('%s spam comment deleted', '%s spam comments deleted', $this->processed_spam_count, 'wp-optimize'), number_format_i18n($this->processed_spam_count));
+		$message1 = sprintf(_n('%s comment removed from Trash', '%s comments removed from Trash', $this->processed_trash_count, 'wp-optimize'), number_format_i18n($this->processed_trash_count));
+
+
+		if ($this->is_multisite_mode()) {
+			$blogs_count_text = sprintf(_n('across %s site', 'across %s sites', count($this->blogs_ids), 'wp-optimize'), count($this->blogs_ids));
+
+			$message .= ' '.$blogs_count_text;
+			$message1 .= ' '.$blogs_count_text;
+		}
+
+		$this->logger->info($message);
+		$this->logger->info($message1);
+
+		$this->register_output($message);
+		$this->register_output($message1);
+	}
+
+	/**
+	 * Do optimization.
+	 */
+	public function optimize() {
+		// remove spam comments.
+
+		$this->processed_spam_count += $this->get_count_comments('spam');
+		$this->delete_comments_by_type('spam');
+
+		$this->processed_trash_count += $this->get_count_comments('trash');
+		$this->delete_comments_by_type('trash');
+	}
+
+	/**
+	 * Delete comments by $type along with comments meta from database.
+	 *
+	 * @param string $type comment type.
+	 * @return array
+	 */
+	public function delete_comments_by_type($type) {
+		$clean = "DELETE c, cm FROM `" . $this->wpdb->comments . "` c LEFT JOIN `" . $this->wpdb->commentmeta . "` cm ON c.comment_ID = cm.comment_id WHERE c.comment_approved = '{$type}'";
+
+		if ('true' == $this->retention_enabled) {
+			$clean .= ' and c.comment_date < NOW() - INTERVAL ' . $this->retention_period . ' WEEK';
+		}
+
+		$clean .= ';';
+		return $this->query($clean);
+	}
+
+	/**
+	 * Do actions before get_info() function.
+	 */
+	public function before_get_info() {
+		$this->found_spam_count = 0;
+		$this->found_trash_count = 0;
+	}
+
+	/**
+	 * Do actions after get_info() function.
+	 */
+	public function after_get_info() {
+
+		if ($this->found_spam_count > 0) {
+			$message = sprintf(_n('%s spam comment found', '%s spam comments found', $this->found_spam_count, 'wp-optimize'), number_format_i18n($this->found_spam_count)).' | <a id="wp-optimize-edit-comments-spam" href="'.admin_url('edit-comments.php?comment_status=spam').'">'.' '.__('Review', 'wp-optimize').'</a>';
+		} else {
+			$message = __('No spam comments found', 'wp-optimize');
+		}
+
+		if ($this->found_trash_count > 0) {
+			$message1 = sprintf(_n('%s trashed comment found', '%s trashed comments found', $this->found_trash_count, 'wp-optimize'), number_format_i18n($this->found_trash_count)).' | <a id="wp-optimize-edit-comments-trash" href="'.admin_url('edit-comments.php?comment_status=trash').'">'.' '.__('Review', 'wp-optimize').'</a>';
+		} else {
+			$message1 = __('No trashed comments found', 'wp-optimize');
+		}
+
+		if ($this->is_multisite_mode()) {
+			$blogs_count_text = sprintf(_n('across %s site', 'across %s sites', count($this->blogs_ids), 'wp-optimize'), count($this->blogs_ids));
+
+			$message .= ' '.$blogs_count_text;
+			$message1 .= ' '.$blogs_count_text;
+		}
+
+		$this->register_output($message);
+		$this->register_output($message1);
+	}
+
+	/**
+	 * Count records those can be optimized.
+	 */
 	public function get_info() {
-		
-		$sql = "SELECT COUNT(*) FROM `".$this->wpdb->comments."` WHERE comment_approved = 'spam'";
-		if ($this->retention_enabled == 'true') {
+		$this->found_spam_count += $this->get_count_comments('spam');
+		$this->found_trash_count += $this->get_count_comments('trash');
+	}
+
+	/**
+	 * Returns count comments by $type.
+	 *
+	 * @param string $type comment type.
+	 * @return mixed
+	 */
+	public function get_count_comments($type) {
+		$sql = "SELECT COUNT(*) FROM `" . $this->wpdb->comments . "` WHERE comment_approved = '{$type}'";
+		if ('true' == $this->retention_enabled) {
 			$sql .= ' and comment_date < NOW() - INTERVAL ' . $this->retention_period . ' WEEK';
 		}
 		$sql .= ';';
 
-		$comments = $this->wpdb->get_var($sql);
-
-		if (null != $comments && 0 != $comments) {
-			$message = sprintf(_n('%d spam comment found', '%d spam comments found', $comments, 'wp-optimize'), number_format_i18n($comments)).' | <a id="wp-optimize-edit-comments-spam" href="'.admin_url('edit-comments.php?comment_status=spam').'">'.' '.__('Review', 'wp-optimize').'</a>';
-		} else {
-			$message = __('No spam comments found', 'wp-optimize');
-		}
-		
-		$this->register_output($message);
-		
-		$sql2 = "SELECT COUNT(*) FROM `".$this->wpdb->comments."` WHERE comment_approved = 'trash'";
-		if ($this->retention_enabled == 'true') {
-			$sql2 .= ' and comment_date < NOW() - INTERVAL ' . $this->retention_period . ' WEEK';
-		}
-		$sql2 .= ';';
-
-		$comments = $this->wpdb->get_var($sql2);
-
-		if (null != $comments && 0 != $comments) {
-			$message2 = sprintf(_n('%d trashed comment found', '%d trashed comments found', $comments, 'wp-optimize'), number_format_i18n($comments)).' | <a id="wp-optimize-edit-comments-trash" href="'.admin_url('edit-comments.php?comment_status=trash').'">'.' '.__('Review', 'wp-optimize').'</a>';
-		} else {
-			$message2 = __('No trashed comments found', 'wp-optimize');
-		}
-		
-		$this->register_output($message2);
-		
+		return $this->wpdb->get_var($sql);
 	}
-	
+
+	/**
+	 * Do actions after get_info() function.
+	 */
 	public function settings_label() {
 	
-		if ($this->retention_enabled == 'true') {
+		if ('true' == $this->retention_enabled) {
 			return sprintf(__('Remove spam and trashed comments which are older than %d weeks', 'wp-optimize'), $this->retention_period);
 		} else {
 			return __('Remove spam and trashed comments', 'wp-optimize');

@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -49,10 +49,60 @@ class Render extends Admin_Init {
 	}
 
 	/**
+	 * Caches and returns the current URL.
+	 *
+	 * @since 3.0.0
+	 * @staticvar string $cache
+	 *
+	 * @return string The current URL.
+	 */
+	public function get_current_canonical_url() {
+
+		static $cache;
+
+		return isset( $cache ) ? $cache : $cache = $this->get_canonical_url();
+	}
+
+	/**
+	 * Caches and returns the current permalink.
+	 * This link excludes any pagination. Great for structured data.
+	 *
+	 * @since 3.0.0
+	 * @staticvar string $cache
+	 *
+	 * @return string The current permalink.
+	 */
+	public function get_current_permalink() {
+
+		static $cache;
+
+		return isset( $cache ) ? $cache : $cache = $this->create_canonical_url(
+			array( 'id' => $this->get_the_real_ID(), 'is_term' => $this->is_archive() )
+		);
+	}
+
+	/**
+	 * Caches and returns the homepage URL.
+	 *
+	 * @since 3.0.0
+	 * @staticvar string $cache
+	 *
+	 * @return string The home URL.
+	 */
+	public function get_homepage_permalink() {
+
+		static $cache;
+
+		return isset( $cache ) ? $cache : $cache = $this->create_canonical_url( array( 'id' => $this->get_the_front_page_ID() ) );
+	}
+
+	/**
 	 * Cache description in static variable
 	 * Must be called inside the loop
 	 *
 	 * @since 2.2.2
+	 * @deprecated
+	 * @since 3.0.6 Silently deprecated.
 	 * @staticvar array $description_cache
 	 *
 	 * @return string The description
@@ -68,53 +118,6 @@ class Render extends Admin_Init {
 	}
 
 	/**
-	 * Cache current URL in static variable
-	 * Must be called inside the loop
-	 *
-	 * @since 2.2.2
-	 * @staticvar array $url_cache
-	 *
-	 * @param string $url the url
-	 * @param int $post_id the page id, if empty it will fetch the requested ID, else the page uri
-	 * @param bool $paged Return current page URL with pagination
-	 * @param bool $from_option Get the canonical uri option
-	 * @param bool $paged_plural Whether to allow pagination on second or later pages.
-	 * @return string The url
-	 */
-	public function the_url_from_cache( $url = '', $post_id = null, $paged = false, $from_option = true, $paged_plural = true ) {
-
-		static $url_cache = array();
-
-		if ( empty( $post_id ) )
-			$post_id = $this->get_the_real_ID();
-
-		if ( isset( $url_cache[ $url ][ $post_id ][ $paged ][ $from_option ][ $paged_plural ] ) )
-			return $url_cache[ $url ][ $post_id ][ $paged ][ $from_option ][ $paged_plural ];
-
-		return $url_cache[ $url ][ $post_id ][ $paged ][ $from_option ][ $paged_plural ] = $this->the_url( $url, array( 'paged' => $paged, 'get_custom_field' => $from_option, 'id' => $post_id, 'paged_plural' => $paged_plural ) );
-	}
-
-	/**
-	 * Cache home URL in static variable
-	 *
-	 * @since 2.5.0
-	 * @since 2.9.0 Now returns subdirectory installations paths too.
-	 * @staticvar array $url_cache
-	 *
-	 * @param bool $force_slash Force slash
-	 * @return string The url
-	 */
-	public function the_home_url_from_cache( $force_slash = false ) {
-
-		static $url_cache = array();
-
-		if ( isset( $url_cache[ $force_slash ] ) )
-			return $url_cache[ $force_slash ];
-
-		return $url_cache[ $force_slash ] = $this->the_url( '', array( 'home' => true, 'forceslash' => $force_slash ) );
-	}
-
-	/**
 	 * Cache current Title in static variable
 	 * Must be called inside the loop
 	 *
@@ -124,7 +127,7 @@ class Render extends Admin_Init {
 	 *
 	 * @param string $title The Title to return
 	 * @param string $sep The Title sepeartor
-	 * @param string $seplocation The Title sepeartor location ( accepts 'left' or 'right' )
+	 * @param string $seplocation The Title sepeartor location, accepts 'left' or 'right'.
 	 * @param bool $meta Ignore theme doing it wrong.
 	 * @return string The title
 	 */
@@ -136,12 +139,12 @@ class Render extends Admin_Init {
 		 *
 		 * @since 2.4.0
 		 */
-		static $setup_cache = null;
-		static $title_param_cache = null;
-		static $sep_param_cache = null;
-		static $seplocation_param_cache = null;
+		static $setup_cache,
+		       $title_param_cache,
+		       $sep_param_cache,
+		       $seplocation_param_cache;
 
-		if ( ! isset( $setup_cache ) ) {
+		if ( ! $setup_cache ) {
 			if ( \doing_filter( 'pre_get_document_title' ) || \doing_filter( 'wp_title' ) ) {
 				$title_param_cache = $title;
 				$sep_param_cache = $sep;
@@ -202,7 +205,8 @@ class Render extends Admin_Init {
 	 * Renders the description meta tag.
 	 *
 	 * @since 1.3.0
-	 * @uses $this->description_from_cache()
+	 * @since 3.0.6 No longer uses $this->description_from_cache()
+	 * @uses $this->get_description()
 	 * @uses $this->detect_seo_plugins()
 	 *
 	 * @return string The description meta tag.
@@ -217,7 +221,7 @@ class Render extends Admin_Init {
 		 * @since 2.3.0
 		 * @since 2.7.0 : Added output within filter.
 		 */
-		$description = (string) \apply_filters( 'the_seo_framework_description_output', $this->description_from_cache(), $this->get_the_real_ID() );
+		$description = (string) \apply_filters( 'the_seo_framework_description_output', $this->get_description(), $this->get_the_real_ID() );
 
 		if ( $description )
 			return '<meta name="description" content="' . \esc_attr( $description ) . '" />' . "\r\n";
@@ -229,7 +233,8 @@ class Render extends Admin_Init {
 	 * Renders og:description meta tag
 	 *
 	 * @since 1.3.0
-	 * @uses $this->description_from_cache()
+	 * @since 3.0.4 No longer uses $this->description_from_cache()
+	 * @uses $this->get_open_graph_title()
 	 *
 	 * @return string The Open Graph description meta tag.
 	 */
@@ -243,7 +248,7 @@ class Render extends Admin_Init {
 		 * @since 2.3.0
 		 * @since 2.7.0 Added output within filter.
 		 */
-		$description = (string) \apply_filters( 'the_seo_framework_ogdescription_output', $this->description_from_cache( true ), $this->get_the_real_ID() );
+		$description = (string) \apply_filters( 'the_seo_framework_ogdescription_output', $this->get_open_graph_description(), $this->get_the_real_ID() );
 
 		if ( $description )
 			return '<meta property="og:description" content="' . \esc_attr( $description ) . '" />' . "\r\n";
@@ -279,8 +284,9 @@ class Render extends Admin_Init {
 	/**
 	 * Renders the Open Graph title meta tag.
 	 *
-	 * @uses $this->title_from_cache()
 	 * @since 2.0.3
+	 * @since 3.0.4 No longer uses $this->title_from_cache()
+	 * @uses $this->get_open_graph_title()
 	 *
 	 * @return string The Open Graph title meta tag.
 	 */
@@ -294,7 +300,7 @@ class Render extends Admin_Init {
 		 * @since 2.3.0
 		 * @since 2.7.0 Added output within filter.
 		 */
-		$title = (string) \apply_filters( 'the_seo_framework_ogtitle_output', $this->title_from_cache( '', '', '', true ), $this->get_the_real_ID() );
+		$title = (string) \apply_filters( 'the_seo_framework_ogtitle_output', $this->get_open_graph_title(), $this->get_the_real_ID() );
 
 		if ( $title )
 			return '<meta property="og:title" content="' . \esc_attr( $title ) . '" />' . "\r\n";
@@ -314,7 +320,9 @@ class Render extends Admin_Init {
 		if ( ! $this->use_og_tags() )
 			return '';
 
-		if ( $type = $this->get_og_type() )
+		$type = $this->get_og_type();
+
+		if ( $type )
 			return '<meta property="og:type" content="' . \esc_attr( $type ) . '" />' . "\r\n";
 
 		return '';
@@ -451,7 +459,7 @@ class Render extends Admin_Init {
 	 *
 	 * @since 1.3.0
 	 * @since 2.9.3 Added filter
-	 * @uses $this->the_url_from_cache()
+	 * @uses $this->get_current_canonical_url()
 	 *
 	 * @return string The Open Graph URL meta tag.
 	 */
@@ -468,11 +476,8 @@ class Render extends Admin_Init {
 			 * @param string $url The canonical/Open Graph URL. Must be escaped.
 			 * @param int    $id  The current page or term ID.
 			 */
-			$url = (string) \apply_filters( 'the_seo_framework_ogurl_output', $this->the_url_from_cache(), $this->get_the_real_ID() );
+			$url = (string) \apply_filters( 'the_seo_framework_ogurl_output', $this->get_current_canonical_url(), $this->get_the_real_ID() );
 
-			/**
-			 * @since 2.7.0 Listens to the second filter.
-			 */
 			if ( $url )
 				return '<meta property="og:url" content="' . $url . '" />' . "\r\n";
 		}
@@ -535,7 +540,8 @@ class Render extends Admin_Init {
 	 *
 	 * @since 2.2.2
 	 * @since 2.9.3 No longer has a fallback to twitter:site:id
-	 * @link https://dev.twitter.com/cards/getting-started
+	 *              @link https://dev.twitter.com/cards/getting-started
+	 * @since 3.0.0 Now uses author meta data.
 	 *
 	 * @return string The Twitter Creator or Twitter Site ID meta tag.
 	 */
@@ -544,15 +550,21 @@ class Render extends Admin_Init {
 		if ( ! $this->use_twitter_tags() )
 			return '';
 
+		$twitter_page = $this->get_current_author_option( 'twitter_page' ) ?: $this->get_option( 'twitter_creator' );
+
 		/**
 		 * Applies filters 'the_seo_framework_twittercreator_output' : string
+		 *
 		 * @since 2.3.0
 		 * @since 2.7.0 Added output within filter.
+		 *
+		 * @param string $twitter_page
+		 * @param int    $id
 		 */
-		$creator = (string) \apply_filters( 'the_seo_framework_twittercreator_output', $this->get_option( 'twitter_creator' ), $this->get_the_real_ID() );
+		$twitter_page = (string) \apply_filters( 'the_seo_framework_twittercreator_output', $twitter_page, $this->get_the_real_ID() );
 
-		if ( $creator )
-			return '<meta name="twitter:creator" content="' . \esc_attr( $creator ) . '" />' . "\r\n";
+		if ( $twitter_page )
+			return '<meta name="twitter:creator" content="' . \esc_attr( $twitter_page ) . '" />' . "\r\n";
 
 		return '';
 	}
@@ -560,8 +572,9 @@ class Render extends Admin_Init {
 	/**
 	 * Renders Twitter Title meta tag.
 	 *
-	 * @uses $this->title_from_cache()
+	 * @uses $this->get_twitter_title()
 	 * @since 2.2.2
+	 * @since 3.0.4 No longer uses $this->title_from_cache()
 	 *
 	 * @return string The Twitter Title meta tag.
 	 */
@@ -575,7 +588,7 @@ class Render extends Admin_Init {
 		 * @since 2.3.0
 		 * @since 2.7.0 Added output within filter.
 		 */
-		$title = (string) \apply_filters( 'the_seo_framework_twittertitle_output', $this->title_from_cache( '', '', '', true ), $this->get_the_real_ID() );
+		$title = (string) \apply_filters( 'the_seo_framework_twittertitle_output', $this->get_twitter_title(), $this->get_the_real_ID() );
 
 		if ( $title )
 			return '<meta name="twitter:title" content="' . \esc_attr( $title ) . '" />' . "\r\n";
@@ -586,8 +599,9 @@ class Render extends Admin_Init {
 	/**
 	 * Renders Twitter Description meta tag.
 	 *
-	 * @uses $this->description_from_cache()
 	 * @since 2.2.2
+	 * @since 3.0.4 No longer uses $this->description_from_cache()
+	 * @uses $this->get_twitter_description()
 	 *
 	 * @return string The Twitter Descritpion meta tag.
 	 */
@@ -601,7 +615,7 @@ class Render extends Admin_Init {
 		 * @since 2.3.0
 		 * @since 2.7.0 Added output within filter.
 		 */
-		$description = (string) \apply_filters( 'the_seo_framework_twitterdescription_output', $this->description_from_cache( true ), $this->get_the_real_ID() );
+		$description = (string) \apply_filters( 'the_seo_framework_twitterdescription_output', $this->get_twitter_description(), $this->get_the_real_ID() );
 
 		if ( $description )
 			return '<meta name="twitter:description" content="' . \esc_attr( $description ) . '" />' . "\r\n";
@@ -646,7 +660,8 @@ class Render extends Admin_Init {
 	 * Renders Facebook Author meta tag.
 	 *
 	 * @since 2.2.2
-	 * @since 2.8.0 : Return empty on og:type 'website' or 'product'
+	 * @since 2.8.0 Returns empty on og:type 'website' or 'product'
+	 * @since 3.0.0 Fetches Author meta data.
 	 *
 	 * @return string The Facebook Author meta tag.
 	 */
@@ -655,18 +670,20 @@ class Render extends Admin_Init {
 		if ( ! $this->use_facebook_tags() )
 			return '';
 
-		if ( in_array( $this->get_og_type(), array( 'website', 'product' ), true ) )
+		if ( 'article' !== $this->get_og_type() )
 			return '';
+
+		$facebook_page = $this->get_current_author_option( 'facebook_page' ) ?: $this->get_option( 'facebook_author' );
 
 		/**
 		 * Applies filters 'the_seo_framework_facebookauthor_output' : string
 		 * @since 2.3.0
 		 * @since 2.7.0 Added output within filter.
 		 */
-		$author = (string) \apply_filters( 'the_seo_framework_facebookauthor_output', $this->get_option( 'facebook_author' ), $this->get_the_real_ID() );
+		$facebook_page = (string) \apply_filters( 'the_seo_framework_facebookauthor_output', $facebook_page, $this->get_the_real_ID() );
 
-		if ( $author )
-			return '<meta property="article:author" content="' . \esc_attr( \esc_url_raw( $author, array( 'http', 'https' ) ) ) . '" />' . "\r\n";
+		if ( $facebook_page )
+			return '<meta property="article:author" content="' . \esc_attr( \esc_url_raw( $facebook_page, array( 'http', 'https' ) ) ) . '" />' . "\r\n";
 
 		return '';
 	}
@@ -675,12 +692,16 @@ class Render extends Admin_Init {
 	 * Renders Facebook Publisher meta tag.
 	 *
 	 * @since 2.2.2
+	 * @since 3.0.0 No longer outputs tag when "og:type" isn't 'article'.
 	 *
 	 * @return string The Facebook Publisher meta tag.
 	 */
 	public function facebook_publisher() {
 
 		if ( ! $this->use_facebook_tags() )
+			return '';
+
+		if ( 'article' !== $this->get_og_type() )
 			return '';
 
 		/**
@@ -726,40 +747,31 @@ class Render extends Admin_Init {
 	 *
 	 * @since 2.2.2
 	 * @since 2.8.0 Returns empty on product pages.
+	 * @since 3.0.0: 1. Now checks for 0000 timestamps.
+	 *               2. Now uses timestamp formats.
+	 *               3. Now uses GMT time.
 	 *
 	 * @return string The Article Publishing Time meta tag.
 	 */
 	public function article_published_time() {
 
-		//* Don't do anything if it's not a page or post.
-		if ( false === $this->is_singular() )
+		if ( ! $this->output_published_time() )
 			return '';
-
-		if ( 'product' === $this->get_og_type() )
-			return '';
-
-		if ( $this->is_real_front_page() ) {
-			//* If it's the frontpage, but the option is disabled, don't do anything.
-			if ( ! $this->get_option( 'home_publish_time' ) )
-				return '';
-		} else {
-			//* If it's a post, but the option is disabled, don't do anything.
-			if ( $this->is_single() && ! $this->get_option( 'post_publish_time' ) )
-				return '';
-
-			//* If it's a page, but the option is disabled, don't do anything.
-			if ( $this->is_page() && ! $this->get_option( 'page_publish_time' ) )
-				return '';
-		}
 
 		$id = $this->get_the_real_ID();
+
+		$post = \get_post( $id );
+		$post_date_gmt = $post->post_date_gmt;
+
+		if ( '0000-00-00 00:00:00' === $post_date_gmt )
+			return '';
 
 		/**
 		 * Applies filters 'the_seo_framework_publishedtime_output' : string
 		 * @since 2.3.0
 		 * @since 2.7.0 Added output within filter.
 		 */
-		$time = (string) \apply_filters( 'the_seo_framework_publishedtime_output', \get_the_date( 'Y-m-d', $id ), $id );
+		$time = (string) \apply_filters( 'the_seo_framework_publishedtime_output', $this->gmt2date( $this->get_timestamp_format(), $post_date_gmt ), $id );
 
 		if ( $time )
 			return '<meta property="article:published_time" content="' . \esc_attr( $time ) . '" />' . "\r\n";
@@ -774,40 +786,30 @@ class Render extends Admin_Init {
 	 * @since 2.2.2
 	 * @since 2.7.0 Listens to $this->get_the_real_ID() instead of WordPress Core ID determination.
 	 * @since 2.8.0 Returns empty on product pages.
+	 * @since 3.0.0: 1. Now checks for 0000 timestamps.
+	 *               2. Now uses timestamp formats.
 	 *
 	 * @return string The Article Modified Time meta tag, and optionally the Open Graph Updated Time.
 	 */
 	public function article_modified_time() {
 
-		// Don't do anything if it's not a page or post.
-		if ( false === $this->is_singular() )
+		if ( ! $this->output_modified_time() )
 			return '';
-
-		if ( 'product' === $this->get_og_type() )
-			return '';
-
-		if ( $this->is_real_front_page() ) {
-			//* If it's the frontpage, but the option is disabled, don't do anything.
-			if ( ! $this->get_option( 'home_modify_time' ) )
-				return '';
-		} else {
-			//* If it's a post, but the option is disabled, don't do anyhting.
-			if ( $this->is_single() && ! $this->get_option( 'post_modify_time' ) )
-				return '';
-
-			//* If it's a page, but the option is disabled, don't do anything.
-			if ( $this->is_page() && ! $this->get_option( 'page_modify_time' ) )
-				return '';
-		}
 
 		$id = $this->get_the_real_ID();
+
+		$post = \get_post( $id );
+		$post_modified_gmt = $post->post_modified_gmt;
+
+		if ( '0000-00-00 00:00:00' === $post_modified_gmt )
+			return '';
 
 		/**
 		 * Applies filters 'the_seo_framework_modifiedtime_output' : string
 		 * @since 2.3.0
 		 * @since 2.7.0 Added output within filter.
 		 */
-		$time = (string) \apply_filters( 'the_seo_framework_modifiedtime_output', \get_post_modified_time( 'Y-m-d', false, $id, false ), $id );
+		$time = (string) \apply_filters( 'the_seo_framework_modifiedtime_output', $this->gmt2date( $this->get_timestamp_format(), $post_modified_gmt ), $id );
 
 		if ( $time ) {
 			$output = '<meta property="article:modified_time" content="' . \esc_attr( $time ) . '" />' . "\r\n";
@@ -825,24 +827,12 @@ class Render extends Admin_Init {
 	 * Renders Canonical URL meta tag.
 	 *
 	 * @since 2.0.6
-	 * @uses $this->the_url_from_cache()
+	 * @since 3.0.0 Deleted filter `the_seo_framework_output_canonical`.
+	 * @uses $this->get_current_canonical_url()
 	 *
 	 * @return string The Canonical URL meta tag.
 	 */
 	public function canonical() {
-
-		/**
-		 * Applies filters the_seo_framework_output_canonical : Don't output canonical if false.
-		 * @since 2.4.2
-		 *
-		 * @deprecated
-		 * @since 2.7.0
-		 */
-		if ( \has_filter( 'the_seo_framework_output_canonical' ) ) {
-			$this->_deprecated_filter( 'the_seo_framework_output_canonical', '2.7.0', "add_filter( 'the_seo_framework_rel_canonical_output', '__return_empty_string' );" );
-			if ( true !== \apply_filters( 'the_seo_framework_output_canonical', true, $this->get_the_real_ID() ) )
-				return '';
-		}
 
 		/**
 		 * Applies filters 'the_seo_framework_rel_canonical_output' : string
@@ -853,13 +843,13 @@ class Render extends Admin_Init {
 		 * @param string $url The canonical URL. Must be escaped.
 		 * @param int    $id  The current page or term ID.
 		 */
-		$url = (string) \apply_filters( 'the_seo_framework_rel_canonical_output', $this->the_url_from_cache(), $this->get_the_real_ID() );
+		$url = (string) \apply_filters( 'the_seo_framework_rel_canonical_output', $this->get_current_canonical_url(), $this->get_the_real_ID() );
 
 		/**
 		 * @since 2.7.0 Listens to the second filter.
 		 */
 		if ( $url )
-			return '<link rel="canonical" href="' . $url . '" />' . "\r\n";
+			return '<link rel="canonical" href="' . $url . '" />' . PHP_EOL;
 
 		return '';
 	}
@@ -907,7 +897,7 @@ class Render extends Admin_Init {
 		$code = (string) \apply_filters( 'the_seo_framework_googlesite_output', $this->get_option( 'google_verification' ), $this->get_the_real_ID() );
 
 		if ( $code )
-			return '<meta name="google-site-verification" content="' . \esc_attr( $code ) . '" />' . "\r\n";
+			return '<meta name="google-site-verification" content="' . \esc_attr( $code ) . '" />' . PHP_EOL;
 
 		return '';
 	}
@@ -928,7 +918,7 @@ class Render extends Admin_Init {
 		$code = (string) \apply_filters( 'the_seo_framework_bingsite_output', $this->get_option( 'bing_verification' ), $this->get_the_real_ID() );
 
 		if ( $code )
-			return '<meta name="msvalidate.01" content="' . \esc_attr( $code ) . '" />' . "\r\n";
+			return '<meta name="msvalidate.01" content="' . \esc_attr( $code ) . '" />' . PHP_EOL;
 
 		return '';
 	}
@@ -949,7 +939,7 @@ class Render extends Admin_Init {
 		$code = (string) \apply_filters( 'the_seo_framework_yandexsite_output', $this->get_option( 'yandex_verification' ), $this->get_the_real_ID() );
 
 		if ( $code )
-			return '<meta name="yandex-verification" content="' . \esc_attr( $code ) . '" />' . "\r\n";
+			return '<meta name="yandex-verification" content="' . \esc_attr( $code ) . '" />' . PHP_EOL;
 
 		return '';
 	}
@@ -970,7 +960,7 @@ class Render extends Admin_Init {
 		$code = (string) \apply_filters( 'the_seo_framework_pintsite_output', $this->get_option( 'pint_verification' ), $this->get_the_real_ID() );
 
 		if ( $code )
-			return '<meta name="p:domain_verify" content="' . \esc_attr( $code ) . '" />' . "\r\n";
+			return '<meta name="p:domain_verify" content="' . \esc_attr( $code ) . '" />' . PHP_EOL;
 
 		return '';
 	}
@@ -998,7 +988,7 @@ class Render extends Admin_Init {
 		if ( empty( $meta ) )
 			return '';
 
-		return sprintf( '<meta name="robots" content="%s" />' . "\r\n", implode( ',', $meta ) );
+		return sprintf( '<meta name="robots" content="%s" />' . PHP_EOL, implode( ',', $meta ) );
 	}
 
 	/**
@@ -1018,10 +1008,10 @@ class Render extends Admin_Init {
 		 * Applies filters 'the_seo_framework_shortlink_output' : string
 		 * @since 2.6.0
 		 */
-		$url = (string) \apply_filters( 'the_seo_framework_shortlink_output', $this->get_shortlink( $id ), $this->get_the_real_ID( $id ) );
+		$url = (string) \apply_filters( 'the_seo_framework_shortlink_output', $this->get_shortlink( $id ), $id );
 
 		if ( $url )
-			return sprintf( '<link rel="shortlink" href="%s" />' . "\r\n", $url );
+			return '<link rel="shortlink" href="' . $url . '" />' . PHP_EOL;
 
 		return '';
 	}
@@ -1053,10 +1043,10 @@ class Render extends Admin_Init {
 		$output = '';
 
 		if ( $prev )
-			$output .= sprintf( '<link rel="prev" href="%s" />' . "\r\n", $prev );
+			$output .= '<link rel="prev" href="' . $prev . '" />' . PHP_EOL;
 
 		if ( $next )
-			$output .= sprintf( '<link rel="next" href="%s" />' . "\r\n", $next );
+			$output .= '<link rel="next" href="' . $next . '" />' . PHP_EOL;
 
 		return $output;
 	}
@@ -1073,7 +1063,7 @@ class Render extends Admin_Init {
 	 */
 	public function get_plugin_indicator( $where = 'before', $timing = 0 ) {
 
-		static $run, $_cache = null;
+		static $run, $_cache;
 
 		if ( ! isset( $run ) ) {
 			/**
@@ -1089,10 +1079,8 @@ class Render extends Admin_Init {
 		if ( false === $run )
 			return '';
 
-		if ( null === $_cache ) {
-
+		if ( ! isset( $_cache ) ) {
 			$_cache = array();
-
 			/**
 			 * Applies filters 'sybre_waaijer_<3'
 			 *
@@ -1136,7 +1124,49 @@ class Render extends Admin_Init {
 	}
 
 	/**
-	 * Determines whether we can use Open Graph tags.
+	 * Determines if modified time should be used in the current query.
+	 *
+	 * @since 3.0.0
+	 * @staticvar bool $cache
+	 *
+	 * @return bool
+	 */
+	public function output_modified_time() {
+
+		static $cache;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		if ( 'article' !== $this->get_og_type() )
+			return $cache = false;
+
+		return $cache = (bool) $this->get_option( 'post_modify_time' );
+	}
+
+	/**
+	 * Determines if published time should be used in the current query.
+	 *
+	 * @since 3.0.0
+	 * @staticvar bool $cache
+	 *
+	 * @return bool
+	 */
+	public function output_published_time() {
+
+		static $cache;
+
+		if ( isset( $cache ) )
+			return $cache;
+
+		if ( 'article' !== $this->get_og_type() )
+			return $cache = false;
+
+		return $cache = (bool) $this->get_option( 'post_publish_time' );
+	}
+
+	/**
+	 * Determines whether we can use Open Graph tags on the front-end.
 	 *
 	 * @since 2.6.0
 	 * @staticvar bool $cache
@@ -1154,7 +1184,7 @@ class Render extends Admin_Init {
 	}
 
 	/**
-	 * Determines whether we can use Facebook tags.
+	 * Determines whether we can use Facebook tags on the front-end.
 	 *
 	 * @since 2.6.0
 	 * @staticvar bool $cache
@@ -1172,7 +1202,7 @@ class Render extends Admin_Init {
 	}
 
 	/**
-	 * Determines whether we can use Twitter tags.
+	 * Determines whether we can use Twitter tags on the front-end.
 	 *
 	 * @since 2.6.0
 	 * @since 2.8.2 : Now also considers Twitter card type output.
@@ -1191,7 +1221,7 @@ class Render extends Admin_Init {
 	}
 
 	/**
-	 * Determines whether we can use Google+ tags.
+	 * Determines whether we can use Google+ tags on the front-end.
 	 *
 	 * @since 2.6.0
 	 * @staticvar bool $cache

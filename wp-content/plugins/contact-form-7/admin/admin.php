@@ -236,7 +236,8 @@ function wpcf7_load_contact_form_admin() {
 			WPCF7::update_option( 'bulk_validate', $result );
 
 			$query = array(
-				'message' => 'validated' );
+				'message' => 'validated',
+			);
 
 			$redirect_to = add_query_arg( $query, menu_page_url( 'wpcf7', false ) );
 			wp_safe_redirect( $redirect_to );
@@ -250,7 +251,8 @@ function wpcf7_load_contact_form_admin() {
 
 	if ( 'wpcf7-new' == $plugin_page ) {
 		$post = WPCF7_ContactForm::get_template( array(
-			'locale' => isset( $_GET['locale'] ) ? $_GET['locale'] : null ) );
+			'locale' => isset( $_GET['locale'] ) ? $_GET['locale'] : null,
+		) );
 	} elseif ( ! empty( $_GET['post'] ) ) {
 		$post = WPCF7_ContactForm::get_instance( $_GET['post'] );
 	}
@@ -273,7 +275,8 @@ function wpcf7_load_contact_form_admin() {
 
 		add_screen_option( 'per_page', array(
 			'default' => 20,
-			'option' => 'cfseven_contact_forms_per_page' ) );
+			'option' => 'cfseven_contact_forms_per_page',
+		) );
 	}
 }
 
@@ -314,12 +317,14 @@ function wpcf7_admin_enqueue_scripts( $hook_suffix ) {
 			? (int) $_GET['active-tab'] : 0,
 		'configValidator' => array(
 			'errors' => array(),
-			'howToCorrect' => __( "How to correct this?", 'contact-form-7' ),
+			'howToCorrect' => __( "How to resolve?", 'contact-form-7' ),
 			'oneError' => __( '1 configuration error detected', 'contact-form-7' ),
 			'manyErrors' => __( '%d configuration errors detected', 'contact-form-7' ),
 			'oneErrorInTab' => __( '1 configuration error detected in this tab panel', 'contact-form-7' ),
 			'manyErrorsInTab' => __( '%d configuration errors detected in this tab panel', 'contact-form-7' ),
 			'docUrl' => WPCF7_ConfigValidator::get_doc_link(),
+			/* translators: screen reader text */
+			'iconAlt' => __( '(configuration error)', 'contact-form-7' ),
 		),
 	);
 
@@ -376,6 +381,7 @@ function wpcf7_admin_management_page() {
 
 	if ( ! empty( $_REQUEST['s'] ) ) {
 		echo sprintf( '<span class="subtitle">'
+			/* translators: %s: search keywords */
 			. __( 'Search results for &#8220;%s&#8221;', 'contact-form-7' )
 			. '</span>', esc_html( $_REQUEST['s'] ) );
 	}
@@ -402,6 +408,7 @@ function wpcf7_admin_bulk_validate_page() {
 	$count = WPCF7_ContactForm::count();
 
 	$submit_text = sprintf(
+		/* translators: %s: number of contact forms */
 		_n(
 			"Validate %s Contact Form Now",
 			"Validate %s Contact Forms Now",
@@ -514,8 +521,9 @@ function wpcf7_admin_updated_message() {
 
 		if ( $count_invalid ) {
 			$updated_message = sprintf(
+				/* translators: %s: number of contact forms */
 				_n(
-					"Configuration validation completed. An invalid contact form was found.",
+					"Configuration validation completed. %s invalid contact form was found.",
 					"Configuration validation completed. %s invalid contact forms were found.",
 					$count_invalid, 'contact-form-7' ),
 				number_format_i18n( $count_invalid ) );
@@ -538,8 +546,13 @@ function wpcf7_plugin_action_links( $links, $file ) {
 		return $links;
 	}
 
-	$settings_link = '<a href="' . menu_page_url( 'wpcf7', false ) . '">'
-		. esc_html( __( 'Settings', 'contact-form-7' ) ) . '</a>';
+	if ( ! current_user_can( 'wpcf7_read_contact_forms' ) ) {
+		return $links;
+	}
+
+	$settings_link = sprintf( '<a href="%1$s">%2$s</a>',
+		menu_page_url( 'wpcf7', false ),
+		esc_html( __( 'Settings', 'contact-form-7' ) ) );
 
 	array_unshift( $links, $settings_link );
 
@@ -557,7 +570,10 @@ function wpcf7_old_wp_version_error() {
 
 ?>
 <div class="notice notice-warning">
-<p><?php echo sprintf( __( '<strong>Contact Form 7 %1$s requires WordPress %2$s or higher.</strong> Please <a href="%3$s">update WordPress</a> first.', 'contact-form-7' ), WPCF7_VERSION, WPCF7_REQUIRED_WP_VERSION, admin_url( 'update-core.php' ) ); ?></p>
+<p><?php
+	/* translators: 1: version of Contact Form 7, 2: version of WordPress, 3: URL */
+	echo sprintf( __( '<strong>Contact Form 7 %1$s requires WordPress %2$s or higher.</strong> Please <a href="%3$s">update WordPress</a> first.', 'contact-form-7' ), WPCF7_VERSION, WPCF7_REQUIRED_WP_VERSION, admin_url( 'update-core.php' ) );
+?></p>
 </div>
 <?php
 }
@@ -596,18 +612,30 @@ function wpcf7_notice_bulk_validate_config() {
 		return;
 	}
 
-	if ( WPCF7::get_option( 'bulk_validate' ) ) { // already done.
+	$result = WPCF7::get_option( 'bulk_validate' );
+	$last_important_update = '5.0.4';
+
+	if ( ! empty( $result['version'] )
+	&& version_compare( $last_important_update, $result['version'], '<=' ) ) {
 		return;
 	}
 
 	$link = add_query_arg(
 		array( 'action' => 'validate' ),
-		menu_page_url( 'wpcf7', false ) );
+		menu_page_url( 'wpcf7', false )
+	);
 
-	$link = sprintf( '<a href="%s">%s</a>', $link, esc_html( __( 'Validate Contact Form 7 Configuration', 'contact-form-7' ) ) );
+	$link = sprintf(
+		'<a href="%1$s">%2$s</a>',
+		esc_url( $link ),
+		esc_html( __( 'Validate Contact Form 7 Configuration', 'contact-form-7' ) )
+	);
 
 	$message = __( "Misconfiguration leads to mail delivery failure or other troubles. Validate your contact forms now.", 'contact-form-7' );
 
-	echo sprintf( '<div class="notice notice-warning"><p>%s &raquo; %s</p></div>',
-		esc_html( $message ), $link );
+	echo sprintf(
+		'<div class="notice notice-warning"><p>%1$s &raquo; %2$s</p></div>',
+		esc_html( $message ),
+		$link
+	);
 }

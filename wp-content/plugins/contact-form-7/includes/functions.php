@@ -108,6 +108,10 @@ function wpcf7_validate_configuration() {
 		WPCF7_VALIDATE_CONFIGURATION );
 }
 
+function wpcf7_autop_or_not() {
+	return (bool) apply_filters( 'wpcf7_autop_or_not', WPCF7_AUTOP );
+}
+
 function wpcf7_load_js() {
 	return apply_filters( 'wpcf7_load_js', WPCF7_LOAD_JS );
 }
@@ -188,7 +192,8 @@ function wpcf7_register_post_types() {
 function wpcf7_version( $args = '' ) {
 	$defaults = array(
 		'limit' => -1,
-		'only_major' => false );
+		'only_major' => false,
+	);
 
 	$args = wp_parse_args( $args, $defaults );
 
@@ -248,13 +253,13 @@ function wpcf7_enctype_value( $enctype ) {
 
 function wpcf7_rmdir_p( $dir ) {
 	if ( is_file( $dir ) ) {
-		if ( ! $result = @unlink( $dir ) ) {
-			$stat = @stat( $dir );
+		if ( ! $result = unlink( $dir ) ) {
+			$stat = stat( $dir );
 			$perms = $stat['mode'];
-			@chmod( $dir, $perms | 0200 ); // add write for owner
+			chmod( $dir, $perms | 0200 ); // add write for owner
 
-			if ( ! $result = @unlink( $dir ) ) {
-				@chmod( $dir, $perms );
+			if ( ! $result = unlink( $dir ) ) {
+				chmod( $dir, $perms );
 			}
 		}
 
@@ -265,7 +270,7 @@ function wpcf7_rmdir_p( $dir ) {
 		return false;
 	}
 
-	if ( $handle = @opendir( $dir ) ) {
+	if ( $handle = opendir( $dir ) ) {
 		while ( false !== ( $file = readdir( $handle ) ) ) {
 			if ( $file == "." || $file == ".." ) {
 				continue;
@@ -277,7 +282,12 @@ function wpcf7_rmdir_p( $dir ) {
 		closedir( $handle );
 	}
 
-	return @rmdir( $dir );
+	if ( false !== ( $files = scandir( $dir ) )
+	&& ! array_diff( $files, array( '.', '..' ) ) ) {
+		return rmdir( $dir );
+	}
+
+	return false;
 }
 
 /* From _http_build_query in wp-includes/functions.php */
@@ -357,4 +367,26 @@ function wpcf7_deprecated_function( $function, $version, $replacement ) {
 			trigger_error( sprintf( '%1$s is <strong>deprecated</strong> since Contact Form 7 version %2$s! Use %3$s instead.', $function, $version, $replacement ) );
 		}
 	}
+}
+
+function wpcf7_anonymize_ip_addr( $ip_addr ) {
+	if ( ! function_exists( 'inet_ntop' ) || ! function_exists( 'inet_pton' ) ) {
+		return $ip_addr;
+	}
+
+	$packed = inet_pton( $ip_addr );
+
+	if ( false === $packed ) {
+		return $ip_addr;
+	}
+
+	if ( 4 == strlen( $packed ) ) { // IPv4
+		$mask = '255.255.255.0';
+	} elseif ( 16 == strlen( $packed ) ) { // IPv6
+		$mask = 'ffff:ffff:ffff:0000:0000:0000:0000:0000';
+	} else {
+		return $ip_addr;
+	}
+
+	return inet_ntop( $packed & inet_pton( $mask ) );
 }

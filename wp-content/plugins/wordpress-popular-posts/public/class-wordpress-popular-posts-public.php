@@ -3,7 +3,7 @@
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       http://cabrerahector.com/
+ * @link       https://cabrerahector.com/
  * @since      4.0.0
  *
  * @package    WordPressPopularPosts
@@ -69,8 +69,16 @@ class WPP_Public {
      * @since    4.0.0
      */
     public function enqueue_styles() {
-        if ( $this->admin_options['tools']['css'] )
-            wp_enqueue_style( 'wordpress-popular-posts-css', plugin_dir_url( __FILE__ ) . 'css/wpp.css', array(), $this->version, 'all' );
+        if ( $this->admin_options['tools']['css'] ) {
+            $theme_file = get_stylesheet_directory() . '/wpp.css';
+
+            if ( @is_file( $theme_file ) ) {
+                wp_enqueue_style( 'wordpress-popular-posts-css', get_stylesheet_directory_uri() . "/wpp.css", array(), $this->version, 'all' );
+            } // Load stock stylesheet
+            else {
+                wp_enqueue_style( 'wordpress-popular-posts-css', plugin_dir_url( __FILE__ ) . 'css/wpp.css', array(), $this->version, 'all' );
+            }
+        }
     }
 
     /**
@@ -81,36 +89,33 @@ class WPP_Public {
     public function enqueue_scripts() {
 
         /**
-         * Enqueue WPP's tracking code.
+         * Enqueue WPP's library.
          */
 
-        $is_single = WPP_Helper::is_single();
+        $is_single = 0;
 
-        if ( $is_single ) {
-
-            if (
-                ( 0 == $this->admin_options['tools']['log']['level'] && !is_user_logged_in() )
-                || ( 1 == $this->admin_options['tools']['log']['level'] )
-                || ( 2 == $this->admin_options['tools']['log']['level'] && is_user_logged_in() )
-            ) {
-
-                wp_register_script( 'wpp-tracking', plugin_dir_url( __FILE__ ) . 'js/tracking.js', array(), $this->version, false );
-
-                $params = array(
-                    'sampling_active' => $this->admin_options['tools']['sampling']['active'],
-                    'sampling_rate' => $this->admin_options['tools']['sampling']['rate'],
-                    'ajax_url' => admin_url( 'admin-ajax.php', is_ssl() ? 'https' : 'http' ),
-                    'action' => 'update_views_ajax',
-                    'ID' => $is_single,
-                    'token' => wp_create_nonce( 'wpp-token' )
-                );
-                wp_localize_script( 'wpp-tracking', 'wpp_params', $params );
-
-                wp_enqueue_script( 'wpp-tracking' );
-
-            }
-
+        if (
+            ( 0 == $this->admin_options['tools']['log']['level'] && !is_user_logged_in() )
+            || ( 1 == $this->admin_options['tools']['log']['level'] )
+            || ( 2 == $this->admin_options['tools']['log']['level'] && is_user_logged_in() )
+        ) {
+            $is_single = WPP_Helper::is_single();
         }
+
+        wp_register_script( 'wpp-js', plugin_dir_url( __FILE__ ) . 'js/wpp-4.1.0.min.js', array(), $this->version, false );
+
+        $params = array(
+            'sampling_active' => (int) $this->admin_options['tools']['sampling']['active'],
+            'sampling_rate' => $this->admin_options['tools']['sampling']['rate'],
+            'ajax_url' => esc_url_raw( rest_url( 'wordpress-popular-posts/v1/popular-posts/' ) ),
+            'action' => 'update_views_ajax',
+            'ID' => $is_single,
+            'token' => wp_create_nonce( 'wp_rest' ),
+            'debug' => WP_DEBUG
+        );
+        wp_localize_script( 'wpp-js', 'wpp_params', $params );
+
+        wp_enqueue_script( 'wpp-js' );
 
     }
 
@@ -201,8 +206,8 @@ class WPP_Public {
         // Update range (summary) table
         $result2 = $wpdb->query( $wpdb->prepare(
             "INSERT INTO {$table}summary
-            (postid, pageviews, view_date, last_viewed) VALUES (%d, %d, %s, %s)
-            ON DUPLICATE KEY UPDATE pageviews = pageviews + %d, last_viewed = %s;",
+            (postid, pageviews, view_date, view_datetime) VALUES (%d, %d, %s, %s)
+            ON DUPLICATE KEY UPDATE pageviews = pageviews + %d, view_datetime = %s;",
             $post_ID,
             $views,
             $curdate,
@@ -234,6 +239,7 @@ class WPP_Public {
         /**
         * @var string $header
         * @var int $limit
+        * @var int $offset
         * @var string $range
         * @var bool $freshness
         * @var string $order_by
@@ -265,12 +271,13 @@ class WPP_Public {
         extract( shortcode_atts( array(
             'header' => '',
             'limit' => 10,
+            'offset' => 0,
             'range' => 'daily',
             'time_unit' => 'hour',
             'time_quantity' => 24,
             'freshness' => false,
             'order_by' => 'views',
-            'post_type' => 'post,page',
+            'post_type' => 'post',
             'pid' => '',
             'cat' => '',
             'taxonomy' => 'category',
@@ -307,6 +314,7 @@ class WPP_Public {
         $shortcode_ops = array(
             'title' => strip_tags( $header ),
             'limit' => ( !empty( $limit ) && WPP_Helper::is_number( $limit ) && $limit > 0 ) ? $limit : 10,
+            'offset' => ( !empty( $offset ) && WPP_Helper::is_number( $offset ) && $offset >= 0 ) ? $offset : 0,
             'range' => ( in_array($range, $range_values) ) ? $range : 'daily',
             'time_quantity' => ( !empty( $time_quantity ) && WPP_Helper::is_number( $time_quantity ) && $time_quantity > 0 ) ? $time_quantity : 24,
             'time_unit' => ( in_array($time_unit, $time_units) ) ? $time_unit : 'hour',
@@ -365,18 +373,12 @@ class WPP_Public {
         if ( empty( $ids ) ) {
             $shortcode_ops['pid'] = '';
         }
-        else {
-            $instance['pid'] = implode( ",", $ids );
-        }
 
         // Category filter
         $ids = array_filter( explode( ",", $shortcode_ops['cat'] ), 'is_numeric' );
         // Got no valid IDs, clear
         if ( empty( $ids ) ) {
             $shortcode_ops['cat'] = '';
-        }
-        else {
-            $instance['cat'] = implode( ",", $ids );
         }
 
         // Author filter
@@ -385,11 +387,8 @@ class WPP_Public {
         if ( empty( $ids ) ) {
             $shortcode_ops['author'] = '';
         }
-        else {
-            $instance['author'] = implode( ",", $ids );
-        }
 
-        $shortcode_content = "\n". "<!-- WordPress Popular Posts Plugin v". $this->version ." [" . ( $php ? "PHP" : "SC" ) . "] [".$shortcode_ops['range']."] [".$shortcode_ops['order_by']."] [custom]" . ( !empty($shortcode_ops['pid']) ? " [PID]" : "" ) . ( !empty($shortcode_ops['cat']) ? " [CAT]" : "" ) . ( !empty($shortcode_ops['author']) ? " [UID]" : "" ) . " -->"."\n";
+        $shortcode_content = '';
 
         // is there a title defined by user?
         if (
@@ -405,58 +404,22 @@ class WPP_Public {
         // Return cached results
         if ( $this->admin_options['tools']['cache']['active'] ) {
 
-            $transient_name = md5( json_encode($shortcode_ops) );
-            $popular_posts = get_transient( $transient_name );
+            $key = md5( json_encode($shortcode_ops) );
+            $popular_posts = WPP_Cache::get( $key );
 
             if ( false === $popular_posts ) {
 
                 $popular_posts = new WPP_Query( $shortcode_ops );
 
-                switch( $this->admin_options['tools']['cache']['interval']['time'] ){
+                $time_value = $this->admin_options['tools']['cache']['interval']['value']; // eg. 5
+                $time_unit = $this->admin_options['tools']['cache']['interval']['time']; // eg. 'minute'
 
-                    case 'minute':
-                        $time = 60;
-                    break;
-
-                    case 'hour':
-                        $time = 60 * 60;
-                    break;
-
-                    case 'day':
-                        $time = 60 * 60 * 24;
-                    break;
-
-                    case 'week':
-                        $time = 60 * 60 * 24 * 7;
-                    break;
-
-                    case 'month':
-                        $time = 60 * 60 * 24 * 30;
-                    break;
-
-                    case 'year':
-                        $time = 60 * 60 * 24 * 365;
-                    break;
-
-                    $expiration = $time * $this->admin_options['tools']['cache']['interval']['value'];
-
-                    // Store transient
-                    set_transient( $transient_name, $popular_posts, $expiration );
-
-                    // Store transient in WPP transients array for garbage collection
-                    $wpp_transients = get_site_option('wpp_transients');
-
-                    if ( !$wpp_transients ) {
-                        $wpp_transients = array( $transient_name );
-                        add_site_option( 'wpp_transients', $wpp_transients );
-                    } else {
-                        if ( !in_array($transient_name, $wpp_transients) ) {
-                            $wpp_transients[] = $transient_name;
-                            update_site_option( 'wpp_transients', $wpp_transients );
-                        }
-                    }
-
-                }
+                WPP_Cache::set(
+                    $key,
+                    $popular_posts,
+                    $time_value,
+                    $time_unit
+                );
 
             }
 
@@ -470,10 +433,19 @@ class WPP_Public {
         $output = new WPP_Output( $popular_posts->get_posts(), $shortcode_ops );
 
         $shortcode_content .= $output->get_output();
-        $shortcode_content .= "\n" . "<!-- End WordPress Popular Posts Plugin v" . $this->version . " -->" . ( $cached ? '<!-- cached -->' : '' ) . "\n";
 
         return $shortcode_content;
 
+    }
+
+	/**
+     * Initiates the popular posts REST controller class.
+     *
+     * @since    4.0.13
+     */
+    public function init_rest_route() {
+        $rest_controller = new WP_REST_Popular_Posts_Controller();
+        $rest_controller->register_routes();
     }
 
 } // End WPP_Public class

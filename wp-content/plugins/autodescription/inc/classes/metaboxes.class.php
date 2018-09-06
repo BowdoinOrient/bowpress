@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -48,13 +48,13 @@ class Metaboxes extends Site_Options {
 	 *
 	 * @param string $id The Nav Tab ID
 	 * @param array $tabs the tab content {
-	 *		$tabs = tab ID key = array(
-	 *			$tabs['name'] => tab name
-	 *			$tabs['callback'] => string|array callback function
-	 *			$tabs['dashicon'] => string Dashicon
-	 *			$tabs['args'] => mixed optional callback function args
-	 *		)
-	 *	}
+	 *    $tabs = tab ID key = array(
+	 *       $tabs['name'] => tab name
+	 *       $tabs['callback'] => string|array callback function
+	 *       $tabs['dashicon'] => string Dashicon
+	 *       $tabs['args'] => mixed optional callback function args
+	 *    )
+	 * }
 	 * @param string $version the The SEO Framework version for debugging. May be emptied.
 	 * @param bool $use_tabs Whether to output tabs, only works when $tabs is greater than 1.
 	 */
@@ -201,6 +201,17 @@ class Metaboxes extends Site_Options {
 	public function general_metabox_canonical_tab() {
 		$this->get_view( 'metaboxes/general-metabox', array(), 'canonical' );
 	}
+
+	/**
+	 * Outputs General Settings meta box timestamps tab.
+	 *
+	 * @since 3.0.0
+	 * @see $this->general_metabox() : Callback for General Settings box.
+	 */
+	public function general_metabox_timestamps_tab() {
+		$this->get_view( 'metaboxes/general-metabox', array(), 'timestamps' );
+	}
+
 	/**
 	 * Title meta box on the Site SEO Settings page.
 	 *
@@ -551,6 +562,7 @@ class Metaboxes extends Site_Options {
 	 * Schema Metabox General Tab output.
 	 *
 	 * @since 2.8.0
+	 * @since 3.0.0 No longer used.
 	 * @see $this->schema_metabox() Callback for Schema.org Settings box.
 	 */
 	public function schema_metabox_general_tab() {

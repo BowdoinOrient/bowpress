@@ -7,9 +7,7 @@ $instance = $this->get_view_instance( 'the_seo_framework_homepage_metabox', $ins
 
 switch ( $instance ) :
 	case 'the_seo_framework_homepage_metabox_main' :
-
 		$this->description( __( 'These settings will take precedence over the settings set within the Home Page edit screen, if any.', 'autodescription' ) );
-
 		?>
 		<hr>
 		<?php
@@ -20,11 +18,11 @@ switch ( $instance ) :
 		 * @since 2.6.0
 		 *
 		 * @param array $default_tabs { 'id' = The identifier =>
-		 *		array(
-		 *			'name'     => The name
-		 *			'callback' => The callback function, use array for method calling
-		 *			'dashicon' => Desired dashicon
-		 *		)
+		 *    array(
+		 *       'name'     => The name
+		 *       'callback' => The callback function, use array for method calling
+		 *       'dashicon' => Desired dashicon
+		 *    )
 		 * }
 		 */
 		$default_tabs = array(
@@ -107,13 +105,7 @@ switch ( $instance ) :
 		if ( $frompost_description ) {
 			$description_placeholder = $frompost_description;
 		} else {
-			$description_args = array(
-				'id' => $home_id,
-				'is_home' => true,
-				'get_custom_field' => false,
-			);
-
-			$description_placeholder = $this->generate_description( '', $description_args );
+			$description_placeholder = $this->get_generated_description( $home_id );
 		}
 
 		/**
@@ -168,19 +160,24 @@ switch ( $instance ) :
 
 		<hr>
 
-		<p>
+		<div>
 			<label for="<?php $this->field_id( 'homepage_title' ); ?>" class="tsf-toblock">
-				<strong><?php printf( esc_html__( 'Custom %s Title', 'autodescription' ), $home_page_i18n ); ?></strong>
-				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#3' ); ?>" target="_blank" title="<?php esc_attr_e( 'Recommended Length: 50 to 55 characters', 'autodescription' ) ?>">[?]</a>
-				<span class="description tsf-counter">
-					<?php printf( esc_html__( 'Characters Used: %s', 'autodescription' ), '<span id="' . esc_attr( $this->field_id( 'homepage_title', false ) ) . '_chars">' . (int) mb_strlen( $tit_len ) . '</span>' ); ?>
-					<span class="hide-if-no-js tsf-ajax"></span>
-				</span>
+				<strong>
+					<?php
+					/* translators: %s = Post type */
+					printf( esc_html__( 'Custom %s Title', 'autodescription' ), $home_page_i18n );
+					?>
+				</strong>
 			</label>
-		</p>
+			<?php
+			//* Output these unconditionally, with inline CSS attached to allow reacting on settings.
+			$this->output_character_counter_wrap( $this->get_field_id( 'homepage_title' ), $tit_len, (bool) $this->get_option( 'display_character_counter' ) );
+			$this->output_pixel_counter_wrap( $this->get_field_id( 'homepage_title' ), 'title', (bool) $this->get_option( 'display_pixel_counter' ) );
+			?>
+		</div>
 		<p id="tsf-title-wrap">
 			<input type="text" name="<?php $this->field_name( 'homepage_title' ); ?>" class="large-text" id="<?php $this->field_id( 'homepage_title' ); ?>" placeholder="<?php echo esc_attr( $home_title_placeholder ); ?>" value="<?php echo esc_attr( $this->get_field_value( 'homepage_title' ) ); ?>" autocomplete=off />
-			<span id="tsf-title-offset" class="hide-if-no-js"></span><span id="tsf-title-placeholder" class="hide-if-no-js"></span>
+			<?php $this->output_js_title_elements(); ?>
 		</p>
 		<?php
 		/**
@@ -220,18 +217,23 @@ switch ( $instance ) :
 		?>
 		<hr>
 
-		<p>
+		<div>
 			<label for="<?php $this->field_id( 'homepage_description' ); ?>" class="tsf-toblock">
-				<strong><?php printf( esc_html__( 'Custom %s Description', 'autodescription' ), $home_page_i18n ); ?></strong>
-				<a href="<?php echo esc_url( 'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#1' ); ?>" target="_blank" title="<?php esc_attr_e( 'Recommended Length: 145 to 155 characters', 'autodescription' ) ?>">[?]</a>
-				<span class="description tsf-counter">
-					<?php printf( esc_html__( 'Characters Used: %s', 'autodescription' ), '<span id="' . esc_attr( $this->field_id( 'homepage_description', false ) ) . '_chars">' . (int) mb_strlen( $desc_len ) . '</span>' ); ?>
-					<span class="hide-if-no-js tsf-ajax"></span>
-				</span>
+				<strong>
+					<?php
+					printf( esc_html__( 'Custom %s Description', 'autodescription' ), $home_page_i18n );
+					?>
+				</strong>
 			</label>
-		</p>
+			<?php
+			//* Output these unconditionally, with inline CSS attached to allow reacting on settings.
+			$this->output_character_counter_wrap( $this->get_field_id( 'homepage_description' ), $desc_len, (bool) $this->get_option( 'display_character_counter' ) );
+			$this->output_pixel_counter_wrap( $this->get_field_id( 'homepage_description' ), 'description', (bool) $this->get_option( 'display_pixel_counter' ) );
+			?>
+		</div>
 		<p>
 			<textarea name="<?php $this->field_name( 'homepage_description' ); ?>" class="large-text" id="<?php $this->field_id( 'homepage_description' ); ?>" rows="3" cols="70" placeholder="<?php echo esc_attr( $description_placeholder ); ?>"><?php echo esc_attr( $this->get_field_value( 'homepage_description' ) ); ?></textarea>
+			<?php echo $this->output_js_description_elements(); ?>
 		</p>
 		<?php
 		$this->description( __( 'The meta description can be used to determine the text used under the title on Search Engine results pages.', 'autodescription' ) );
@@ -275,8 +277,10 @@ switch ( $instance ) :
 
 		?>
 		<fieldset>
-			<legend><h4><?php esc_html_e( 'Document Title Additions Location', 'autodescription' ); ?></h4></legend>
-			<?php $this->description( __( 'Determines which side the added title text will go on.', 'autodescription' ) ); ?>
+			<legend>
+				<h4><?php esc_html_e( 'Title Additions Location', 'autodescription' ); ?></h4>
+				<?php $this->description( __( 'This setting determines which side the added title text will go on.', 'autodescription' ) ); ?>
+			</legend>
 
 			<p id="tsf-home-title-location" class="tsf-fields">
 				<span class="tsf-toblock">
@@ -349,7 +353,7 @@ switch ( $instance ) :
 		$i_label = sprintf( esc_html__( 'Apply %1$s to the %2$s?', 'autodescription' ), $this->code_wrap( 'noindex' ), $home_page_i18n );
 		$i_label .= ' ';
 		$i_label .= $this->make_info(
-			__( 'Tell Search Engines not to show this page in their search results', 'autodescription' ),
+			__( 'This tells search engines not to show this page in their search results.', 'autodescription' ),
 			'https://support.google.com/webmasters/answer/93710?hl=' . $language,
 			false
 		) . $noindex_note;
@@ -359,7 +363,7 @@ switch ( $instance ) :
 		$f_label = sprintf( esc_html__( 'Apply %1$s to the %2$s?', 'autodescription' ), $this->code_wrap( 'nofollow' ), $home_page_i18n );
 		$f_label .= ' ';
 		$f_label .= $this->make_info(
-			__( 'Tell Search Engines not to follow links on this page', 'autodescription' ),
+			__( 'This tells search engines not to follow links on this page.', 'autodescription' ),
 			'https://support.google.com/webmasters/answer/96569?hl=' . $language,
 			false
 		) . $nofollow_note;
@@ -369,7 +373,7 @@ switch ( $instance ) :
 		$a_label = sprintf( esc_html__( 'Apply %1$s to the %2$s?', 'autodescription' ), $this->code_wrap( 'noarchive' ), $home_page_i18n );
 		$a_label .= ' ';
 		$a_label .= $this->make_info(
-			__( 'Tell Search Engines not to save a cached copy of this page', 'autodescription' ),
+			__( 'This tells search engines not to save a cached copy of this page.', 'autodescription' ),
 			'https://support.google.com/webmasters/answer/79812?hl=' . $language,
 			false
 		) . $noarchive_note;
@@ -457,8 +461,8 @@ switch ( $instance ) :
 		?>
 		<p>
 			<label for="tsf_homepage_socialimage-url">
-				<strong><?php esc_html_e( 'Custom Home Page Image URL', 'autodescription' ); ?></strong>
-				<?php $this->make_info( __( 'Preferred Home Page Social Image URL location', 'autodescription' ), 'https://developers.facebook.com/docs/sharing/best-practices#images' ); ?>
+				<strong><?php esc_html_e( 'Custom Homepage Image URL', 'autodescription' ); ?></strong>
+				<?php $this->make_info( __( 'Set preferred homepage Social Image URL location.', 'autodescription' ), 'https://developers.facebook.com/docs/sharing/best-practices#images' ); ?>
 			</label>
 		</p>
 		<p>

@@ -7,7 +7,6 @@ $instance = $this->get_view_instance( 'the_seo_framework_schema_metabox', $insta
 
 switch ( $instance ) :
 	case 'the_seo_framework_schema_metabox_main' :
-
 		?>
 		<h4><?php esc_html_e( 'Schema.org Output Settings', 'autodescription' ); ?></h4>
 		<?php
@@ -16,7 +15,7 @@ switch ( $instance ) :
 			$this->description( __( 'Another Schema.org plugin has been detected.', 'autodescription' ) );
 		else :
 			$this->description( __( 'The Schema.org markup is a standard way of annotating structured data for Search Engines. This markup is represented within hidden scripts throughout the website.', 'autodescription' ) );
-			$this->description( __( 'When your web pages include structured data markup, Search Engines can use that data to index your content better, present it more prominently in Search Results, and use it in several different applications.', 'autodescription' ) );
+			$this->description( __( 'When your web pages include structured data markup, search engines can use that data to index your content better, present it more prominently in Search Results, and use it in several different applications.', 'autodescription' ) );
 			$this->description( __( 'This is also known as the "Knowledge Graph" and "Structured Data", which is under heavy active development by several Search Engines. Therefore, the usage of the outputted markup is not guaranteed.', 'autodescription' ) );
 
 			/**
@@ -25,19 +24,19 @@ switch ( $instance ) :
 			 * @since 2.8.0
 			 *
 			 * @param array $default_tabs { 'id' = The identifier =>
-			 *		array(
-			 *			'name'     => The name
-			 *			'callback' => The callback function, use array for method calling
-			 *			'dashicon' => Desired dashicon
-			 *		)
+			 *    array(
+			 *       'name'     => The name
+			 *       'callback' => The callback function, use array for method calling
+			 *       'dashicon' => Desired dashicon
+			 *    )
 			 * }
 			 */
 			$default_tabs = array(
-				'general' => array(
-					'name'     => __( 'General', 'autodescription' ),
-					'callback' => array( $this, 'schema_metabox_general_tab' ),
-					'dashicon' => 'admin-generic',
-				),
+				// 'general' => array(
+				// 	'name'     => __( 'General', 'autodescription' ),
+				// 	'callback' => array( $this, 'schema_metabox_general_tab' ),
+				// 	'dashicon' => 'admin-generic',
+				// ),
 				'structure' => array(
 					'name'     => __( 'Structure', 'autodescription' ),
 					'callback' => array( $this, 'schema_metabox_structure_tab' ),
@@ -64,10 +63,62 @@ switch ( $instance ) :
 		break;
 
 	case 'the_seo_framework_schema_metabox_general' :
+		//* Emptied @ 3.0.0
+		break;
+
+	case 'the_seo_framework_schema_metabox_structure' :
+		?>
+		<h4><?php esc_html_e( 'Site Structure Options', 'autodescription' ); ?></h4>
+		<?php
+		$this->description( __( 'The site structure Schema.org output allows search engines to gain knowledge on how your website is built.', 'autodescription' ) );
+		$this->description( __( "For example, search engines display your pages' URLs when listed in the Search Results. These options allow you to enhance those URLs output.", 'autodescription' ) );
+		?>
+		<hr>
+		<h4><?php esc_html_e( 'Breadcrumbs', 'autodescription' ); ?></h4>
+		<?php
+		$this->description( __( "Breadcrumb trails indicate page positions in the site's hierarchy. Using the following option will show the hierarchy within the Search Results when available.", 'autodescription' ) );
+
+		$info = $this->make_info( __( 'Learn how this data is used.', 'autodescription' ), 'https://developers.google.com/search/docs/data-types/breadcrumbs', false );
+		$this->wrap_fields( $this->make_checkbox(
+			'ld_json_breadcrumbs',
+			esc_html__( 'Enable Breadcrumbs?', 'autodescription' ) . ' ' . $info,
+			'',
+			false
+		), true );
 
 		?>
-		<h4><?php esc_html_e( 'About this website', 'autodescription' ); ?></h4>
+		<hr>
+		<h4><?php echo esc_html( _x( 'Sitelinks Searchbox', 'Product name', 'autodescription' ) ); ?></h4>
+		<?php
+		$this->description( __( 'When Search users search for your brand name, the following option allows them to search through this website directly from the Search Results.', 'autodescription' ) );
 
+		$info = $this->make_info( __( 'Learn how this data is used.', 'autodescription' ), 'https://developers.google.com/search/docs/data-types/sitelinks-searchbox', false );
+		$this->wrap_fields( $this->make_checkbox(
+			'ld_json_searchbox',
+			esc_html_x( 'Enable Sitelinks Searchbox?', 'Sitelinks Searchbox is a Product name', 'autodescription' ) . ' ' . $info,
+			'',
+			false
+		), true );
+		break;
+
+	case 'the_seo_framework_schema_metabox_presence' :
+		?>
+		<h4><?php esc_html_e( 'Authorized Presence Options', 'autodescription' ); ?></h4>
+		<?php
+		$this->description( __( 'The authorized presence Schema.org output helps Search Engine users find ways to interact with this website.', 'autodescription' ) );
+
+		$info = $this->make_info( __( 'Learn how this data is used.', 'autodescription' ), 'https://developers.google.com/search/docs/guides/enhance-site#add-your-sites-name-logo-and-social-links', false );
+		//* Echo checkbox.
+		$this->wrap_fields( $this->make_checkbox(
+			'knowledge_output',
+			esc_html__( 'Output Authorized Presence?', 'autodescription' ) . ' ' . $info,
+			'',
+			false
+		), true );
+		?>
+		<hr>
+
+		<h4><?php esc_html_e( 'About this website', 'autodescription' ); ?></h4>
 		<p>
 			<label for="<?php $this->field_id( 'knowledge_type' ); ?>"><?php echo esc_html_x( 'This website represents:', '...Organization or Person.', 'autodescription' ); ?></label>
 			<select name="<?php $this->field_name( 'knowledge_type' ); ?>" id="<?php $this->field_id( 'knowledge_type' ); ?>">
@@ -94,102 +145,45 @@ switch ( $instance ) :
 		<p>
 			<input type="text" name="<?php $this->field_name( 'knowledge_name' ); ?>" class="large-text" id="<?php $this->field_id( 'knowledge_name' ); ?>" placeholder="<?php echo esc_attr( $this->get_blogname() ) ?>" value="<?php echo esc_attr( $this->get_field_value( 'knowledge_name' ) ); ?>" />
 		</p>
-		<?php
-		break;
-
-	case 'the_seo_framework_schema_metabox_structure' :
-
-		?><h4><?php esc_html_e( 'Site Structure Options', 'autodescription' ); ?></h4><?php
-		$this->description( __( 'The site structure Schema.org output allows Search Engines to gain knowledge on how your website is built.', 'autodescription' ) );
-		$this->description( __( "For example, Search Engines display your pages' URLs when listed in the Search Results. These options allow you to enhance those URLs output.", 'autodescription' ) );
-
-		?>
-		<hr>
-
-		<h4><?php esc_html_e( 'Breadcrumbs', 'autodescription' ); ?></h4><?php
-		$this->description( __( "Breadcrumb trails indicate the page's position in the site hierarchy. Using the following option will show the hierarchy within the Search Results when available.", 'autodescription' ) );
-
-		$info = $this->make_info( __( 'About Breadcrumbs', 'autodescription' ), 'https://developers.google.com/search/docs/data-types/breadcrumbs', false );
-		$this->wrap_fields( $this->make_checkbox(
-			'ld_json_breadcrumbs',
-			esc_html__( 'Enable Breadcrumbs?', 'autodescription' ) . ' ' . $info,
-			esc_html__( 'Multiple trails can be outputted. The longest trail is prioritized.', 'autodescription' ),
-			false
-		), true );
-
-		?>
-		<hr>
-
-		<h4><?php esc_html_e( 'Site Name', 'autodescription' ); ?></h4>
-		<?php
-		$this->description( __( "When using breadcrumbs, the first entry is by default your website's address. Using the following option will convert it to the Site Name.", 'autodescription' ) );
-
-		$info = $this->make_info(
-			__( 'Include your Site Name in Search Results', 'autodescription' ),
-			'https://developers.google.com/search/docs/data-types/sitename',
-			false
-		);
-		$this->wrap_fields( $this->make_checkbox(
-			'ld_json_sitename',
-			esc_html__( 'Convert URL to Site Name?', 'autodescription' ) . ' ' . $info,
-			sprintf( esc_html__( 'The Site Name is: %s', 'autodescription' ), $this->code_wrap( $this->get_blogname() ) ),
-			false
-		), true );
-
-		?>
-		<hr>
-		<?php
-
-		/* translators: https://developers.google.com/search/docs/data-types/sitelinks-searchbox */
-		?><h4><?php echo esc_html( _x( 'Sitelinks Searchbox', 'Product name', 'autodescription' ) ); ?></h4><?php
-		$this->description( __( 'When Search users search for your brand name, the following option allows them to search through this website directly from the Search Results.', 'autodescription' ) );
-
-		$info = $this->make_info( _x( 'Sitelinks Searchbox', 'Product name', 'autodescription' ), 'https://developers.google.com/search/docs/data-types/sitelinks-searchbox', false );
-		$this->wrap_fields( $this->make_checkbox(
-			'ld_json_searchbox',
-			esc_html_x( 'Enable Sitelinks Searchbox?', 'Product name', 'autodescription' ) . ' ' . $info,
-			'',
-			false
-		), true );
-		break;
-
-	case 'the_seo_framework_schema_metabox_presence' :
-
-		?><h4><?php esc_html_e( 'Authorized Presence Options', 'autodescription' ); ?></h4><?php
-		$this->description( __( 'The authorized presence Schema.org output helps Search Engine users find ways to interact with this website.', 'autodescription' ) );
-
-		$info = $this->make_info( __( 'About Authorized Presence', 'autodescription' ), 'https://developers.google.com/search/docs/guides/enhance-site#add-your-sites-name-logo-and-social-links', false );
-		//* Echo checkbox.
-		$this->wrap_fields( $this->make_checkbox(
-			'knowledge_output',
-			esc_html__( 'Output Authorized Presence?', 'autodescription' ) . ' ' . $info,
-			'',
-			false
-		), true );
-
-		?>
 		<hr>
 
 		<h4><?php esc_html_e( 'Website logo', 'autodescription' ); ?></h4>
 		<?php
-		//* @TODO @priority OMGWTFBBQ 2.8.0 this logo MUST prefer "Site Icon". State that.
-		// if ( $this->theme_supports_site_icon() )
-		// $this->description( __( 'If your theme supports', 'autodescription' ) );
-		$info = $this->make_info( __( 'About Organization Logo', 'autodescription' ), 'https://developers.google.com/search/docs/data-types/logo', false );
+		$this->description( esc_html__( 'These options are used when this site represents an organization. When no logo is outputted, search engine will look elsewhere.', 'autodescription' ) );
+		$info = $this->make_info( __( 'Learn how this data is used.', 'autodescription' ), 'https://developers.google.com/search/docs/data-types/logo', false );
 		$this->wrap_fields( $this->make_checkbox(
 			'knowledge_logo',
-			esc_html__( 'Use the Favicon from Customizer as the Organization Logo?', 'autodescription' ) . ' ' . $info,
-			esc_html__( 'This option only has an effect when this site represents an Organization. If left disabled, Search Engines will look elsewhere for a logo, if it exists and is assigned as a logo.', 'autodescription' ),
+			esc_html__( 'Enable logo?', 'autodescription' ) . ' ' . $info,
+			'',
 			false
 		), true );
 
+		$logo_placeholder = $this->get_knowledge_logo( false );
 		?>
+		<p>
+			<label for="knowledge_logo-url">
+				<strong><?php esc_html_e( 'Logo URL', 'autodescription' ); ?></strong>
+				<?php $this->make_info( __( 'The logo image must be square.', 'autodescription' ) ); ?>
+			</label>
+		</p>
+		<p>
+			<span class="hide-if-js attention"><?php esc_html_e( 'Setting a logo requires JavaScript.', 'autodescription' ); ?></span>
+			<input class="large-text" type="text" readonly="readonly" data-readonly="1" name="<?php $this->field_name( 'knowledge_logo_url' ); ?>" id="knowledge_logo-url" placeholder="<?php echo esc_url( $logo_placeholder ); ?>" value="<?php echo esc_url( $this->get_field_value( 'knowledge_logo_url' ) ); ?>" />
+			<input type="hidden" name="<?php $this->field_name( 'knowledge_logo_id' ); ?>" id="knowledge_logo-id" value="<?php echo absint( $this->get_field_value( 'knowledge_logo_id' ) ); ?>" />
+		</p>
+		<p class="hide-if-no-js">
+			<?php
+			//* Already escaped.
+			echo $this->get_logo_uploader_form( 'knowledge_logo' );
+			?>
+		</p>
 		<hr>
 
-		<h4><?php esc_html_e( 'Social Pages connected to this website', 'autodescription' ); ?></h4>
+		<h4><?php esc_html_e( 'Connected Social Pages', 'autodescription' ); ?></h4>
 		<?php
 		$this->description( __( "Don't have a page at a site or is the profile only privately accessible? Leave that field empty. Unsure? Fill it in anyway.", 'autodescription' ) );
 		$this->description( __( 'Add the link that leads directly to the social page of this website.', 'autodescription' ) );
+		$this->description( __( 'These settings do not affect sharing behavior with the social networks.', 'autodescription' ) );
 
 		$connectedi18n = _x( 'RelatedProfile', 'No spaces. E.g. https://facebook.com/RelatedProfile', 'autodescription' );
 		$profile18n = _x( 'Profile', 'Social Profile', 'autodescription' );
@@ -263,20 +257,23 @@ switch ( $instance ) :
 			),
 		);
 
-		foreach ( $socialsites as $key => $value ) {
+		foreach ( $socialsites as $key => $v ) {
 			?>
 			<p>
-				<label for="<?php $this->field_id( $value['option'] ); ?>">
-					<strong><?php echo esc_html( $value['desc'] ); ?></strong>
+				<label for="<?php $this->field_id( $v['option'] ); ?>">
+					<strong><?php echo esc_html( $v['desc'] ); ?></strong>
 					<?php
-					if ( $value['examplelink'] ) {
-						?><a href="<?php echo esc_url( $value['examplelink'] ); ?>" target="_blank">[?]</a><?php
+					if ( $v['examplelink'] ) {
+						$this->make_info(
+							__( 'View your profile.', 'autodescription' ),
+							$v['examplelink']
+						);
 					}
 					?>
 				</label>
 			</p>
 			<p>
-				<input type="text" name="<?php $this->field_name( $value['option'] ); ?>" class="large-text" id="<?php $this->field_id( $value['option'] ); ?>" placeholder="<?php echo esc_attr( $value['placeholder'] ) ?>" value="<?php echo esc_attr( $this->get_field_value( $value['option'] ) ); ?>" />
+				<input type="text" name="<?php $this->field_name( $v['option'] ); ?>" class="large-text" id="<?php $this->field_id( $v['option'] ); ?>" placeholder="<?php echo esc_attr( $v['placeholder'] ); ?>" value="<?php echo esc_attr( $this->get_field_value( $v['option'] ) ); ?>" />
 			</p>
 			<?php
 		}

@@ -7,200 +7,217 @@ require_once('class-updraft-log-levels.php');
 require_once('class-updraft-abstract-logger.php');
 require_once('class-updraft-logger.php');
 
-if (class_exists('Updraft_Logger')) return ;
+if (class_exists('Updraft_Logger')) return;
 
 /**
  * Class Updraft_Logger
  */
 class Updraft_Logger implements Updraft_Logger_Interface {
-    protected $_loggers = array();
+	
+	protected $_loggers = array();
 
-    /**
-     * Constructor method
-     * @param Updraft_Logger_Interface $logger
-     */
-    public function __construct(Updraft_Logger_Interface $logger = null) {
-        if (!is_null($logger)) $this->_loggers = array($logger);
-    }
+	/**
+	 * Constructor method
+	 *
+	 * @param Updraft_Logger_Interface $logger
+	 */
+	public function __construct(Updraft_Logger_Interface $logger = null) {
+		if (!empty($logger)) $this->_loggers = array($logger);
+	}
 
-    /**
-     * Add logger to loggers list
-     * @param Updraft_Logger_Interface $logger
-     */
-    public function add_logger(Updraft_Logger_Interface $logger) {
-        $this->_loggers[] = $logger;
-    }
+	/**
+	 * Add logger to loggers list
+	 *
+	 * @param Updraft_Logger_Interface $logger
+	 */
+	public function add_logger(Updraft_Logger_Interface $logger) {
+		$logger_id = $logger_class = get_class($logger);
 
-    /**
-     * Return list of loggers
-     * @return array
-     */
-    public function get_loggers() {
-        return $this->_loggers;
-    }
+		// don't add logger if it doesn't support multiple loggers.
+		if (!empty($this->_loggers) && array_key_exists($logger_id, $this->_loggers) && false == $logger->is_allow_multiple()) return false;
 
-    /**
-     * System is unusable.
-     *
-     * @param string $message
-     * @param array $context
-     * @return null
-     */
-    public function emergency($message, array $context = array()) {
+		$index = 0;
 
-        if (empty($this->_loggers)) return false;
+		// get free id key.
+		while (array_key_exists($logger_id, $this->_loggers)) {
+			$index++;
+			$logger_id = $logger_class.'_'.$index;
+		}
 
-        foreach($this->_loggers as $logger) {
-            $logger->emergency($message, $context);
-        }
+		$this->_loggers[$logger_id] = $logger;
+	}
 
-    }
+	/**
+	 * Return list of loggers
+	 *
+	 * @return array
+	 */
+	public function get_loggers() {
+		return $this->_loggers;
+	}
 
-    /**
-     * Action must be taken immediately.
-     *
-     * Example: Entire website down, database unavailable, etc. This should
-     * trigger the SMS alerts and wake you up.
-     *
-     * @param string $message
-     * @param array $context
-     * @return null
-     */
-    public function alert($message, array $context = array()) {
+	/**
+	 * System is unusable.
+	 *
+	 * @param  string $message
+	 * @param  array  $context
+	 * @return null
+	 */
+	public function emergency($message, array $context = array()) {
 
-        if (empty($this->_loggers)) return false;
+		if (empty($this->_loggers)) return false;
 
-        foreach($this->_loggers as $logger) {
-            $logger->alert($message, $context);
-        }
+		foreach ($this->_loggers as $logger) {
+			$logger->emergency($message, $context);
+		}
 
-    }
+	}
 
-    /**
-     * Critical conditions.
-     *
-     * Example: Application component unavailable, unexpected exception.
-     *
-     * @param string $message
-     * @param array $context
-     * @return null
-     */
-    public function critical($message, array $context = array()) {
+	/**
+	 * Action must be taken immediately.
+	 *
+	 * Example: Entire website down, database unavailable, etc. This should
+	 * trigger the SMS alerts and wake you up.
+	 *
+	 * @param  string $message
+	 * @param  array  $context
+	 * @return null
+	 */
+	public function alert($message, array $context = array()) {
 
-        if (empty($this->_loggers)) return false;
+		if (empty($this->_loggers)) return false;
 
-        foreach($this->_loggers as $logger) {
-            $logger->critical($message, $context);
-        }
+		foreach ($this->_loggers as $logger) {
+			$logger->alert($message, $context);
+		}
 
-    }
+	}
 
-    /**
-     * Runtime errors that do not require immediate action but should typically
-     * be logged and monitored.
-     *
-     * @param string $message
-     * @param array $context
-     * @return null
-     */
-    public function error($message, array $context = array()) {
+	/**
+	 * Critical conditions.
+	 *
+	 * Example: Application component unavailable, unexpected exception.
+	 *
+	 * @param  string $message
+	 * @param  array  $context
+	 * @return null
+	 */
+	public function critical($message, array $context = array()) {
 
-        if (empty($this->_loggers)) return false;
+		if (empty($this->_loggers)) return false;
 
-        foreach($this->_loggers as $logger) {
-            $logger->error($message, $context);
-        }
+		foreach ($this->_loggers as $logger) {
+			$logger->critical($message, $context);
+		}
 
-    }
+	}
 
-    /**
-     * Exceptional occurrences that are not errors.
-     *
-     * Example: Use of deprecated APIs, poor use of an API, undesirable things
-     * that are not necessarily wrong.
-     *
-     * @param string $message
-     * @param array $context
-     * @return null
-     */
-    public function warning($message, array $context = array()) {
+	/**
+	 * Runtime errors that do not require immediate action but should typically
+	 * be logged and monitored.
+	 *
+	 * @param  string $message
+	 * @param  array  $context
+	 * @return null
+	 */
+	public function error($message, array $context = array()) {
 
-        if (empty($this->_loggers)) return false;
+		if (empty($this->_loggers)) return false;
 
-        foreach($this->_loggers as $logger) {
-            $logger->warning($message, $context);
-        }
+		foreach ($this->_loggers as $logger) {
+			$logger->error($message, $context);
+		}
 
-    }
+	}
 
-    /**
-     * Normal but significant events.
-     *
-     * @param string $message
-     * @param array $context
-     * @return null
-     */
-    public function notice($message, array $context = array()) {
+	/**
+	 * Exceptional occurrences that are not errors.
+	 *
+	 * Example: Use of deprecated APIs, poor use of an API, undesirable things
+	 * that are not necessarily wrong.
+	 *
+	 * @param  string $message
+	 * @param  array  $context
+	 * @return null
+	 */
+	public function warning($message, array $context = array()) {
 
-        if (empty($this->_loggers)) return false;
+		if (empty($this->_loggers)) return false;
 
-        foreach($this->_loggers as $logger) {
-            $logger->notice($message, $context);
-        }
+		foreach ($this->_loggers as $logger) {
+			$logger->warning($message, $context);
+		}
 
-    }
+	}
 
-    /**
-     * Interesting events.
-     *
-     * Example: User logs in, SQL logs.
-     *
-     * @param string $message
-     * @param array $context
-     * @return null
-     */
-    public function info($message, array $context = array()) {
+	/**
+	 * Normal but significant events.
+	 *
+	 * @param  string $message
+	 * @param  array  $context
+	 * @return null
+	 */
+	public function notice($message, array $context = array()) {
 
-        if (empty($this->_loggers)) return false;
+		if (empty($this->_loggers)) return false;
 
-        foreach($this->_loggers as $logger) {
-            $logger->info($message, $context);
-        }
+		foreach ($this->_loggers as $logger) {
+			$logger->notice($message, $context);
+		}
 
-    }
+	}
 
-    /**
-     * Detailed debug information.
-     *
-     * @param string $message
-     * @param array $context
-     * @return null
-     */
-    public function debug($message, array $context = array()) {
+	/**
+	 * Interesting events.
+	 *
+	 * Example: User logs in, SQL logs.
+	 *
+	 * @param  string $message
+	 * @param  array  $context
+	 * @return null
+	 */
+	public function info($message, array $context = array()) {
 
-        if (empty($this->_loggers)) return false;
+		if (empty($this->_loggers)) return false;
 
-        foreach($this->_loggers as &$logger) {
-            $logger->debug($message, $context);
-        }
+		foreach ($this->_loggers as $logger) {
+			$logger->info($message, $context);
+		}
 
-    }
+	}
 
-    /**
-     * Logs with an arbitrary level.
-     *
-     * @param mixed $level
-     * @param string $message
-     * @param array $context
-     * @return null
-     */
-    public function log($level, $message, array $context = array()) {
+	/**
+	 * Detailed debug information.
+	 *
+	 * @param  string $message
+	 * @param  array  $context
+	 * @return null
+	 */
+	public function debug($message, array $context = array()) {
 
-        if (empty($this->_loggers)) return false;
+		if (empty($this->_loggers)) return false;
 
-        foreach($this->_loggers as $logger) {
-            $logger->log($message, $context);
-        }
+		foreach ($this->_loggers as &$logger) {
+			$logger->debug($message, $context);
+		}
 
-    }
+	}
+
+	/**
+	 * Logs with an arbitrary level.
+	 *
+	 * @param  mixed  $level
+	 * @param  string $message
+	 * @param  array  $context
+	 * @return null
+	 */
+	public function log($level, $message, array $context = array()) {
+
+		if (empty($this->_loggers)) return false;
+
+		foreach ($this->_loggers as $logger) {
+			$logger->log($level, $message, $context);
+		}
+
+	}
 }

@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -43,10 +43,10 @@ final class Load extends Feed implements Debug_Interface {
 	 * @var bool Whether transients are enabled.
 	 * @var bool Whether script debugging is enabled.
 	 */
-	public $the_seo_framework_debug = false;
-	public $the_seo_framework_debug_hidden = false;
-	public $the_seo_framework_use_transients = true;
-	public $script_debug = false;
+	public $the_seo_framework_debug = false,
+	       $the_seo_framework_debug_hidden = false,
+	       $the_seo_framework_use_transients = true,
+	       $script_debug = false;
 
 	/**
 	 * Constructor, setup debug vars and then load parent constructor.
@@ -58,11 +58,8 @@ final class Load extends Feed implements Debug_Interface {
 
 		static $count = 0;
 
-		if ( $count > 0 ) {
+		if ( $count++ )
 			return null;
-		}
-
-		$count++;
 
 		//* Setup debug vars before initializing parents.
 		$this->init_debug_vars();
@@ -89,7 +86,6 @@ final class Load extends Feed implements Debug_Interface {
 
 		//* WP Core definition.
 		$this->script_debug = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ?: $this->script_debug;
-
 	}
 
 	/**
@@ -185,8 +181,7 @@ final class Load extends Feed implements Debug_Interface {
 	 * @param string $replacement Optional. The function that should have been called. Default null.
 	 */
 	public function _deprecated_filter( $filter, $version, $replacement = null ) {
-		$instance = \The_SEO_Framework\Debug::get_instance();
-		$instance->_deprecated_filter( $filter, $version, $replacement );
+		Debug::get_instance()->_deprecated_filter( $filter, $version, $replacement );
 	}
 
 	/**
@@ -202,8 +197,7 @@ final class Load extends Feed implements Debug_Interface {
 	 * @param string $replacement Optional. The function that should have been called. Default null.
 	 */
 	public function _deprecated_function( $function, $version, $replacement = null ) {
-		$instance = \The_SEO_Framework\Debug::get_instance();
-		$instance->_deprecated_function( $function, $version, $replacement );
+		Debug::get_instance()->_deprecated_function( $function, $version, $replacement );
 	}
 
 	/**
@@ -219,8 +213,7 @@ final class Load extends Feed implements Debug_Interface {
 	 * @param string $version  The version of WordPress where the message was added.
 	 */
 	public function _doing_it_wrong( $function, $message, $version = null ) {
-		$instance = \The_SEO_Framework\Debug::get_instance();
-		$instance->_doing_it_wrong( $function, $message, $version );
+		Debug::get_instance()->_doing_it_wrong( $function, $message, $version );
 	}
 
 	/**
@@ -235,8 +228,7 @@ final class Load extends Feed implements Debug_Interface {
 	 * @param string $message A message explaining what has been done incorrectly.
 	 */
 	public function _inaccessible_p_or_m( $p_or_m, $message = '' ) {
-		$instance = \The_SEO_Framework\Debug::get_instance();
-		$instance->_inaccessible_p_or_m( $p_or_m, $message );
+		Debug::get_instance()->_inaccessible_p_or_m( $p_or_m, $message );
 	}
 	/**
 	 * Debug init. Simplified way of debugging a function, only works in admin.
@@ -251,13 +243,10 @@ final class Load extends Feed implements Debug_Interface {
 	 * @return void early if debugging is disabled or when storing cache values.
 	 */
 	public function debug_init( $method, $store, $debug_key = null ) {
-
-		$instance = \The_SEO_Framework\Debug::get_instance();
-
 		if ( func_num_args() >= 4 ) {
-			$instance->debug_init( $method, $store, $debug_key, array_slice( func_get_args(), 3 ) );
+			Debug::get_instance()->debug_init( $method, $store, $debug_key, array_slice( func_get_args(), 3 ) );
 		} else {
-			$instance->debug_init( $method, $store, $debug_key );
+			Debug::get_instance()->debug_init( $method, $store, $debug_key );
 		}
 	}
 }

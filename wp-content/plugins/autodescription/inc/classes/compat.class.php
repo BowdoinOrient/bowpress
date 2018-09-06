@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2017 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -43,9 +43,6 @@ class Compat extends Core {
 
 		//* Jetpack compat.
 		\add_action( 'init', array( $this, 'jetpack_compat' ) );
-
-		//* BuddyPress front-end compat.
-		\remove_action( 'wp_head', '_bp_maybe_remove_rel_canonical', 8 );
 	}
 
 	/**
@@ -63,35 +60,31 @@ class Compat extends Core {
 			$this->_include_compat( 'mbstring', 'php' );
 		}
 
+		$wp_version = $GLOBALS['wp_version'];
+
+		if ( version_compare( $wp_version, '4.6', '<' ) ) {
+			//* WP 4.6.0
+			$this->_include_compat( '460', 'wp' );
+		}
+
 		if ( $this->is_theme( 'genesis' ) ) {
 			//* Genesis Framework
 			$this->_include_compat( 'genesis', 'theme' );
 		}
 
-		if ( defined( 'DOMAIN_MAPPING' ) ) {
-			if ( $this->detect_plugin( array( 'functions' => array( 'redirect_to_mapped_domain' ) ) ) ) {
-				//* Donncha domain mapping.
-				$this->_include_compat( 'donncha-dm', 'plugin' );
-			} elseif ( $this->detect_plugin( array( 'functions' => array( 'domainmap_launch' ) ) ) ) {
-				//* WPMUdev domain mapping.
-				$this->_include_compat( 'wpmudev-dm', 'plugin' );
-			}
-		}
-
-		if ( $this->detect_plugin( array( 'globals' => array( 'polylang' ) ) ) ) {
-			//* PolyLang... it includes compat for WPML, but let's see how this works for now.
-			$this->_include_compat( 'polylang', 'plugin' );
-		} elseif ( $this->detect_plugin( array( 'constants' => array( 'ICL_LANGUAGE_CODE' ) ) ) ) {
+		if ( $this->detect_plugin( array( 'constants' => array( 'ICL_LANGUAGE_CODE' ) ) ) ) {
 			//* WPML
 			$this->_include_compat( 'wpml', 'plugin' );
-		} elseif ( $this->detect_plugin( array( 'constants' => array( 'QTX_VERSION' ) ) ) ) {
-			//* qTranslate X
-			$this->_include_compat( 'qtranslatex', 'plugin' );
 		}
 
 		if ( $this->detect_plugin( array( 'globals' => array( 'ultimatemember' ) ) ) ) {
 			//* Ultimate Member
 			$this->_include_compat( 'ultimatemember', 'plugin' );
+		}
+		if ( $this->detect_plugin( array( 'globals' => array( 'bp' ) ) ) ) {
+			//* BuddyPress
+			$this->_include_compat( 'buddypress', 'plugin' );
+
 		}
 
 		if ( $this->detect_plugin( array( 'functions' => array( 'bbpress' ) ) ) ) {
@@ -118,8 +111,8 @@ class Compat extends Core {
 
 		static $included = array();
 
-		isset( $included[ $what ][ $type ] )
-		or $included[ $what ][ $type ] = (bool) require_once( THE_SEO_FRAMEWORK_DIR_PATH_COMPAT . $type . '-' . $what . '.php' );
+		if ( ! isset( $included[ $what ][ $type ] ) )
+			$included[ $what ][ $type ] = (bool) require THE_SEO_FRAMEWORK_DIR_PATH_COMPAT . $type . '-' . $what . '.php';
 
 		return $included[ $what ][ $type ];
 	}
