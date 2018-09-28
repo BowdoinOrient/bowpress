@@ -332,9 +332,56 @@ function packaging_shortcode( $atts ){
 	}
 }
 
+function current_issue() {
+	$vol148_issues = array(
+		"2018-09-21" => "3",
+		"2018-09-28" => "4",
+		"2018-10-12" => "5",
+		"2018-10-19" => "6",
+		"2018-10-26" => "7",
+		"2018-11-02" => "8",
+		"2018-11-09" => "9",
+		"2018-11-16" => "10",
+		"2018-11-30" => "11",
+		"2018-12-07" => "12",
+		"2019-01-25" => "13",
+		"2019-02-01" => "14",
+		"2019-02-08" => "15",
+		"2019-02-15" => "16",
+		"2019-02-22" => "17",
+		"2019-03-01" => "18",
+		"2019-03-29" => "19",
+		"2019-04-05" => "20",
+		"2019-04-12" => "21",
+		"2019-04-19" => "22",
+		"2019-04-26" => "23",
+		"2019-05-03" => "24",
+	);
+
+	$date = "";
+	$issuenum = "";
+	foreach($vol148_issues as $curr_date => $curr_issue_num) {
+		
+		// Positive if $date is in the past; neg if in the future. We have to
+		// use the WP-specific current_time function because of time zones. :( 
+		$diff = current_time('timestamp', 0) - strtotime($curr_date);
+
+		// If more than 1 week in the past
+		if($diff < 0) {
+			break;
+		}
+
+		$date = $curr_date;
+		$issuenum = $curr_issue_num;
+	}
+
+	return [
+		"issue_num" => $issuenum,
+		"date" => $date
+	];
+}
+
 add_shortcode( 'packaging', 'packaging_shortcode' );
-
-
 
 add_theme_support( 'post-thumbnails' );
 set_post_thumbnail_size( 640, 480, array('center', 'center'));
