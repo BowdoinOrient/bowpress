@@ -216,14 +216,9 @@ within the page-wrap div. -->
 			</a>
 		</h1>
 
-		<?php
-			$volume = (int)(just_variable( "volume", FALSE ));
-			$number = (int)(just_variable( "number", FALSE ));
-		?>
-
 		<p class="home-header__date-info">
 			<span class="date"><?php echo current_time('l, F j, Y') ?></span>
-			<span class="issue">Volume <?php echo $volume ?>, Issue <?php echo $number ?></span>
+			<span class="issue">Volume 148, Issue <?php echo current_issue()["issue_num"]; ?></span>
 		</p>
 
 		<nav class="home-nav">
