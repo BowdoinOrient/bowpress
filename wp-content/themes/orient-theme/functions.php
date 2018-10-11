@@ -375,10 +375,10 @@ function current_issue() {
 		$issuenum = $curr_issue_num;
 	}
 
-	return [
+	return array(
 		"issue_num" => $issuenum,
 		"date" => $date
-	];
+	);
 }
 
 add_shortcode( 'packaging', 'packaging_shortcode' );

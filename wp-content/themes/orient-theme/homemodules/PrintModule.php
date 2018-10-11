@@ -5,7 +5,7 @@
 
 			<h1>Explore the print edition.</h1>
 			<p>Browse this week's paper and view our archives.<br>
-			Last published on <?php echo date('l, F j, Y', strtotime(current_issue()["date"])); ?>.</p>
+			Last published on <?php $ci = current_issue(); echo date('l, F j, Y', strtotime($ci["date"])); ?>.</p>
 		</a>
 	</div>
 </div>
