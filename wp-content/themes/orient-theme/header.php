@@ -218,7 +218,7 @@ within the page-wrap div. -->
 
 		<p class="home-header__date-info">
 			<span class="date"><?php echo current_time('l, F j, Y') ?></span>
-			<span class="issue">Volume 148, Issue <?php echo current_issue()["issue_num"]; ?></span>
+			<span class="issue">Volume 148, Issue <?php $ci = current_issue(); echo $ci["issue_num"]; ?></span>
 		</p>
 
 		<nav class="home-nav">
