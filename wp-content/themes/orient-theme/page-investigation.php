@@ -1,22 +1,19 @@
 <?php
 
 $tip_success = false;
+$tip_error = false;
 
 if($_POST) {
 	// validate post array
 	if(sizeof($_POST) > 2) {
-		return;
-	} 
-
-	if(!$_POST['message'] || !$_POST['g-recaptcha-response']) {
 		return;
 	}
 
 	// validate recaptcha
 
 	$url = 'https://www.google.com/recaptcha/api/siteverify';
-	$data = array('secret' => $recaptcha_secret, 
-				  'response' => $_POST['g-recaptcha-response'], 
+	$data = array('secret' => $recaptcha_secret,
+				  'response' => $_POST['g-recaptcha-response'],
 				  'remoteip' => $_SERVER['REMOTE_ADDR']);
 
 	// use key 'http' even if you send the request to https://...
@@ -30,7 +27,9 @@ if($_POST) {
 	$context  = stream_context_create($options);
 	$result = file_get_contents($url, false, $context);
 
-	if(json_decode($result, true)["success"]) {
+	$result = json_decode($result, true);
+
+	if($result["success"]) {
 		// send slack message
 		$url = $slack_tipline_url;
 		$data = array('payload' => "{\"text\": \"" . $_POST["message"] . "\"}");
@@ -46,9 +45,10 @@ if($_POST) {
 		$context  = stream_context_create($options);
 		file_get_contents($url, false, $context);
 		$tip_success = true;
+	} else {
+		$tip_error = true;
 	}
 }
-
 get_header();
 if (have_posts()) :
 	while (have_posts()) :
@@ -76,6 +76,10 @@ if (have_posts()) :
 		<article>
 			<?php if($tip_success): ?>
 				<p class="tip-success-message"><strong>Your tip has been successfully submitted.</strong></p>
+			<?php endif; ?>
+
+			<?php if($tip_error): ?>
+				<p class="tip-success-message"><strong>Please fill out the captcha properly.</strong></p>
 			<?php endif; ?>
 
 			<p>To anonymously submit a tip or request an investigation, fill out the form below.</p>
