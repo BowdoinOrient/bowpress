@@ -561,3 +561,7 @@
 	color: $dark-gray;
 	font-size: 0.8em;
 }
+
+.slick-prev:before, .slick-next:before {
+	color:#333;
+}

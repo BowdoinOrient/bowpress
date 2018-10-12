@@ -1,0 +1,18 @@
+.tipline-form {
+    font-family: $alt-font-family;
+
+    textarea {
+        font-size: 0.9em;
+        width: 70%;
+        height: 8em;
+        display: block;
+    }
+
+    .g-recaptcha {
+        margin: 0.5em 0;
+    }
+}
+
+.tip-success-message {
+    color: $red;
+}

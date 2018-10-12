@@ -13,15 +13,9 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<!-- Links -->
-	<link rel="stylesheet" href="<?php echo get_stylesheet_uri(); ?>?11022017">
-	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
-	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>
+	<link rel="stylesheet" href="<?php echo get_stylesheet_uri(); ?>?10112018">
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
 	<script type="text/eqcss" src="<?php echo get_stylesheet_directory_uri(); ?>/sass/element-queries.eqcss"></script>
-	<style>
-	.slick-prev:before, .slick-next:before {
-		color:#333; !important;
-	}
-	</style>
 
 	<!-- Font loading -->
 	<script type="text/javascript" src="https://use.typekit.com/rmt0nbm.js"></script>
@@ -39,11 +33,13 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 	<link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120.png" />
 	<link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76.png" />
 	<link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152.png" />
+
 	<link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196" />
 	<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
 	<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
 	<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
 	<link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128" />
+	
 	<meta name="application-name" content="&nbsp;"/>
 	<meta name="msapplication-TileColor" content="#FFFFFF" />
 	<meta name="msapplication-TileImage" content="mstile-144x144.png" />
@@ -52,17 +48,10 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 	<meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
 	<meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
 
-
-	<!-- Meta Description for Search Engines -->
-	<meta name="description" content="The Bowdoin Orient is the student-run newspaper of Bowdoin College in Brunswick, Maine. It is the oldest continuously running weekly student newspaper in the United States.">
-
 	<!-- Begin Wordpress Head Bullcrap -->
 	<?php wp_head(); ?>
 
 </head>
-
-<!-- Chartbeat Part 1 -->
-<script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
 
 <body <?php body_class(); ?>>
 
