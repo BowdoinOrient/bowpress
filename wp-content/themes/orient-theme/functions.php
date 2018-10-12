@@ -389,5 +389,6 @@ add_image_size( 'module', 640, 480, array('center', 'center'));
 
 include 'housing-svg-shortcode.php';
 include 'custom-fields.php';
+include 'ignored.php';
 
 flush_rewrite_rules();

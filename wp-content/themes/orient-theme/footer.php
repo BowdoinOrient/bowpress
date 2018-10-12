@@ -49,8 +49,6 @@
 
 </div> <!-- not-a-drawer -->
 
-<!-- <div class="survey-bubble">!</div> -->
-
 <!-- WordPress Footer Bullcrap -->
 <?php wp_footer(); ?>
 
@@ -64,24 +62,6 @@
   ga('create', 'UA-18441903-3', 'auto');
   ga('send', 'pageview');
 
-</script>
-
-<!-- Charbeat Part 2 -->
-<script type="text/javascript">
-  var _sf_async_config = { uid: 65083, domain: 'bowdoinorient.com', useCanonical: true };
-  (function() {
-    function loadChartbeat() {
-      window._sf_endpt = (new Date()).getTime();
-      var e = document.createElement('script');
-      e.setAttribute('language', 'javascript');
-      e.setAttribute('type', 'text/javascript');
-      e.setAttribute('src','//static.chartbeat.com/js/chartbeat.js');
-      document.body.appendChild(e);
-    };
-    var oldonload = window.onload;
-    window.onload = (typeof window.onload != 'function') ?
-      loadChartbeat : function() { oldonload(); loadChartbeat(); };
-  })();
 </script>
 
 <!-- Included Scripts -->
