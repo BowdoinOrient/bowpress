@@ -50,6 +50,28 @@
 	</div>
 
 	<div class="row">
+		<div class="col col-sm-12 hidden-lg hidden-md">
+			<?php echo home_render("M6", 16); ?>
+			<?php echo home_render("M6", 17); ?>
+			<?php echo home_render("M6", 18); ?>
+			<?php echo home_render("M6", 19); ?>
+			<?php echo home_render("M6", 20); ?>
+			<?php echo home_render("M6", 21); ?>
+			<?php echo home_render("M6", 22); ?>
+			<?php echo home_render("M6", 23); ?>
+			<?php echo home_render("M6", 24); ?>
+			<?php echo home_render("M6", 25); ?>
+			<?php echo home_render("M6", 26); ?>
+			<?php echo home_render("M6", 27); ?>
+			<?php echo home_render("M6", 28); ?>
+			<?php echo home_render("M6", 29); ?>
+			<?php echo home_render("M6", 30); ?>
+			<?php echo home_render("M6", 31); ?>
+			<?php echo home_render("M6", 32); ?>
+		</div>
+	</div>
+
+	<div class="row">
 		<div class="col col-md-12">
 			<h1 class="block-title"><a href="/series/talk-of-the-quad/">Recently in &lsquo;Talk of the Quad&rsquo;</a></h1>
 			<?php echo home_render("M5", 9); ?>
