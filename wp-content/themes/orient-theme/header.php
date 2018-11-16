@@ -13,7 +13,7 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<!-- Links -->
-	<link rel="stylesheet" href="<?php echo get_stylesheet_uri(); ?>?10112018">
+	<link rel="stylesheet" href="<?php echo get_stylesheet_uri(); ?>?11152018">
 	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
 	<script type="text/eqcss" src="<?php echo get_stylesheet_directory_uri(); ?>/sass/element-queries.eqcss"></script>
 
@@ -335,8 +335,6 @@ within the page-wrap div. -->
 		<h1>Note about Unsupported Devices:</h1>
 		<p>You seem to be browsing on a screen size, browser, or device that this website cannot support. Some things might look and act a little weird.</p>
 	</div>
-
-	<h1>I'm testing the site!</h1>
 
 	<!-- Begin the WordPress content. Should be the only use of the Main tag. -->
 	<main id="visual-jump">

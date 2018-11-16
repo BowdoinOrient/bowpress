@@ -124,6 +124,27 @@ if(jQuery('.content aside').length) {
 	});
 }
 
+var disableCommentSubmission = function() {
+	console.log("we're here");
+    var text = jQuery('#comment').val();
+    text = text.trim()
+    var count = text.split(/[\s]+/).length
+    jQuery("#wordcount").html(count + "/200 words");
+    
+    if (count > 200) {
+        jQuery('#submit').prop("disabled",true);
+        jQuery('#wordcount').addClass("over-the-limit");
+    } else {
+        jQuery('#submit').prop("disabled",false);
+        jQuery('#wordcount').removeClass("over-the-limit");
+    }
+}
+
+jQuery(document).ready(function() {
+	jQuery('#comment').keyup(disableCommentSubmission)
+});
+
+
 /**
  * Make anything with the carousel class a carousel.
  */
