@@ -2,23 +2,11 @@
 
 get_header();
 
-//create a copy of wp_query
 $copy = clone $wp_query;
-
-//alternative???
-// $copy = WP_Query($wp_query);  
-// $copy = new WP_Query( array('post_type' => 'post') );
-$copy->set('nopaging', true);
-$wp_query->set( 'nopaging' , true );
-
 
 //find the date for the first and latest articles
 $first_article_date = get_the_date('F j, Y', $copy->posts[$copy->post_count - 1]);
 $latest_article_date = get_the_date('F j, Y', $copy->posts[0]);
-
-// reset query ... doesn't work??
-wp_reset_postdata();
-wp_reset_query();
 
 ?>
 	<?php if ( have_posts() ) : ?>
