@@ -7,7 +7,7 @@ if($_POST) {
 	// validate post array
 	if(sizeof($_POST) > 2) {
 		return;
-	}
+	} 
 
 	// validate recaptcha
 
@@ -76,6 +76,10 @@ if (have_posts()) :
 		<article>
 			<?php if($tip_success): ?>
 				<p class="tip-success-message"><strong>Your tip has been successfully submitted.</strong></p>
+			<?php endif; ?>
+			
+			<?php if($tip_error): ?>
+				<p class="tip-success-message"><strong>Please fill out the captcha properly.</strong></p>
 			<?php endif; ?>
 
 			<?php if($tip_error): ?>
