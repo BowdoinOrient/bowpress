@@ -124,8 +124,7 @@ if(jQuery('.content aside').length) {
 	});
 }
 
-var disableCommentSubmission = function() {
-	console.log("we're here");
+var checkValidCommentSubmission = function() {
     var text = jQuery('#comment').val();
     text = text.trim()
     var count = text.split(/[\s]+/).length
@@ -141,7 +140,7 @@ var disableCommentSubmission = function() {
 }
 
 jQuery(document).ready(function() {
-	jQuery('#comment').keyup(disableCommentSubmission)
+	jQuery('#comment').keyup(checkValidCommentSubmission)
 });
 
 
