@@ -72,7 +72,7 @@ $args = array(
 		    '" size="30"' . $aria_req . ' /></p>'
 	),
 	'comment_notes_before' => '<p><strong>Any comments that do not follow the policy will not be published.</strong></p>',
-	'comment_notes_after' => '',
+	'comment_notes_after' => '<p id="wordcount">0/200 words</p>',
 );
 
 comment_form($args);
