@@ -50,6 +50,14 @@
 	</div>
 
 	<div class="row">
+		<div class="col col-sm-12 hidden-lg hidden-md">
+		<?php for($i = 16; $i<=32; $i++) : ?>
+				<?php echo home_render("M6", $i); ?>
+			<?php endfor; ?>
+		</div>
+	</div>
+
+	<div class="row">
 		<div class="col col-md-12">
 			<h1 class="block-title"><a href="/series/talk-of-the-quad/">Recently in &lsquo;Talk of the Quad&rsquo;</a></h1>
 			<?php echo home_render("M5", 9); ?>

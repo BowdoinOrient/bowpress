@@ -13,8 +13,9 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<!-- Links -->
-	<link rel="stylesheet" href="<?php echo get_stylesheet_uri(); ?>?11152018">
 	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>
+	<link rel="stylesheet" href="<?php echo get_stylesheet_uri(); ?>?11152018">
 	<script type="text/eqcss" src="<?php echo get_stylesheet_directory_uri(); ?>/sass/element-queries.eqcss"></script>
 
 	<!-- Font loading -->
