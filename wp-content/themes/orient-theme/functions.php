@@ -381,6 +381,9 @@ function current_issue() {
 	);
 }
 
+function cachebust_file($filename) {
+	return $filename . "?" . md5(file_get_contents($filename));
+}
 add_shortcode( 'packaging', 'packaging_shortcode' );
 
 add_theme_support( 'post-thumbnails' );
