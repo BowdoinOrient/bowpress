@@ -76,7 +76,7 @@
 <script async src="<?php echo get_template_directory_uri() ?>/js/modernizr.js"></script>
 
 <!-- Custom JavaScript -->
-<script async src="<?php echo get_template_directory_uri() ?>/js/script.js?11012018"></script>
+<script async src="<?php echo cachebusted_js(); ?>"></script>
 
 </body>
 </html>
