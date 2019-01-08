@@ -381,6 +381,18 @@ function current_issue() {
 	);
 }
 
+function cachebust_file($filename) {
+	return $filename . "?" . md5(file_get_contents($filename));
+}
+
+function cachebusted_css() {
+	return cachebust_file(get_stylesheet_uri());
+}
+
+function cachebusted_js() {
+	return cachebust_file(get_template_directory_uri() . '/js/script.js');
+}
+
 add_shortcode( 'packaging', 'packaging_shortcode' );
 
 add_theme_support( 'post-thumbnails' );
