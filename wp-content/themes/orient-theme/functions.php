@@ -400,7 +400,6 @@ add_theme_support( 'post-thumbnails' );
 set_post_thumbnail_size( 640, 480, array('center', 'center'));
 add_image_size( 'module', 640, 480, array('center', 'center'));
 
-include 'housing-svg-shortcode.php';
 include 'custom-fields.php';
 include 'ignored.php';
 
