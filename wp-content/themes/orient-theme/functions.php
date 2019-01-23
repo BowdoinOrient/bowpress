@@ -281,8 +281,6 @@ function author_and_date($echo = true, $id = null) {
 	}
 }
 
-
-
 function packaging_shortcode( $atts ){
 	$packages = get_posts(array(
 		'post_type' => 'packaging',
@@ -325,6 +323,12 @@ function packaging_shortcode( $atts ){
 		$output .= '</div></div>';
 		return $output;
 	}
+}
+
+function interactive_shortcode($directory) {
+	if(!$directory["page"]) {return "";}
+
+	return file_get_contents(ABSPATH . "static/" . $directory["page"] . "/index.html");
 }
 
 function current_issue() {
@@ -389,6 +393,8 @@ function cachebusted_js() {
 }
 
 add_shortcode( 'packaging', 'packaging_shortcode' );
+
+add_shortcode( 'interactive', 'interactive_shortcode' );
 
 add_theme_support( 'post-thumbnails' );
 set_post_thumbnail_size( 640, 480, array('center', 'center'));
