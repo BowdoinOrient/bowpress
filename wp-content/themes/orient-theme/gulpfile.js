@@ -3,9 +3,9 @@ var sass = require("gulp-sass");
 var minifyCss = require("gulp-clean-css");
 var autoprefixer = require("gulp-autoprefixer");
 
-gulp.task("sass", function(done) {
-  setTimeout(function() {
-    return gulp
+function style() {
+  return (
+    gulp
       .src("./sass/style.scss")
       .pipe(sass().on("error", sass.logError))
       .pipe(
@@ -19,21 +19,13 @@ gulp.task("sass", function(done) {
           keepSpecialComments: 1
         })
       )
-      .pipe(gulp.dest("./"));
-  }, 100);
-  done();
-});
+      .pipe(gulp.dest("./"))
+  );
+}
 
-gulp.task(
-  "default",
-  gulp.series("sass", function(done) {
-    done();
-  })
-);
+function watch(){
+  gulp.watch("./sass/**/*.scss", style);
+}
 
-gulp.task(
-  "watch",
-  gulp.series("sass", function() {
-    gulp.watch("./sass/**/*.scss", ["sass"]);
-  })
-);
+exports.css = style;
+exports.default = watch;

@@ -292,19 +292,6 @@ if(function_exists("register_field_group"))
 				'message' => '',
 				'default_value' => 0,
 			),
-			array (
-				'key' => 'field_58409d4834ea4',
-				'label' => 'Article Style',
-				'name' => 'article_style',
-				'type' => 'select',
-				'choices' => array (
-					'regular' => 'Regular',
-					'big-art' => 'Big Art',
-				),
-				'default_value' => 'regular',
-				'allow_null' => 0,
-				'multiple' => 0,
-			),
 		),
 		'location' => array (
 			array (
