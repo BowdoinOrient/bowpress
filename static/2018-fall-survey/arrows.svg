@@ -1,0 +1,25 @@
+
+<svg width="650px" height="42.7px" viewBox="0 0 608 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <linearGradient x1="2.41826228%" y1="50%" x2="98.1891257%" y2="50%" id="linearGradient-1">
+            <stop stop-color="#601F1A" offset="0%"></stop>
+            <stop stop-color="#C45D5B" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="5.29432913%" y1="50%" x2="96.6831091%" y2="50%" id="linearGradient-2">
+            <stop stop-color="#6587B7" offset="0%"></stop>
+            <stop stop-color="#1B293F" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="url(#linearGradient-1)" fill-rule="nonzero" x="23" y="19" width="139" height="10"></rect>
+        <rect id="Rectangle" fill="url(#linearGradient-2)" fill-rule="nonzero" x="168" y="19" width="424" height="10"></rect>
+        <polygon id="Triangle" fill="#1B293F" fill-rule="nonzero" transform="translate(596.000000, 23.500000) rotate(-270.000000) translate(-596.000000, -23.500000) " points="596 12 612 35 580 35"></polygon>
+        <polygon id="Triangle" fill="#601F1A" fill-rule="nonzero" transform="translate(12.000000, 23.500000) rotate(-90.000000) translate(-12.000000, -23.500000) " points="12 12 28 35 -4 35"></polygon>
+        <text id="Disapproval" font-family="Verlag-Black, Verlag" font-size="16" font-weight="700" fill="#000000">
+            <tspan x="30" y="13">Disapproval</tspan>
+        </text>
+        <text id="Approval" font-family="Verlag-Black, Verlag" font-size="16" font-weight="700" fill="#000000">
+            <tspan x="517" y="13">Approval</tspan>
+        </text>
+    </g>
+</svg>

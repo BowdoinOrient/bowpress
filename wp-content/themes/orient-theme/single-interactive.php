@@ -52,4 +52,32 @@ $chevronLeft = '<svg version="1.1" id="Chevron_left" xmlns="http://www.w3.org/20
 
 </div>
 
+<h1 class="single__sidebar__heading">Most Popular</h1>
+
+<div class="single__sidebar__popular">
+<?php
+    $args = array(
+        'post_type' => 'post',
+        'limit' => 5,
+        'range' => 'weekly',
+    );
+    wpp_get_mostpopular($args)
+?>
+</div>
+
+<div class="article-comments">
+        <h1>Comments</h1>
+        <p>Before submitting a comment, please review our <a href="/policies/">comment policy</a>. Some key points from the policy:</p>
+
+        <ul>
+            <li>No hate speech, profanity, disrespectful or threatening comments.</li>
+            <li>No personal attacks on reporters.</li>
+            <li>Comments must be under 200 words.</li>
+            <li>You are strongly encouraged to use a real name or identifier ("Class of '92").</li>
+            <li>Any comments made with an email address that does not belong to you will get removed.</li>
+        </ul>
+
+        <?php comments_template(); ?>
+    </div>
+
 <?php get_footer(); ?>
