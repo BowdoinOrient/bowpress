@@ -103,7 +103,20 @@
 }
 
 
+.interactive-content {
+	margin-bottom: 3em;
+	font-size: 1.2em;
 
+	& > p {
+		margin-bottom: $vertical-rhythm;
+	}
+
+	.carousel {
+		width: 90%;
+		margin-left: 5%;
+		margin-bottom: 10%;
+	}
+}
 
 
 .single__content {
