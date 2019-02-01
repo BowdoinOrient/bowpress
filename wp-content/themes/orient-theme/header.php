@@ -21,7 +21,7 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 	<!-- Font loading -->
 	<script type="text/javascript" src="https://use.typekit.com/rmt0nbm.js"></script>
 	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-	<!-- <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/7613576/7415972/css/fonts.css" /> -->
+	<link rel="stylesheet" type="text/css" href="https://cloud.typography.com/7613576/7415972/css/fonts.css" />
 
 	<link rel="author" href="/humans.txt">
 
