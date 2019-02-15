@@ -28,6 +28,15 @@
 					<?php echo home_render("M2", 8); ?>
 				</div>
 			</div>
+
+			<?php if ( function_exists( 'vote_poll' ) && ! in_pollarchive() ): ?>
+				<div class="row">
+					<div class="col-md-12">
+						<h2 class="block-title">Poll</h2>
+						<div><?php get_poll();?></div>
+					</div>
+				</div>
+			<?php endif; ?>
 		</div>
 		<div class="col col-md-4 col-sm-4 col-xs-12 col-md-push-2">
 			<div class="module no-border hidden-xs">
