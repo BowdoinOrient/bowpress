@@ -49,6 +49,10 @@ ol.commentlist li.thread-alt { }
 ol.commentlist li.thread-even {}
 ol.commentlist li.thread-odd {}
 
+.comment-body {
+	overflow-wrap: break-word;
+}
+
 .comment-respond .comment-notes.comment-notes {
 	font-style: italic;
 	margin-bottom: 1.2em;
