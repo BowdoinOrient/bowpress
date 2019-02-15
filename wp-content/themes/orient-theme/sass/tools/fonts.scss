@@ -1,0 +1,379 @@
+@font-face {
+	font-family: 'Chronicle';
+	src: url('./fonts/ChronicleDispComp-Semi.eot');
+	src: url('./fonts/ChronicleDispComp-Semi.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/ChronicleDispComp-Semi.woff') format('woff'),
+		url('./fonts/ChronicleDispComp-Semi.ttf') format('truetype');
+	font-weight: 600;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Chronicle';
+	src: url('./fonts/ChronicleDispComp-Roman.eot');
+	src: url('./fonts/ChronicleDispComp-Roman.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/ChronicleDispComp-Roman.woff') format('woff'),
+		url('./fonts/ChronicleDispComp-Roman.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Chronicle';
+	src: url('./fonts/ChronicleDispComp-Bold.eot');
+	src: url('./fonts/ChronicleDispComp-Bold.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/ChronicleDispComp-Bold.woff') format('woff'),
+		url('./fonts/ChronicleDispComp-Bold.ttf') format('truetype');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Chronicle';
+	src: url('./fonts/ChronicleDispComp-Italic.eot');
+	src: url('./fonts/ChronicleDispComp-Italic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/ChronicleDispComp-Italic.woff') format('woff'),
+		url('./fonts/ChronicleDispComp-Italic.ttf') format('truetype');
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Chronicle';
+	src: url('./fonts/ChronicleDispComp-Black.eot');
+	src: url('./fonts/ChronicleDispComp-Black.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/ChronicleDispComp-Black.woff') format('woff'),
+		url('./fonts/ChronicleDispComp-Black.ttf') format('truetype');
+	font-weight: 900;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Chronicle';
+	src: url('./fonts/ChronicleDispComp-SemiItalic.eot');
+	src: url('./fonts/ChronicleDispComp-SemiItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/ChronicleDispComp-SemiItalic.woff') format('woff'),
+		url('./fonts/ChronicleDispComp-SemiItalic.ttf') format('truetype');
+	font-weight: 600;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Chronicle';
+	src: url('./fonts/ChronicleDispComp-BlackItalic.eot');
+	src: url('./fonts/ChronicleDispComp-BlackItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/ChronicleDispComp-BlackItalic.woff') format('woff'),
+		url('./fonts/ChronicleDispComp-BlackItalic.ttf') format('truetype');
+	font-weight: 900;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Chronicle';
+	src: url('./fonts/ChronicleDispComp-BoldItalic.eot');
+	src: url('./fonts/ChronicleDispComp-BoldItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/ChronicleDispComp-BoldItalic.woff') format('woff'),
+		url('./fonts/ChronicleDispComp-BoldItalic.ttf') format('truetype');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag Compressed';
+	src: url('./fonts/VerlagCompressed-BlackItalic.eot');
+	src: url('./fonts/VerlagCompressed-BlackItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCompressed-BlackItalic.woff') format('woff'),
+		url('./fonts/VerlagCompressed-BlackItalic.ttf') format('truetype');
+	font-weight: 900;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag Compressed';
+	src: url('./fonts/VerlagCompressed-Black.eot');
+	src: url('./fonts/VerlagCompressed-Black.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCompressed-Black.woff') format('woff'),
+		url('./fonts/VerlagCompressed-Black.ttf') format('truetype');
+	font-weight: 900;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag Compressed';
+	src: url('./fonts/VerlagCompressed-LightItalic.eot');
+	src: url('./fonts/VerlagCompressed-LightItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCompressed-LightItalic.woff') format('woff'),
+		url('./fonts/VerlagCompressed-LightItalic.ttf') format('truetype');
+	font-weight: 300;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag Condensed';
+	src: url('./fonts/VerlagCondensed-Bold.eot');
+	src: url('./fonts/VerlagCondensed-Bold.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCondensed-Bold.woff') format('woff'),
+		url('./fonts/VerlagCondensed-Bold.ttf') format('truetype');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag Compressed XLight';
+	src: url('./fonts/VerlagCompressed-XLightItalic.eot');
+	src: url('./fonts/VerlagCompressed-XLightItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCompressed-XLightItalic.woff') format('woff'),
+		url('./fonts/VerlagCompressed-XLightItalic.ttf') format('truetype');
+	font-weight: 200;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag Compressed XLight';
+	src: url('./fonts/VerlagCompressed-XLight.eot');
+	src: url('./fonts/VerlagCompressed-XLight.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCompressed-XLight.woff') format('woff'),
+		url('./fonts/VerlagCompressed-XLight.ttf') format('truetype');
+	font-weight: 200;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag Compressed';
+	src: url('./fonts/VerlagCompressed-BoldItalic.eot');
+	src: url('./fonts/VerlagCompressed-BoldItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCompressed-BoldItalic.woff') format('woff'),
+		url('./fonts/VerlagCompressed-BoldItalic.ttf') format('truetype');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag Condensed';
+	src: url('./fonts/VerlagCondensed-BlackItalic.eot');
+	src: url('./fonts/VerlagCondensed-BlackItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCondensed-BlackItalic.woff') format('woff'),
+		url('./fonts/VerlagCondensed-BlackItalic.ttf') format('truetype');
+	font-weight: 900;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag';
+	src: url('./fonts/Verlag-BlackItalic.eot');
+	src: url('./fonts/Verlag-BlackItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/Verlag-BlackItalic.woff') format('woff'),
+		url('./fonts/Verlag-BlackItalic.ttf') format('truetype');
+	font-weight: 900;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag Condensed XLight';
+	src: url('./fonts/VerlagCondensed-XLightItalic.eot');
+	src: url('./fonts/VerlagCondensed-XLightItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCondensed-XLightItalic.woff') format('woff'),
+		url('./fonts/VerlagCondensed-XLightItalic.ttf') format('truetype');
+	font-weight: 200;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag XLight';
+	src: url('./fonts/Verlag-XLightItalic.eot');
+	src: url('./fonts/Verlag-XLightItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/Verlag-XLightItalic.woff') format('woff'),
+		url('./fonts/Verlag-XLightItalic.ttf') format('truetype');
+	font-weight: 200;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag Condensed';
+	src: url('./fonts/VerlagCondensed-Light.eot');
+	src: url('./fonts/VerlagCondensed-Light.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCondensed-Light.woff') format('woff'),
+		url('./fonts/VerlagCondensed-Light.ttf') format('truetype');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag';
+	src: url('./fonts/Verlag-LightItalic.eot');
+	src: url('./fonts/Verlag-LightItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/Verlag-LightItalic.woff') format('woff'),
+		url('./fonts/Verlag-LightItalic.ttf') format('truetype');
+	font-weight: 300;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag';
+	src: url('./fonts/Verlag-Light.eot');
+	src: url('./fonts/Verlag-Light.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/Verlag-Light.woff') format('woff'),
+		url('./fonts/Verlag-Light.ttf') format('truetype');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag Condensed';
+	src: url('./fonts/VerlagCondensed-BoldItalic.eot');
+	src: url('./fonts/VerlagCondensed-BoldItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCondensed-BoldItalic.woff') format('woff'),
+		url('./fonts/VerlagCondensed-BoldItalic.ttf') format('truetype');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag Compressed';
+	src: url('./fonts/VerlagCompressed-Light.eot');
+	src: url('./fonts/VerlagCompressed-Light.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCompressed-Light.woff') format('woff'),
+		url('./fonts/VerlagCompressed-Light.ttf') format('truetype');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag Book';
+	src: url('./fonts/Verlag-BookItalic.eot');
+	src: url('./fonts/Verlag-BookItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/Verlag-BookItalic.woff') format('woff'),
+		url('./fonts/Verlag-BookItalic.ttf') format('truetype');
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag Condensed';
+	src: url('./fonts/VerlagCondensed-LightItalic.eot');
+	src: url('./fonts/VerlagCondensed-LightItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCondensed-LightItalic.woff') format('woff'),
+		url('./fonts/VerlagCondensed-LightItalic.ttf') format('truetype');
+	font-weight: 300;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag Compressed Book';
+	src: url('./fonts/VerlagCompressed-Book.eot');
+	src: url('./fonts/VerlagCompressed-Book.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCompressed-Book.woff') format('woff'),
+		url('./fonts/VerlagCompressed-Book.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag Condensed';
+	src: url('./fonts/VerlagCondensed-Black.eot');
+	src: url('./fonts/VerlagCondensed-Black.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCondensed-Black.woff') format('woff'),
+		url('./fonts/VerlagCondensed-Black.ttf') format('truetype');
+	font-weight: 900;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag Compressed Book';
+	src: url('./fonts/VerlagCompressed-BookItalic.eot');
+	src: url('./fonts/VerlagCompressed-BookItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCompressed-BookItalic.woff') format('woff'),
+		url('./fonts/VerlagCompressed-BookItalic.ttf') format('truetype');
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag Book';
+	src: url('./fonts/Verlag-Book.eot');
+	src: url('./fonts/Verlag-Book.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/Verlag-Book.woff') format('woff'),
+		url('./fonts/Verlag-Book.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag Compressed';
+	src: url('./fonts/VerlagCompressed-Bold.eot');
+	src: url('./fonts/VerlagCompressed-Bold.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCompressed-Bold.woff') format('woff'),
+		url('./fonts/VerlagCompressed-Bold.ttf') format('truetype');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag XLight';
+	src: url('./fonts/Verlag-XLight.eot');
+	src: url('./fonts/Verlag-XLight.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/Verlag-XLight.woff') format('woff'),
+		url('./fonts/Verlag-XLight.ttf') format('truetype');
+	font-weight: 200;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag Condensed Book';
+	src: url('./fonts/VerlagCondensed-Book.eot');
+	src: url('./fonts/VerlagCondensed-Book.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCondensed-Book.woff') format('woff'),
+		url('./fonts/VerlagCondensed-Book.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag Condensed XLight';
+	src: url('./fonts/VerlagCondensed-XLight.eot');
+	src: url('./fonts/VerlagCondensed-XLight.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCondensed-XLight.woff') format('woff'),
+		url('./fonts/VerlagCondensed-XLight.ttf') format('truetype');
+	font-weight: 200;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag Condensed Book';
+	src: url('./fonts/VerlagCondensed-BookItalic.eot');
+	src: url('./fonts/VerlagCondensed-BookItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/VerlagCondensed-BookItalic.woff') format('woff'),
+		url('./fonts/VerlagCondensed-BookItalic.ttf') format('truetype');
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag';
+	src: url('./fonts/Verlag-Bold.eot');
+	src: url('./fonts/Verlag-Bold.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/Verlag-Bold.woff') format('woff'),
+		url('./fonts/Verlag-Bold.ttf') format('truetype');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Verlag';
+	src: url('./fonts/Verlag-BoldItalic.eot');
+	src: url('./fonts/Verlag-BoldItalic.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/Verlag-BoldItalic.woff') format('woff'),
+		url('./fonts/Verlag-BoldItalic.ttf') format('truetype');
+	font-weight: bold;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: 'Verlag';
+	src: url('./fonts/Verlag-Black.eot');
+	src: url('./fonts/Verlag-Black.eot?#iefix') format('embedded-opentype'),
+		url('./fonts/Verlag-Black.woff') format('woff'),
+		url('./fonts/Verlag-Black.ttf') format('truetype');
+	font-weight: 900;
+	font-style: normal;
+}
