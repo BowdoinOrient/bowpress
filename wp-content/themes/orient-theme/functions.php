@@ -17,7 +17,6 @@ function orient_theme_plugin_check() {
 	  ( !is_plugin_active( 'co-authors-plus/co-authors-plus.php' ) ||
 		!is_plugin_active( 'advanced-custom-fields/acf.php' ) ||
 		!is_plugin_active( 'wp-subtitle/wp-subtitle.php' ) ||
-		!is_plugin_active( 'just-wp-variables/just-variables.php' ) ||
 		!is_plugin_active( 'wordpress-popular-posts/wordpress-popular-posts.php' ) ||
 		!is_plugin_active( 'orient-image-handling/orient-image-handling.php' ) ||
 		!is_plugin_active( 'orient-taxonomies/orient-taxonomies.php' ) ||
