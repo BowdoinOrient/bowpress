@@ -72,9 +72,6 @@
 <!-- EQCSS - Element Queries for the home page -->
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/eqcss/1.2.1/EQCSS.min.js"></script>
 
-<!-- Modernizr - Graceful degradation for older browsers -->
-<script async src="<?php echo get_template_directory_uri() ?>/js/modernizr.js"></script>
-
 <!-- Custom JavaScript -->
 <script async src="<?php echo cachebusted_js(); ?>"></script>
 
