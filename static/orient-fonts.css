@@ -1,0 +1,303 @@
+@font-face {
+	font-family:Chronicle;
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Semi.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Semi.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Semi.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Semi.ttf) format("truetype");
+	font-weight:600;
+	font-style:normal
+}
+
+@font-face {
+	font-family:Chronicle;
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Roman.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Roman.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Roman.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Roman.ttf) format("truetype");
+	font-weight:400;
+	font-style:normal
+}
+
+@font-face {
+	font-family:Chronicle;
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Bold.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Bold.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Bold.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Bold.ttf) format("truetype");
+	font-weight:700;
+	font-style:normal
+}
+
+@font-face {
+	font-family:Chronicle;
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Italic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Italic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Italic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Italic.ttf) format("truetype");
+	font-weight:400;
+	font-style:italic
+}
+
+@font-face {
+	font-family:Chronicle;
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Black.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Black.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Black.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-Black.ttf) format("truetype");
+	font-weight:900;
+	font-style:normal
+}
+
+@font-face {
+	font-family:Chronicle;
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-SemiItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-SemiItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-SemiItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-SemiItalic.ttf) format("truetype");
+	font-weight:600;
+	font-style:italic
+}
+
+@font-face {
+	font-family:Chronicle;
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-BlackItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-BlackItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-BlackItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-BlackItalic.ttf) format("truetype");
+	font-weight:900;
+	font-style:italic
+}
+
+@font-face {
+	font-family:Chronicle;
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-BoldItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-BoldItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-BoldItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/ChronicleDispComp-BoldItalic.ttf) format("truetype");
+	font-weight:700;
+	font-style:italic
+}
+
+@font-face {
+	font-family:'Verlag Compressed';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-BlackItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-BlackItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-BlackItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-BlackItalic.ttf) format("truetype");
+	font-weight:900;
+	font-style:italic
+}
+
+@font-face {
+	font-family:'Verlag Compressed';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Black.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Black.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Black.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Black.ttf) format("truetype");
+	font-weight:900;
+	font-style:normal
+}
+
+@font-face {
+	font-family:'Verlag Compressed';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-LightItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-LightItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-LightItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-LightItalic.ttf) format("truetype");
+	font-weight:300;
+	font-style:italic
+}
+
+@font-face {
+	font-family:'Verlag Condensed';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Bold.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Bold.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Bold.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Bold.ttf) format("truetype");
+	font-weight:700;
+	font-style:normal
+}
+
+@font-face {
+	font-family:'Verlag Compressed XLight';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-XLightItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-XLightItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-XLightItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-XLightItalic.ttf) format("truetype");
+	font-weight:200;
+	font-style:italic
+}
+
+@font-face {
+	font-family:'Verlag Compressed XLight';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-XLight.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-XLight.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-XLight.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-XLight.ttf) format("truetype");
+	font-weight:200;
+	font-style:normal
+}
+
+@font-face {
+	font-family:'Verlag Compressed';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-BoldItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-BoldItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-BoldItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-BoldItalic.ttf) format("truetype");
+	font-weight:700;
+	font-style:italic
+}
+
+@font-face {
+	font-family:'Verlag Condensed';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-BlackItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-BlackItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-BlackItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-BlackItalic.ttf) format("truetype");
+	font-weight:900;
+	font-style:italic
+}
+
+@font-face {
+	font-family:Verlag;
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-BlackItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-BlackItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/Verlag-BlackItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/Verlag-BlackItalic.ttf) format("truetype");
+	font-weight:900;
+	font-style:italic
+}
+
+@font-face {
+	font-family:'Verlag Condensed XLight';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-XLightItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-XLightItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-XLightItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-XLightItalic.ttf) format("truetype");
+	font-weight:200;
+	font-style:italic
+}
+
+@font-face {
+	font-family:'Verlag XLight';
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-XLightItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-XLightItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/Verlag-XLightItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/Verlag-XLightItalic.ttf) format("truetype");
+	font-weight:200;
+	font-style:italic
+}
+
+@font-face {
+	font-family:'Verlag Condensed';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Light.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Light.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Light.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Light.ttf) format("truetype");
+	font-weight:300;
+	font-style:normal
+}
+
+@font-face {
+	font-family:Verlag;
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-LightItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-LightItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/Verlag-LightItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/Verlag-LightItalic.ttf) format("truetype");
+	font-weight:300;
+	font-style:italic
+}
+
+@font-face {
+	font-family:Verlag;
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-Light.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-Light.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/Verlag-Light.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/Verlag-Light.ttf) format("truetype");
+	font-weight:300;
+	font-style:normal
+}
+
+@font-face {
+	font-family:'Verlag Condensed';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-BoldItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-BoldItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-BoldItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-BoldItalic.ttf) format("truetype");
+	font-weight:700;
+	font-style:italic
+}
+
+@font-face {
+	font-family:'Verlag Compressed';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Light.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Light.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Light.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Light.ttf) format("truetype");
+	font-weight:300;
+	font-style:normal
+}
+
+@font-face {
+	font-family:'Verlag Book';
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-BookItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-BookItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/Verlag-BookItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/Verlag-BookItalic.ttf) format("truetype");
+	font-weight:400;
+	font-style:italic
+}
+
+@font-face {
+	font-family:'Verlag Condensed';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-LightItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-LightItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-LightItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-LightItalic.ttf) format("truetype");
+	font-weight:300;
+	font-style:italic
+}
+
+@font-face {
+	font-family:'Verlag Compressed Book';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Book.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Book.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Book.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Book.ttf) format("truetype");
+	font-weight:400;
+	font-style:normal
+}
+
+@font-face {
+	font-family:'Verlag Condensed';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Black.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Black.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Black.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Black.ttf) format("truetype");
+	font-weight:900;
+	font-style:normal
+}
+
+@font-face {
+	font-family:'Verlag Compressed Book';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-BookItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-BookItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-BookItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-BookItalic.ttf) format("truetype");
+	font-weight:400;
+	font-style:italic
+}
+
+@font-face {
+	font-family:'Verlag Book';
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-Book.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-Book.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/Verlag-Book.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/Verlag-Book.ttf) format("truetype");
+	font-weight:400;
+	font-style:normal
+}
+
+@font-face {
+	font-family:'Verlag Compressed';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Bold.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Bold.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Bold.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCompressed-Bold.ttf) format("truetype");
+	font-weight:700;
+	font-style:normal
+}
+
+@font-face {
+	font-family:'Verlag XLight';
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-XLight.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-XLight.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/Verlag-XLight.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/Verlag-XLight.ttf) format("truetype");
+	font-weight:200;
+	font-style:normal
+}
+
+@font-face {
+	font-family:'Verlag Condensed Book';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Book.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Book.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Book.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-Book.ttf) format("truetype");
+	font-weight:400;
+	font-style:normal
+}
+
+@font-face {
+	font-family:'Verlag Condensed XLight';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-XLight.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-XLight.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-XLight.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-XLight.ttf) format("truetype");
+	font-weight:200;
+	font-style:normal
+}
+
+@font-face {
+	font-family:'Verlag Condensed Book';
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-BookItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-BookItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-BookItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/VerlagCondensed-BookItalic.ttf) format("truetype");
+	font-weight:400;
+	font-style:italic
+}
+
+@font-face {
+	font-family:Verlag;
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-Bold.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-Bold.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/Verlag-Bold.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/Verlag-Bold.ttf) format("truetype");
+	font-weight:700;
+	font-style:normal
+}
+
+@font-face {
+	font-family:Verlag;
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-BoldItalic.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-BoldItalic.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/Verlag-BoldItalic.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/Verlag-BoldItalic.ttf) format("truetype");
+	font-weight:700;
+	font-style:italic
+}
+
+@font-face {
+	font-family:Verlag;
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-Black.eot);
+	src:url(http://font-cdn.bowdoinorient.co/files/Verlag-Black.eot?#iefix) format("embedded-opentype"),url(http://font-cdn.bowdoinorient.co/files/Verlag-Black.woff) format("woff"),url(http://font-cdn.bowdoinorient.co/files/Verlag-Black.ttf) format("truetype");
+	font-weight:900;
+	font-style:normal
+}
