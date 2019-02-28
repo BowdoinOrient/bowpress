@@ -5,7 +5,7 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 -->
 
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="en">
 <head>
 	<!-- Required -->
 	<meta charset="UTF-8">
