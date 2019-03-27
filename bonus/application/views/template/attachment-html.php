@@ -1,15 +1,15 @@
-<figure id="attachment<?=$id?>" data-attachment-id="<?=$id?>" data-attachment-type="<?=$type?>" class="articlemedia html-attachment <?= ($big ? 'bigphoto' : '') ?>">
+<figure id="attachment<?php echo $id?>" data-attachment-id="<?php echo $id?>" data-attachment-type="<?php echo $type?>" class="articlemedia html-attachment <?php echo  ($big ? 'bigphoto' : '') ?>">
 
-    <? if(bonus()): ?>
-        <div id="deleteAttachment<?=$id?>" data-attachment-id="<?=$id?>" class="delete deleteAttachment">&times;</div>
-        <div id="bigEnable<?=$id?>"  data-attachment-id="<?=$id?>" data-toggle="true"  class="bigAttachmentToggle <?= ($big ? 'hide' : '') ?>">&#8689;</div>
-        <div id="bigDisable<?=$id?>" data-attachment-id="<?=$id?>" data-toggle="false" class="bigAttachmentToggle <?= ($big ? '' : 'hide') ?>">&#8690;</div>
-    <? endif; ?>
+    <?php if(bonus()): ?>
+        <div id="deleteAttachment<?php echo $id?>" data-attachment-id="<?php echo $id?>" class="delete deleteAttachment">&times;</div>
+        <div id="bigEnable<?php echo $id?>"  data-attachment-id="<?php echo $id?>" data-toggle="true"  class="bigAttachmentToggle <?php echo  ($big ? 'hide' : '') ?>">&#8689;</div>
+        <div id="bigDisable<?php echo $id?>" data-attachment-id="<?php echo $id?>" data-toggle="false" class="bigAttachmentToggle <?php echo  ($big ? '' : 'hide') ?>">&#8690;</div>
+    <?php endif; ?>
 
-    <? $width = ($big ? '890' : '500'); ?>
+    <?php $width = ($big ? '890' : '500'); ?>
 
-    <div style="max-width:<?=$width?>; overflow:hidden" class="html-content">
-        <?= $content1 ?>
+    <div style="max-width:<?php echo $width?>; overflow:hidden" class="html-content">
+        <?php echo  $content1 ?>
     </div>
 
     <script>
@@ -32,14 +32,14 @@
     </script>
 
     <figcaption>
-        <? if(!empty($author_id) && !bonus()): ?>
-            <p id="attachmentcredit<?=$id?>" class="photocredit">
-                <?= anchor('author/'.$author_id, $author_name) ?>
+        <?php if(!empty($author_id) && !bonus()): ?>
+            <p id="attachmentcredit<?php echo $id?>" class="photocredit">
+                <?php echo  anchor('author/'.$author_id, $author_name) ?>
             </p>
-        <? elseif(bonus()): ?>
-            <p id="attachmentcredit<?=$id?>" class="photocredit" contenteditable="true" title="Author"><?= (!empty($author_name) ? $author_name : ''); ?></p>
-        <? endif; ?>
-        <p id="attachmentcaption<?=$id?>" class="photocaption" <?if(bonus()):?>contenteditable="true" title="Caption"<?endif;?>><?= (!empty($content2) ? $content2 : ''); ?></p>
+        <?php elseif(bonus()): ?>
+            <p id="attachmentcredit<?php echo $id?>" class="photocredit" contenteditable="true" title="Author"><?php echo  (!empty($author_name) ? $author_name : ''); ?></p>
+        <?php endif; ?>
+        <p id="attachmentcaption<?php echo $id?>" class="photocaption" <?php if(bonus()):?>contenteditable="true" title="Caption"<?php endif;?>><?php echo  (!empty($content2) ? $content2 : ''); ?></p>
     </figcaption>
 
 </figure>

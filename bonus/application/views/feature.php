@@ -1,103 +1,103 @@
-<?$headdata = new stdClass();
+<?php $headdata = new stdClass();
 $headdata->viewtype = "feature";
 $this->load->view('template/head', $headdata); ?>
 
 <body>
-    <? $headerdata->viewtype = "feature";
+    <?php $headerdata->viewtype = "feature";
     $this->load->view('template/bodyheader', $headerdata); ?>
 
     <div id="container">
 
-        <div id="titlepage" style="background-image:url('<?=base_url().'images/'.$article->date.'/'.$coverphoto->filename_large?>')">
+        <div id="titlepage" style="background-image:url('<?php echo base_url().'images/'.$article->date.'/'.$coverphoto->filename_large?>')">
             <div id="header-bg">
                 <header>
                     <hgroup class="articletitle-group">
                   
-                        <? if($article->series || bonus()): ?>
-                            <h3 id="feature-series" class="series"<?if(bonus()):?> contenteditable="true" title="Series"<?endif;?>>
-                                <? if(!bonus()): ?><a href="<?=site_url()?>series/<?=$series->id?>"><? endif; ?>
-                                <?=$series->name?>
-                                <? if(!bonus()): ?></a><? endif; ?>
+                        <?php if($article->series || bonus()): ?>
+                            <h3 id="feature-series" class="series"<?php if(bonus()):?> contenteditable="true" title="Series"<?php endif;?>>
+                                <?php if(!bonus()): ?><a href="<?php echo site_url()?>series/<?php echo $series->id?>"><?php endif; ?>
+                                <?php echo $series->name?>
+                                <?php if(!bonus()): ?></a><?php endif; ?>
                             </h3>
-                        <? endif; ?>
+                        <?php endif; ?>
                       
-                        <h2 id="articletitle" class="articletitle <?= ($article->published ? '' : 'draft'); ?>"<?if(bonus()):?> contenteditable="true" title="Title"<?endif;?>><?=$article->title?></h2>
-                        <? if(bonus()): ?><div id="title" class="charsremaining"></div><? endif; ?>
-                        <h3 id="articlesubtitle" class="articlesubtitle"<?if(bonus()):?> contenteditable="true" title="Subtitle"<?endif;?>><? if(isset($article->subtitle)): ?><?=$article->subtitle?><? endif; ?></h3>
-                        <? if(bonus()): ?><div id="subtitle" class="charsremaining"></div><? endif; ?>
+                        <h2 id="articletitle" class="articletitle <?php echo  ($article->published ? '' : 'draft'); ?>"<?php if(bonus()):?> contenteditable="true" title="Title"<?php endif;?>><?php echo $article->title?></h2>
+                        <?php if(bonus()): ?><div id="title" class="charsremaining"></div><?php endif; ?>
+                        <h3 id="articlesubtitle" class="articlesubtitle"<?php if(bonus()):?> contenteditable="true" title="Subtitle"<?php endif;?>><?php if(isset($article->subtitle)): ?><?php echo $article->subtitle?><?php endif; ?></h3>
+                        <?php if(bonus()): ?><div id="subtitle" class="charsremaining"></div><?php endif; ?>
 
                     </hgroup>
 
                     <div id="authorblock">
-                        <? if(bonus() && $series->name != "Editorial"): ?>
-                            <div class="opinion-notice"><input type="checkbox" name="opinion" value="opinion" <? if($article->opinion): ?>checked="checked"<? endif; ?> /> Does this piece represent the opinion of the author?</div>
-                        <? endif; ?>
-                        <? if($series->name == "Editorial"): ?>
-                            <object data="<?=base_url()?>img/icon-opinion.svg" type="image/svg+xml" class="opinion-icon" height="20" width="20" title="Plinio Fernandes, from The Noun Project"></object>
+                        <?php if(bonus() && $series->name != "Editorial"): ?>
+                            <div class="opinion-notice"><input type="checkbox" name="opinion" value="opinion" <?php if($article->opinion): ?>checked="checked"<?php endif; ?> /> Does this piece represent the opinion of the author?</div>
+                        <?php endif; ?>
+                        <?php if($series->name == "Editorial"): ?>
+                            <object data="<?php echo base_url()?>img/icon-opinion.svg" type="image/svg+xml" class="opinion-icon" height="20" width="20" title="Plinio Fernandes, from The Noun Project"></object>
                             <div class="opinion-notice">This piece represents the opinion of <span style="font-style:normal;">The Bowdoin Orient</span> editorial board.</div>
-                        <? endif; ?>
-                        <? if($authors): ?>
-                            <? if($article->opinion == '1' && !bonus()): ?>
-                                <object data="<?=base_url()?>img/icon-opinion.svg" type="image/svg+xml" class="opinion-icon" height="20" width="20" title="Plinio Fernandes, from The Noun Project"></object>
-                                <div class="opinion-notice">This piece represents the opinion of the author<?if(count($authors)>1):?>s<?endif;?>:</div>
-                            <? endif; ?>
-                            <? foreach($authors as $key => $author): ?>
-                                <a href="<?=site_url()?>author/<?=$author->authorid?>">
-                                    <div id="author<?=$author->articleauthorid?>" class="authortile<? if(bonus()):?> bonus<? endif; ?> <?if($article->opinion == '1'):?>opinion<? endif; ?>">
-                                        <? if(bonus()): ?><div id="deleteAuthor<?=$author->articleauthorid?>" class="delete">&times;</div><? endif; ?>
-                                        <? if(!empty($author->photo) && $article->opinion): ?><img src="<?=base_url().'images/authors/'.$author->photo?>" class="authorpic"><? endif; ?>
+                        <?php endif; ?>
+                        <?php if($authors): ?>
+                            <?php if($article->opinion == '1' && !bonus()): ?>
+                                <object data="<?php echo base_url()?>img/icon-opinion.svg" type="image/svg+xml" class="opinion-icon" height="20" width="20" title="Plinio Fernandes, from The Noun Project"></object>
+                                <div class="opinion-notice">This piece represents the opinion of the author<?php if(count($authors)>1):?>s<?php endif;?>:</div>
+                            <?php endif; ?>
+                            <?php foreach($authors as $key => $author): ?>
+                                <a href="<?php echo site_url()?>author/<?php echo $author->authorid?>">
+                                    <div id="author<?php echo $author->articleauthorid?>" class="authortile<?php if(bonus()):?> bonus<?php endif; ?> <?php if($article->opinion == '1'):?>opinion<?php endif; ?>">
+                                        <?php if(bonus()): ?><div id="deleteAuthor<?php echo $author->articleauthorid?>" class="delete">&times;</div><?php endif; ?>
+                                        <?php if(!empty($author->photo) && $article->opinion): ?><img src="<?php echo base_url().'images/authors/'.$author->photo?>" class="authorpic"><?php endif; ?>
                                         <div class="authortext">
-                                            <div class="articleauthor"><?=$author->authorname?></div>
-                                            <div class="articleauthorjob"><?=$author->jobname?></div>
+                                            <div class="articleauthor"><?php echo $author->authorname?></div>
+                                            <div class="articleauthorjob"><?php echo $author->jobname?></div>
                                         </div>
                                     </div>
                                 </a>
-                            <? endforeach; ?>
-                        <? endif; ?>
-                        <? if(bonus()): ?>
-                            <div class="authortile bonus <?if($article->opinion == '1'):?>opinion<? endif; ?>">
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                        <?php if(bonus()): ?>
+                            <div class="authortile bonus <?php if($article->opinion == '1'):?>opinion<?php endif; ?>">
                                 <div class="articleauthor" id="addauthor" contenteditable="true" title="Author"></div>
                                 <div class="articleauthorjob" id="addauthorjob" contenteditable="true" title="Author job"></div>
                             </div>
-                        <? endif; ?>
+                        <?php endif; ?>
                     </div>
             
-                    <p class="articledate"><time pubdate datetime="<?=$article->date?>"><?=date("F j, Y",strtotime($article->date))?></time></p> 
+                    <p class="articledate"><time pubdate datetime="<?php echo $article->date?>"><?php echo date("F j, Y",strtotime($article->date))?></time></p> 
                 </header>
             </div>
-            <div class="hidemobile downarrow"><img src="<?=base_url().'img/icon-chevron-down.svg'?>"></div>
+            <div class="hidemobile downarrow"><img src="<?php echo base_url().'img/icon-chevron-down.svg'?>"></div>
         </div>
 
-        <article id="mainstory" data-article-id="<?=$article->id?>">
+        <article id="mainstory" data-article-id="<?php echo $article->id?>">
 
             <div class="sidebar-shim"></div>
             <canvas class="sidebar" id="nav-bar" tabindex="1"></canvas>
             
-            <? if(bonus()): ?>
+            <?php if(bonus()): ?>
                 <div class="sidebar" id="bonus-bar">
-                    <img src="<?=base_url()?>img/features/photo.png" class="bonus-action" title="PHOTO" credit="Plinio Fernandes, from The Noun Project"/>
-                    <img src="<?=base_url()?>img/features/video.png" class="bonus-action" title="VIDEO" credit="Thomas Le Bas, from The Noun Project"/>
-                    <img src="<?=base_url()?>img/features/quote.png" class="bonus-action" title="BLOCK QUOTE" credit="Alex Fuller, from The Noun Project"/>
-                    <img src="<?=base_url()?>img/features/audio.png" class="bonus-action" title="SOUNDCLOUD AUDIO" credit="Samuel Q. Green, from The Noun Project"/>
-                    <img src="<?=base_url()?>img/features/pdf.png" class="bonus-action" title="SCRIBD PDF" credit="Jamison Wieser, from The Noun Project"/>
-                    <img src="<?=base_url()?>img/features/code.png" class="bonus-action" title="HTML" credit="Public domain, from The Noun Project"/>
+                    <img src="<?php echo base_url()?>img/features/photo.png" class="bonus-action" title="PHOTO" credit="Plinio Fernandes, from The Noun Project"/>
+                    <img src="<?php echo base_url()?>img/features/video.png" class="bonus-action" title="VIDEO" credit="Thomas Le Bas, from The Noun Project"/>
+                    <img src="<?php echo base_url()?>img/features/quote.png" class="bonus-action" title="BLOCK QUOTE" credit="Alex Fuller, from The Noun Project"/>
+                    <img src="<?php echo base_url()?>img/features/audio.png" class="bonus-action" title="SOUNDCLOUD AUDIO" credit="Samuel Q. Green, from The Noun Project"/>
+                    <img src="<?php echo base_url()?>img/features/pdf.png" class="bonus-action" title="SCRIBD PDF" credit="Jamison Wieser, from The Noun Project"/>
+                    <img src="<?php echo base_url()?>img/features/code.png" class="bonus-action" title="HTML" credit="Public domain, from The Noun Project"/>
                 </div>
-            <? endif; ?>
+            <?php endif; ?>
 
             <div id="articlebodycontainer">
         
-                <div id="articlebody" class="articlebody"<?if(bonus()):?> contenteditable="true" title="Article body"<?endif;?>>
-                    <? if(!empty($body)): ?>
-                        <?=$body->body;?>
-                    <? endif; ?>
+                <div id="articlebody" class="articlebody"<?php if(bonus()):?> contenteditable="true" title="Article body"<?php endif;?>>
+                    <?php if(!empty($body)): ?>
+                        <?php echo $body->body;?>
+                    <?php endif; ?>
                 </div>
 
-                <?if(!bonus()):?>
+                <?php if(!bonus()):?>
 
                     <div id="attachments">
                     <!-- where the in-article attachments are created and later removed from with JS -->
                     <!-- this div is deleted fter that takes place -->
-                        <? if ($attachments) {
+                        <?php if ($attachments) {
                             foreach ($attachments as $attachment) {
                                 if ($attachment->type == "pullquote") {
                                     $this->load->view('template/feature-attachments/pullquote', $attachment);
@@ -117,49 +117,49 @@ $this->load->view('template/head', $headdata); ?>
                             }
                         } ?>
 
-                        <? if ($photos) : ?>
-                            <? foreach ($photos as $photo) : ?>
-                                <? if (!$photo->coverphoto) : ?>
-                                    <div class="attachment photo" data-afterpar="<?=$photo->afterpar?>">
-                                        <img src="<?=base_url().'images/'.$article->date.'/'.$photo->filename_large?>"/>
-                                        <? if (isset($photo->photographer_id)): ?>
-                                            <p class="photocredit"><a href="<?=base_url().'author/'.$photo->photographer_id?>"><i><?=$photo->photographer_name?></i></a></p>
-                                        <? else: ?>
-                                            <p class="photocredit"><i><?=$photo->credit?></i></p>
-                                        <? endif; ?> 
-                                        <p class="photocaption"><?=$photo->caption?></p>
+                        <?php if ($photos) : ?>
+                            <?php foreach ($photos as $photo) : ?>
+                                <?php if (!$photo->coverphoto) : ?>
+                                    <div class="attachment photo" data-afterpar="<?php echo $photo->afterpar?>">
+                                        <img src="<?php echo base_url().'images/'.$article->date.'/'.$photo->filename_large?>"/>
+                                        <?php if (isset($photo->photographer_id)): ?>
+                                            <p class="photocredit"><a href="<?php echo base_url().'author/'.$photo->photographer_id?>"><i><?php echo $photo->photographer_name?></i></a></p>
+                                        <?php else: ?>
+                                            <p class="photocredit"><i><?php echo $photo->credit?></i></p>
+                                        <?php endif; ?> 
+                                        <p class="photocaption"><?php echo $photo->caption?></p>
                                     </div>
-                                <? endif; ?>
-                            <? endforeach; ?>
-                        <? endif; ?>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
             
                 </div>
-            <?endif;?>
+            <?php endif;?>
 
             <div id="articlefooter">
                 <br>
                 <p>
                 <h2>Comments</h2>
-                Before submitting a comment, please review our <?=anchor('comments', 'comment policy')?>.
+                Before submitting a comment, please review our <?php echo anchor('comments', 'comment policy')?>.
                 </p>
 
-                <? if(!bonus()): ?>
+                <?php if(!bonus()): ?>
                     <!-- Disqus -->
                     <div id="disqus_thread"></div>
                     <script type="text/javascript">
                     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
                         var disqus_shortname = 'bowdoinorient'; // required: replace example with your forum shortname
-                        var disqus_title = '<?=addslashes($article->title)?>';
+                        var disqus_title = '<?php echo addslashes($article->title)?>';
 
                         //disqus_identifier isn't necessary, because it can use the URL. it's preferable, though, because of different URL schemes.
                         //problem is, we used a different scheme (date&section&priority, e.g. 2012-05-04&2&1) on the old site.
                         //on newer articles (>7308), we just use the new unique article id.
-                        <? if($article->id <= 7308): ?>
-                            var disqus_identifier = '<?=$article->date."?".$article->section_id."?".$article->priority?>';
-                        <? else: ?>
-                            var disqus_identifier = '<?=$article->id?>';
-                        <? endif; ?>
+                        <?php if($article->id <= 7308): ?>
+                            var disqus_identifier = '<?php echo $article->date."?".$article->section_id."?".$article->priority?>';
+                        <?php else: ?>
+                            var disqus_identifier = '<?php echo $article->id?>';
+                        <?php endif; ?>
                             
                         /* * * DON'T EDIT BELOW THIS LINE * * */
                         (function() {
@@ -170,14 +170,14 @@ $this->load->view('template/head', $headdata); ?>
                     </script>
                     <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
                     <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-                <? endif; ?>
+                <?php endif; ?>
             </div>  
         </article>
     </div>
 
-    <? $this->load->view('template/bodyfooter', $footerdata); ?>
+    <?php $this->load->view('template/bodyfooter', $footerdata); ?>
 
-    <? $this->load->view('bonus/bonusbar', TRUE); ?>
+    <?php $this->load->view('bonus/bonusbar', TRUE); ?>
 
     <script type="text/javascript">$(".bonus-action").tipsy({gravity: 'e', offset: '8'});</script>
 
@@ -200,7 +200,7 @@ $this->load->view('template/head', $headdata); ?>
         $(".sidebar#nav-bar").css("left", $offset + 20); // whoever knows why this has to be offset by 20 is a smarter man than I
     </script>
 
-    <?if(!bonus()):?>
+    <?php if(!bonus()):?>
         <script type="text/javascript">
             //move the attachments into place
             $attachments = $(".attachment");
@@ -209,7 +209,7 @@ $this->load->view('template/head', $headdata); ?>
             });
             $("#attachments").remove();
         </script>
-    <? endif; ?>
+    <?php endif; ?>
 
     <script type="text/javascript">
         // apply styles to the first paragraph
@@ -455,7 +455,7 @@ $this->load->view('template/head', $headdata); ?>
         });
     </script>
 
-    <? if(bonus()): ?>
+    <?php if(bonus()): ?>
         <script>
 
         var titleedited=false;
@@ -483,7 +483,7 @@ $this->load->view('template/head', $headdata); ?>
             });
         
             // SET PUBLISHED
-            window.published = <?= $article->published ? 'true' : 'false' ?>;
+            window.published = <?php echo  $article->published ? 'true' : 'false' ?>;
         
             // DETECT CHANGES AND SUCH
             // surely there's a better way to handle this
@@ -604,7 +604,7 @@ $this->load->view('template/head', $headdata); ?>
                 if(photoadded) {
                     calls.push($.ajax({
                         type: "POST",
-                        url: "<?=site_url()?>article/ajax_add_photo/<?=$article->date?>/<?=$article->id?>",
+                        url: "<?php echo site_url()?>article/ajax_add_photo/<?php echo $article->date?>/<?php echo $article->id?>",
                         data: 
                             "img=" + $('#dnd-holder').css('background-image') + 
                             "&credit=" + urlencode($("#photocreditbonus").html()) +
@@ -687,7 +687,7 @@ $this->load->view('template/head', $headdata); ?>
                 // and body, only if it's been edited
                 calls.push($.ajax({
                     type: "POST",
-                    url: "<?=site_url()?>article/edit/<?=$article->id?>",
+                    url: "<?php echo site_url()?>article/edit/<?php echo $article->id?>",
                     data: ajaxrequest,
                     success: function(result){
                         if(result=="Refreshing...") { refresh = true; }
@@ -719,7 +719,7 @@ $this->load->view('template/head', $headdata); ?>
                 $.when.apply($, calls).then(function() {
                     $("#savenotify").html(statusMessage);
                     if(window.publish) {
-                        window.location = "<?=site_url()?>"; 
+                        window.location = "<?php echo site_url()?>"; 
                     }
                     if(refresh) { 
                         window.location.reload(); 
@@ -733,12 +733,12 @@ $this->load->view('template/head', $headdata); ?>
                 if(confirm("Are you sure you want to delete this article? (If this article has already been published, it's probs not kosher to delete it.)")) {
                     $.ajax({
                         type: "POST",
-                        url: "<?=site_url()?>article/ajax_delete_article/<?=$article->id?>",
+                        url: "<?php echo site_url()?>article/ajax_delete_article/<?php echo $article->id?>",
                         data: "remove=true",
                         success: function(result){
                             if(result=="Article deleted.") {
                                 //return home
-                                window.location = "<?=site_url()?>";
+                                window.location = "<?php echo site_url()?>";
                             }
                             //show alert
                             $("#savenotify").html(result);
@@ -758,7 +758,7 @@ $this->load->view('template/head', $headdata); ?>
               
                 $.ajax({
                     type: "POST",
-                    url: "<?=site_url()?>article/ajax_remove_article_author/"+articleAuthorId,
+                    url: "<?php echo site_url()?>article/ajax_remove_article_author/"+articleAuthorId,
                     data: "remove=true",
                     success: function(result){
                         if(result=="Author removed.") {
@@ -780,7 +780,7 @@ $this->load->view('template/head', $headdata); ?>
               
                 $.ajax({
                     type: "POST",
-                    url: "<?=site_url()?>article/ajax_delete_photo/"+photoId,
+                    url: "<?php echo site_url()?>article/ajax_delete_photo/"+photoId,
                     data: "remove=true",
                     success: function(result){
                         if(result=="Photo deleted.") {
@@ -804,7 +804,7 @@ $this->load->view('template/head', $headdata); ?>
               
                 $.ajax({
                     type: "POST",
-                    url: "<?=site_url()?>article/ajax_bigphoto/"+<?=$article->id?>,
+                    url: "<?php echo site_url()?>article/ajax_bigphoto/"+<?php echo $article->id?>,
                     data: "bigphoto="+toggle,
                     success: function(result){
                         if(result=="Bigphoto enabled.") {
@@ -830,7 +830,7 @@ $this->load->view('template/head', $headdata); ?>
                 event.preventDefault();
                 $.ajax({
                     type: "POST",
-                    url: "<?=site_url()?>article/ajax_add_attachment/<?=$article->id?>",
+                    url: "<?php echo site_url()?>article/ajax_add_attachment/<?php echo $article->id?>",
                     data: {
                         type: "html",
                         content1: urlencode($("input[name=html-code]").val())
@@ -853,7 +853,7 @@ $this->load->view('template/head', $headdata); ?>
                 event.preventDefault();
                 $.ajax({
                     type: "POST",
-                    url: "<?=site_url()?>article/ajax_add_attachment/<?=$article->id?>",
+                    url: "<?php echo site_url()?>article/ajax_add_attachment/<?php echo $article->id?>",
                     data: {
                         type:       "video",
                         content1:   urlencode($('input[name=video-url]').val())
@@ -900,7 +900,7 @@ $this->load->view('template/head', $headdata); ?>
               
                 $.ajax({
                     type: "POST",
-                    url: "<?=site_url()?>article/ajax_delete_attachment/"+attachmentId,
+                    url: "<?php echo site_url()?>article/ajax_delete_attachment/"+attachmentId,
                     data: ajaxrequest,
                     dataType: 'json',
                     success: function(result){
@@ -923,7 +923,7 @@ $this->load->view('template/head', $headdata); ?>
               
                 $.ajax({
                     type: "POST",
-                    url: "<?=site_url()?>article/ajax_attachment_big/"+attachmentId,
+                    url: "<?php echo site_url()?>article/ajax_attachment_big/"+attachmentId,
                     data: "big="+toggle,
                     success: function(result){
                         if(result=="Big enabled.") {
@@ -956,46 +956,46 @@ $this->load->view('template/head', $headdata); ?>
 
         $(function() {
             $( "#addauthor" ).autocomplete({
-                source: "<?=site_url()?>article/ajax_suggest/author/name"
+                source: "<?php echo site_url()?>article/ajax_suggest/author/name"
             });
         });
 
         $(function() {
             $( "#addauthorjob" ).autocomplete({
-                source: "<?=site_url()?>article/ajax_suggest/job/name"
+                source: "<?php echo site_url()?>article/ajax_suggest/job/name"
             });
         });
 
 
         $(function() {
             $( "#photocreditbonus" ).autocomplete({
-                source: "<?=site_url()?>article/ajax_suggest/author/name"
+                source: "<?php echo site_url()?>article/ajax_suggest/author/name"
             });
         });
 
-        <? if(!empty($photos)): ?>
-            <? foreach($photos as $photo): ?>
+        <?php if(!empty($photos)): ?>
+            <?php foreach($photos as $photo): ?>
                 $(function() {
-                    $( "#photocredit<?=$photo->photo_id?>" ).autocomplete({
-                        source: "<?=site_url()?>article/ajax_suggest/author/name"
+                    $( "#photocredit<?php echo $photo->photo_id?>" ).autocomplete({
+                        source: "<?php echo site_url()?>article/ajax_suggest/author/name"
                     });
                 });
-            <? endforeach; ?>
-        <? endif; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
       
-        <? if(!empty($attachments)): ?>
-            <? foreach($attachments as $attachment): ?>
+        <?php if(!empty($attachments)): ?>
+            <?php foreach($attachments as $attachment): ?>
                 $(function() {
-                    $( "#attachmentcredit<?=$attachment->id?>" ).autocomplete({
-                      source: "<?=site_url()?>article/ajax_suggest/author/name"
+                    $( "#attachmentcredit<?php echo $attachment->id?>" ).autocomplete({
+                      source: "<?php echo site_url()?>article/ajax_suggest/author/name"
                     });
                 });
-            <? endforeach; ?>
-        <? endif; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
       
         $(function() {
             $( "#series" ).autocomplete({
-                source: "<?=site_url()?>article/ajax_suggest/series/name"
+                source: "<?php echo site_url()?>article/ajax_suggest/series/name"
             });
         });
 
@@ -1111,6 +1111,6 @@ $this->load->view('template/head', $headdata); ?>
             }
         </script>
       
-    <? endif; ?>
+    <?php endif; ?>
 </body>
 </html>

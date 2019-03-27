@@ -1,8 +1,8 @@
-<? $this->load->view('template/head'); ?>
+<?php $this->load->view('template/head'); ?>
 
 <body>
 
-<? $this->load->view('template/bodyheader', $headerdata); ?>
+<?php $this->load->view('template/bodyheader', $headerdata); ?>
 
 <div id="content">
     
@@ -17,17 +17,17 @@
         
         <div id="articlebody" class="articlebody">
         
-            <form action="<?=site_url()?>advsearch" id="adv-search" method="get">
+            <form action="<?php echo site_url()?>advsearch" id="adv-search" method="get">
             
-                <input class="" type="text" placeholder="Title" name="title" autofocus <? if(!empty($searchdata['title'])):?>value="<?= $searchdata['title'] ?>"<?endif;?>>
+                <input class="" type="text" placeholder="Title" name="title" autofocus <?php if(!empty($searchdata['title'])):?>value="<?php echo  $searchdata['title'] ?>"<?php endif;?>>
                 
-                <br/><input class="" type="text" placeholder="Author" name="author" <? if(!empty($searchdata['author'])):?>value="<?= $searchdata['author'] ?>"<?endif;?>>
-                <input class="" type="text" placeholder="Series" name="series" <? if(!empty($searchdata['series'])):?>value="<?= $searchdata['series'] ?>"<?endif;?>>
+                <br/><input class="" type="text" placeholder="Author" name="author" <?php if(!empty($searchdata['author'])):?>value="<?php echo  $searchdata['author'] ?>"<?php endif;?>>
+                <input class="" type="text" placeholder="Series" name="series" <?php if(!empty($searchdata['series'])):?>value="<?php echo  $searchdata['series'] ?>"<?php endif;?>>
                 
-                <br/><input class="" type="date" placeholder="Since date" name="since" <? if(!empty($searchdata['since'])):?>value="<?= $searchdata['since'] ?>"<?endif;?>>
-                – <input class="" type="date" placeholder="Until date" name="until" <? if(!empty($searchdata['until'])):?>value="<?= $searchdata['until'] ?>"<?endif;?>>
+                <br/><input class="" type="date" placeholder="Since date" name="since" <?php if(!empty($searchdata['since'])):?>value="<?php echo  $searchdata['since'] ?>"<?php endif;?>>
+                – <input class="" type="date" placeholder="Until date" name="until" <?php if(!empty($searchdata['until'])):?>value="<?php echo  $searchdata['until'] ?>"<?php endif;?>>
                 
-                <br/>Featured: <?= form_checkbox('featured', 'featured', (!empty($searchdata['featured']))); ?>
+                <br/>Featured: <?php echo  form_checkbox('featured', 'featured', (!empty($searchdata['featured']))); ?>
                 
                 <br/><button id="submit" type="submit">Search</button>
                 
@@ -35,27 +35,27 @@
  
         </div>
       
-          <? if(!empty($articles)): ?>
+          <?php if(!empty($articles)): ?>
         <section id="results" class="">
             <h2>Results</h2>    
-            <?$blocktype = array(
+            <?php $blocktype = array(
                 "blocks"=>$articles,
                 "twotier"=>TRUE,
                 "dateified"=>TRUE);?>
-            <?$this->load->view('template/articleblock', $blocktype);?>
+            <?php $this->load->view('template/articleblock', $blocktype);?>
         </section>
-        <? elseif(!empty($searchdata)): ?>
+        <?php elseif(!empty($searchdata)): ?>
         <p>No results.</p>
-        <? endif; ?>
+        <?php endif; ?>
       
       
     </article>
 
 </div>
 
-<? $this->load->view('template/bodyfooter', $footerdata); ?>
+<?php $this->load->view('template/bodyfooter', $footerdata); ?>
 
-<? $this->load->view('bonus/bonusbar', TRUE); ?>
+<?php $this->load->view('bonus/bonusbar', TRUE); ?>
 
 </body>
 

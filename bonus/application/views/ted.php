@@ -9,7 +9,7 @@
 <style>
 
 body {
-    background-image: url(<?=base_url()?>img/ted.jpeg);
+    background-image: url(<?php echo base_url()?>img/ted.jpeg);
     background-size: cover;
 }
 
@@ -104,7 +104,7 @@ blockquote p {
 <p id="savenotify"></p>
 
 <blockquote class="oval-thought">
-    <p id="message" contenteditable="true"><?=$message?></p>
+    <p id="message" contenteditable="true"><?php echo $message?></p>
 </blockquote>
 
 <script>
@@ -116,7 +116,7 @@ $(document).ready(function()
             e.preventDefault();
             $.ajax({
                 type: "POST",
-                url: "<?=site_url()?>ted/add",
+                url: "<?php echo site_url()?>ted/add",
                 data: "message=" + $("#message").html(),
                 success: function(result){
                     $("#savenotify").html(result);

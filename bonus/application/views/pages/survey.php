@@ -1,4 +1,4 @@
-<? $this->load->view('template/head'); ?>
+<?php $this->load->view('template/head'); ?>
 
 <style>
 .survey {
@@ -28,7 +28,7 @@
 
 <body>
 
-<? $this->load->view('template/bodyheader', $headerdata); ?>
+<?php $this->load->view('template/bodyheader', $headerdata); ?>
 
 <div id="content">    
     <!-- 
@@ -50,9 +50,9 @@
     </script>
 </div>
 
-<? $this->load->view('template/bodyfooter', $footerdata); ?>
+<?php $this->load->view('template/bodyfooter', $footerdata); ?>
 
-<? $this->load->view('bonus/bonusbar', TRUE); ?>
+<?php $this->load->view('bonus/bonusbar', TRUE); ?>
 
 </body>
 

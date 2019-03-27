@@ -1,8 +1,8 @@
-<? $this->load->view('template/head'); ?>
+<?php $this->load->view('template/head'); ?>
 
 <body>
 
-<? $this->load->view('template/bodyheader', $headerdata); ?>
+<?php $this->load->view('template/bodyheader', $headerdata); ?>
 
 <div id="content">
 
@@ -14,7 +14,7 @@
             </hgroup>
         </header>
 
-        <img src="<?=base_url()?>img/connect-please.jpg" align="right" title="Katie Fitch, The Bowdoin Orient" id="connect-please" class="hidemobile">
+        <img src="<?php echo base_url()?>img/connect-please.jpg" align="right" title="Katie Fitch, The Bowdoin Orient" id="connect-please" class="hidemobile">
 
         <div id="pagescontentbody" class="pagescontentbody">
               <p>The Bowdoin Orient<br/>
@@ -68,9 +68,9 @@
 
 </div>
 
-<? $this->load->view('template/bodyfooter', $footerdata); ?>
+<?php $this->load->view('template/bodyfooter', $footerdata); ?>
 
-<? $this->load->view('bonus/bonusbar', TRUE); ?>
+<?php $this->load->view('bonus/bonusbar', TRUE); ?>
 
 </body>
 

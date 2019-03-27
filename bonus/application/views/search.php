@@ -1,8 +1,8 @@
-<? $this->load->view('template/head'); ?>
+<?php $this->load->view('template/head'); ?>
 
 <body>
 
-<? $this->load->view('template/bodyheader', $headerdata); ?>
+<?php $this->load->view('template/bodyheader', $headerdata); ?>
 
 <div id="content">
     
@@ -16,8 +16,8 @@
         </header>
         
         <div id="bigsearch">
-            <form action="<?=site_url()?>search" id="cse-search-box" method="get">
-                <input class="filterinput" type="text" value="<?=$query?>" name="q" autofocus>
+            <form action="<?php echo site_url()?>search" id="cse-search-box" method="get">
+                <input class="filterinput" type="text" value="<?php echo $query?>" name="q" autofocus>
             </form>
         </div>
         
@@ -55,7 +55,7 @@
               }, true);
             </script>
             
-            <p><?=anchor('advsearch','Advanced search')?></p>
+            <p><?php echo anchor('advsearch','Advanced search')?></p>
              
         </div>
       
@@ -63,9 +63,9 @@
 
 </div>
 
-<? $this->load->view('template/bodyfooter', $footerdata); ?>
+<?php $this->load->view('template/bodyfooter', $footerdata); ?>
 
-<? $this->load->view('bonus/bonusbar', TRUE); ?>
+<?php $this->load->view('bonus/bonusbar', TRUE); ?>
 
 </body>
 

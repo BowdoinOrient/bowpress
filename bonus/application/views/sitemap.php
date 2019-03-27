@@ -1,4 +1,4 @@
-<?= '<?xml version="1.0" encoding="UTF-8"?>' ?>
+<?php echo  '<?xml version="1.0" encoding="UTF-8"?>' ?>
 
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
@@ -26,28 +26,28 @@
       <loc>http://bowdoinorient.com/search</loc>
    </url>
    
-<? foreach($articles as $article): ?>
+<?php foreach($articles as $article): ?>
 
    <url>
-      <loc>http://bowdoinorient.com/article/<?=$article->id?></loc>
+      <loc>http://bowdoinorient.com/article/<?php echo $article->id?></loc>
    </url>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
-<? foreach($authors as $author): ?>
+<?php foreach($authors as $author): ?>
 
    <url>
-      <loc>http://bowdoinorient.com/author/<?=$author->id?></loc>
+      <loc>http://bowdoinorient.com/author/<?php echo $author->id?></loc>
    </url>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
-<? foreach($series as $serie): ?>
+<?php foreach($series as $serie): ?>
 
    <url>
-      <loc>http://bowdoinorient.com/series/<?=$serie->id?></loc>
+      <loc>http://bowdoinorient.com/series/<?php echo $serie->id?></loc>
    </url>
 
-<? endforeach; ?>
+<?php endforeach; ?>
 
 </urlset>

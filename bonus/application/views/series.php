@@ -1,22 +1,22 @@
-<? $this->load->view('template/head'); ?>
+<?php $this->load->view('template/head'); ?>
 
 <body>
 
-<? $this->load->view('template/bodyheader', $headerdata); ?>
+<?php $this->load->view('template/bodyheader', $headerdata); ?>
 
 <div id="content">
             
     <header class="authorheader">
                 
-        <? if(!empty($series->photo)): ?>
-            <figure class="authorpic"><img src="<?=base_url().'images/series/'.$series->photo?>"></figure>
-        <? endif; ?>
+        <?php if(!empty($series->photo)): ?>
+            <figure class="authorpic"><img src="<?php echo base_url().'images/series/'.$series->photo?>"></figure>
+        <?php endif; ?>
         
             <!-- MARGIN-BOTTOM HERE IS TEMPORARY UNTIL HEADER GETS FLESHED OUT -->
         <div class="authorstats" style="margin-bottom:0!important;">
-            <h2 class="authorname"><?=$series->name?></h2>
+            <h2 class="authorname"><?php echo $series->name?></h2>
             
-            <? if(!empty($series->description)): ?><?= $series->description ?><? endif; ?>
+            <?php if(!empty($series->description)): ?><?php echo  $series->description ?><?php endif; ?>
         </div>
                 
     </header>
@@ -34,25 +34,25 @@
         /* FOR NON-TABLETS */
             @media all and (min-width: 961px) {
             .statblock {
-                width: <?=$colwidth?>%;
+                width: <?php echo $colwidth?>%;
             }
         }
         </style>
         
-        <? if(!empty($contributors)): ?>
+        <?php if(!empty($contributors)): ?>
         <div class="statblock">
             <h2>Contributors</h2>
-            <?$blocktype = array(
+            <?php $blocktype = array(
                 "blocks"=>$contributors,
                 "articles"=>FALSE,
                 "autoheight"=>TRUE,
                 "contrib"=>TRUE);?>
-            <?$this->load->view('template/smalltile', $blocktype);?>
+            <?php $this->load->view('template/smalltile', $blocktype);?>
         </div>
-        <? endif; ?>
+        <?php endif; ?>
         
         <h2>All articles</h2>
-        <?$blockparams = array(
+        <?php $blockparams = array(
             "blocks"=>$articles,
             "twotier"=>TRUE);
         $this->load->view('template/articleblock', $blockparams);?>    
@@ -60,9 +60,9 @@
     
 </div>
 
-<? $this->load->view('template/bodyfooter', $footerdata); ?>
+<?php $this->load->view('template/bodyfooter', $footerdata); ?>
 
-<? $this->load->view('bonus/bonusbar', TRUE); ?>
+<?php $this->load->view('bonus/bonusbar', TRUE); ?>
 
 </body>
 

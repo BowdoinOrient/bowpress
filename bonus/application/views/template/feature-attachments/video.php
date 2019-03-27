@@ -1,5 +1,5 @@
-<div class="attachment video" data-afterpar="<?=$afterpar?>">
-    <? 
+<div class="attachment video" data-afterpar="<?php echo $afterpar?>">
+    <?php 
         if ($type == 'vimeo') {
             $json = json_decode(file_get_contents("http://vimeo.com/api/oembed.json?url=http%3A//vimeo.com/".$content1), true);
         } elseif ($type == 'youtube') {
@@ -21,10 +21,10 @@
             $embed->src = $embed->src."&html5=1";
         }
     ?>
-    <iframe width="<?=$embed->width?>" height="<?=$embed->height?>" src="<?=$embed->src?>" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen data-afterpar="<?=$afterpar?>"></iframe>
+    <iframe width="<?php echo $embed->width?>" height="<?php echo $embed->height?>" src="<?php echo $embed->src?>" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen data-afterpar="<?php echo $afterpar?>"></iframe>
 </div>
 <script>
-    $vid = $(".video iframe").filter("[data-afterpar='<?=$afterpar?>']");
+    $vid = $(".video iframe").filter("[data-afterpar='<?php echo $afterpar?>']");
     $aspectratio = $vid.height() / $vid.width();
     $vid.css("width", "100%");
     $vid.css("height", $vid.width() * $aspectratio);

@@ -5,85 +5,85 @@ $this->load->view('template/head', $headdata); ?>
 
 <body>
 
-    <? $this->load->view('template/bodyheader', $headerdata); ?>
+    <?php $this->load->view('template/bodyheader', $headerdata); ?>
 
     <div id="content">
 
-        <article id="mainstory" data-article-id="<?=$article->id?>">
+        <article id="mainstory" data-article-id="<?php echo $article->id?>">
 
             <header>
                 <hgroup class="articletitle-group">
 
                 <!-- NEXT / PREV -->
                 <div class="article_header_nav hidetablet hidemobile">
-                    <? if(!empty($series_previous)): ?>
-                        <?$leftblock = array(
+                    <?php if(!empty($series_previous)): ?>
+                        <?php $leftblock = array(
                             "blocks"=>$series_previous,
                             "leftmargin"=>TRUE,
                             "rightmargin"=>FALSE);?>
-                        <?$this->load->view('template/articleblock', $leftblock);?>
+                        <?php $this->load->view('template/articleblock', $leftblock);?>
                         <script type="text/javascript">if(!isFullyVisible($('.leftmargin')))$(".leftmargin").hide();</script>
-                    <? endif;?>
-                    <? if(!empty($series_next)): ?>
-                        <?$rightblock = array(
+                    <?php endif;?>
+                    <?php if(!empty($series_next)): ?>
+                        <?php $rightblock = array(
                             "blocks"=>$series_next,
                             "rightmargin"=>TRUE,
                             "leftmargin"=>FALSE);?>
-                        <?$this->load->view('template/articleblock', $rightblock);?>
+                        <?php $this->load->view('template/articleblock', $rightblock);?>
                         <script type="text/javascript">if(!isFullyVisible($('.rightmargin')))$(".rightmargin").hide();</script>
-                    <? endif; ?>
+                    <?php endif; ?>
                 </div>
 
-                <? if($article->series || bonus()): ?>
-                    <h3 id="series" class="series"<?if(bonus()):?> contenteditable="true" title="Series"<?endif;?>>
-                <? if(!bonus()): ?><a href="<?=site_url()?>series/<?=$series->id?>"><? endif; ?>
-                <?=$series->name?>
-                <? if(!bonus()): ?></a><? endif; ?>
+                <?php if($article->series || bonus()): ?>
+                    <h3 id="series" class="series"<?php if(bonus()):?> contenteditable="true" title="Series"<?php endif;?>>
+                <?php if(!bonus()): ?><a href="<?php echo site_url()?>series/<?php echo $series->id?>"><?php endif; ?>
+                <?php echo $series->name?>
+                <?php if(!bonus()): ?></a><?php endif; ?>
                     </h3>
-                <? endif; ?>
+                <?php endif; ?>
 
-                <h2 id="articletitle" class="articletitle <?= ($article->published ? '' : 'draft'); ?>"<?if(bonus()):?> contenteditable="true" title="Title"<?endif;?>><?=$article->title?></h2>
-                <? if(bonus()): ?><div id="title" class="charsremaining"></div><? endif; ?>
-                <h3 id="articlesubtitle" class="articlesubtitle"<?if(bonus()):?> contenteditable="true" title="Subtitle"<?endif;?>><? if(isset($article->subtitle)): ?><?=$article->subtitle?><? endif; ?></h3>
-                <? if(bonus()): ?><div id="subtitle" class="charsremaining"></div><? endif; ?>
+                <h2 id="articletitle" class="articletitle <?php echo  ($article->published ? '' : 'draft'); ?>"<?php if(bonus()):?> contenteditable="true" title="Title"<?php endif;?>><?php echo $article->title?></h2>
+                <?php if(bonus()): ?><div id="title" class="charsremaining"></div><?php endif; ?>
+                <h3 id="articlesubtitle" class="articlesubtitle"<?php if(bonus()):?> contenteditable="true" title="Subtitle"<?php endif;?>><?php if(isset($article->subtitle)): ?><?php echo $article->subtitle?><?php endif; ?></h3>
+                <?php if(bonus()): ?><div id="subtitle" class="charsremaining"></div><?php endif; ?>
 
             </hgroup>
 
         <div id="authorblock">
-            <? if(bonus() && $series->name != "Editorial"): ?>
-                <div class="opinion-notice"><input type="checkbox" name="opinion" value="opinion" <? if($article->opinion): ?>checked="checked"<? endif; ?> /> Does this piece represent the opinion of the author?</div>
-            <? endif; ?>
-            <? if($series->name == "Editorial"): ?>
-                <object data="<?=base_url()?>img/icon-opinion.svg" type="image/svg+xml" class="opinion-icon" height="20" width="20" title="Plinio Fernandes, from The Noun Project"></object>
+            <?php if(bonus() && $series->name != "Editorial"): ?>
+                <div class="opinion-notice"><input type="checkbox" name="opinion" value="opinion" <?php if($article->opinion): ?>checked="checked"<?php endif; ?> /> Does this piece represent the opinion of the author?</div>
+            <?php endif; ?>
+            <?php if($series->name == "Editorial"): ?>
+                <object data="<?php echo base_url()?>img/icon-opinion.svg" type="image/svg+xml" class="opinion-icon" height="20" width="20" title="Plinio Fernandes, from The Noun Project"></object>
                 <div class="opinion-notice">This piece represents the opinion of <span style="font-style:normal;">The Bowdoin Orient</span> editorial board.</div>
-            <? endif; ?>
-            <? if($authors): ?>
-                <? if($article->opinion == '1' && !bonus()): ?>
-                    <object data="<?=base_url()?>img/icon-opinion.svg" type="image/svg+xml" class="opinion-icon" height="20" width="20" title="Plinio Fernandes, from The Noun Project"></object>
-                    <div class="opinion-notice">This piece represents the opinion of the author<?if(count($authors)>1):?>s<?endif;?>:</div>
-                <? endif; ?>
-                <? foreach($authors as $key => $author): ?>
-                    <a href="<?=site_url()?>author/<?=$author->authorid?>">
-                        <div id="author<?=$author->articleauthorid?>" class="authortile<? if(bonus()):?> bonus<? endif; ?> <?if($article->opinion == '1'):?>opinion<? endif; ?>">
-                            <? if(bonus()): ?><div id="deleteAuthor<?=$author->articleauthorid?>" class="delete">&times;</div><? endif; ?>
-                            <? if(!empty($author->photo) && $article->opinion): ?><img src="<?=base_url().'images/authors/'.$author->photo?>" class="authorpic"><? endif; ?>
+            <?php endif; ?>
+            <?php if($authors): ?>
+                <?php if($article->opinion == '1' && !bonus()): ?>
+                    <object data="<?php echo base_url()?>img/icon-opinion.svg" type="image/svg+xml" class="opinion-icon" height="20" width="20" title="Plinio Fernandes, from The Noun Project"></object>
+                    <div class="opinion-notice">This piece represents the opinion of the author<?php if(count($authors)>1):?>s<?php endif;?>:</div>
+                <?php endif; ?>
+                <?php foreach($authors as $key => $author): ?>
+                    <a href="<?php echo site_url()?>author/<?php echo $author->authorid?>">
+                        <div id="author<?php echo $author->articleauthorid?>" class="authortile<?php if(bonus()):?> bonus<?php endif; ?> <?php if($article->opinion == '1'):?>opinion<?php endif; ?>">
+                            <?php if(bonus()): ?><div id="deleteAuthor<?php echo $author->articleauthorid?>" class="delete">&times;</div><?php endif; ?>
+                            <?php if(!empty($author->photo) && $article->opinion): ?><img src="<?php echo base_url().'images/authors/'.$author->photo?>" class="authorpic"><?php endif; ?>
                             <div class="authortext">
-                                <div class="articleauthor"><?=$author->authorname?></div>
-                                <div class="articleauthorjob"><?=$author->jobname?></div>
+                                <div class="articleauthor"><?php echo $author->authorname?></div>
+                                <div class="articleauthorjob"><?php echo $author->jobname?></div>
                             </div>
                         </div>
                     </a>
-                <? endforeach; ?>
-            <? endif; ?>
-            <? if(bonus()): ?>
-                <div class="authortile bonus <?if($article->opinion == '1'):?>opinion<? endif; ?>">
+                <?php endforeach; ?>
+            <?php endif; ?>
+            <?php if(bonus()): ?>
+                <div class="authortile bonus <?php if($article->opinion == '1'):?>opinion<?php endif; ?>">
                     <div class="articleauthor" id="addauthor" contenteditable="true" title="Author"></div>
                     <div class="articleauthorjob" id="addauthorjob" contenteditable="true" title="Author job"></div>
                 </div>
-            <? endif; ?>
+            <?php endif; ?>
         </div>
 
-        <p class="articledate"><time pubdate datetime="<?=$article->date?>"><?=date("F j, Y",strtotime($article->date))?></time></p>
+        <p class="articledate"><time pubdate datetime="<?php echo $article->date?>"><?php echo date("F j, Y",strtotime($article->date))?></time></p>
             </header>
 
             <!-- catcher is used to trigger sticky sidebar, currently disabled (see below) -->
@@ -157,14 +157,14 @@ $this->load->view('template/head', $headdata); ?>
                     ?>
                 </div>
                 <div id="bonus-attachments">
-                    <? if(bonus()): ?>
+                    <?php if(bonus()): ?>
                         <!-- image upload -->
                         <figure class="articlemedia mini">
                             <div id="dnd-holder" class="bonus-attachment">
                                 <!-- imageupload input has opacity set to zero, width and height set to 100%, so you can click anywhere to upload -->
                                 <input id="imageupload" class="imageupload" type=file accept="image/gif,image/jpeg,image/png">
                                 <div id="dnd-instructions">
-                                    <img src="<?=base_url()?>img/icon-uploadphoto.png" type="image/svg+xml" height="50" width="50" title=""></object>
+                                    <img src="<?php echo base_url()?>img/icon-uploadphoto.png" type="image/svg+xml" height="50" width="50" title=""></object>
                                     <br/>Click or drag
                                     <br/>JPG, PNG or GIF
                                 </div>
@@ -179,7 +179,7 @@ $this->load->view('template/head', $headdata); ?>
                         <!-- video attachment -->
                         <figure class="articlemedia mini">
                             <div id="video-attach" class="bonus-attachment">
-                                <img src="<?=base_url()?>img/icon-video.png" width="45" title="Thomas Le Bas, from The Noun Project"></object>
+                                <img src="<?php echo base_url()?>img/icon-video.png" width="45" title="Thomas Le Bas, from The Noun Project"></object>
                                 <form>
                                     <br/><input type="text" style="width:160px" name="video-url" placeholder="YouTube or Vimeo URL"></input>
                                     <br/><button type="submit" id="attach-video">Attach</button>
@@ -190,7 +190,7 @@ $this->load->view('template/head', $headdata); ?>
                         <!-- HTML inliner -->
                         <figure class="articlemedia mini">
                             <div id="html-attach" class="bonus-attachment">
-                                <img src="<?=base_url()?>img/icon-code.png" width="45" title=""></object>
+                                <img src="<?php echo base_url()?>img/icon-code.png" width="45" title=""></object>
                                 <form>
                                     <br/><input type="text" style="width:160px" name="html-code" placeholder="Raw HTML code"></input>
                                     <br/><button type="submit" id="insert-code">Insert</button>
@@ -198,7 +198,7 @@ $this->load->view('template/head', $headdata); ?>
                             </div>
                         </figure>
 
-                    <? endif; ?>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -208,10 +208,10 @@ $this->load->view('template/head', $headdata); ?>
             <div id="toc_container_catcher"></div>
             <div id="toc_container"></div>
 
-            <div id="articlebody" class="articlebody"<?if(bonus()):?> contenteditable="true" title="Article body"<?endif;?>>
-                <? if(!empty($body)): ?>
-                <?=$body->body;?>
-                <? endif; ?>
+            <div id="articlebody" class="articlebody"<?php if(bonus()):?> contenteditable="true" title="Article body"<?php endif;?>>
+                <?php if(!empty($body)): ?>
+                <?php echo $body->body;?>
+                <?php endif; ?>
             </div>
 
             </div>
@@ -220,7 +220,7 @@ $this->load->view('template/head', $headdata); ?>
         </article>
     </div>
 
-    <? $this->load->view('template/bodyfooter', $footerdata); ?>
+    <?php $this->load->view('template/bodyfooter', $footerdata); ?>
 </body>
 
 

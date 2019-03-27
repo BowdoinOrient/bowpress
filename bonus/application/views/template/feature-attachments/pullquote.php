@@ -1,6 +1,6 @@
-<div class="attachment pullquote" data-afterpar="<?=$afterpar?>">
-    <p class="quote"><?=$content1?></p>
-    <?if($content2 != null): ?>
-        <p class="credit">—<?=$content2?></p>
-    <? endif; ?>
+<div class="attachment pullquote" data-afterpar="<?php echo $afterpar?>">
+    <p class="quote"><?php echo $content1?></p>
+    <?php if($content2 != null): ?>
+        <p class="credit">—<?php echo $content2?></p>
+    <?php endif; ?>
 </div>

@@ -1,16 +1,16 @@
-    <? if(!empty($featured)): ?>
+    <?php if(!empty($featured)): ?>
     <!-- FEATURED ARTICLES -->
     <section id="Featured" class="featured">
         <h2>★ Featured 
-            <? if(substr(uri_string(),0,8)=="article/" && bonus()): ?> <input type="checkbox" name="featured" value="featured" <? if($article->featured): ?>checked="checked"<? endif; ?> /><?endif;?>
+            <?php if(substr(uri_string(),0,8)=="article/" && bonus()): ?> <input type="checkbox" name="featured" value="featured" <?php if($article->featured): ?>checked="checked"<?php endif; ?> /><?php endif;?>
         </h2>
-        <?$blocktype = array(
+        <?php $blocktype = array(
             "blocks"=>$featured,
             "twotier"=>FALSE,
             "medtile"=>TRUE);?>
-        <?$this->load->view('template/articleblock', $blocktype);?>
+        <?php $this->load->view('template/articleblock', $blocktype);?>
     </section>
-    <? endif; ?>
+    <?php endif; ?>
 
     <footer id="bodyfooter">
         
@@ -22,17 +22,17 @@
                 <span class="street-address">6200 College Station</span><br>
                 <span class="locality">Brunswick</span>, <span class="region">Maine</span> <span class="postal-code">04011</span><br>
             </span>
-            <div id="copyright"><small>&copy; <?=date("Y")?>, The Bowdoin Orient</a>.</small></div>
+            <div id="copyright"><small>&copy; <?php echo date("Y")?>, The Bowdoin Orient</a>.</small></div>
         </div>
         
         <div id="footerlinks">
             <ul>
-                <li><a href="<?=site_url()?>search">Search</a><span class="hidemobile"> <a href="<?=site_url()?>advsearch">(Adv)</a></span></li>
-                <li><a href="<?=site_url()?>about">About</a></li>
-                <!--<li><a href="<?=site_url()?>archives">Archives</a></li>-->
-                <li><a href="<?=site_url()?>subscribe">Subscribe</a></li>
-                <li><a href="<?=site_url()?>advertise">Advertise</a></li>
-                <li><a href="<?=site_url()?>contact">Contact</a></li>
+                <li><a href="<?php echo site_url()?>search">Search</a><span class="hidemobile"> <a href="<?php echo site_url()?>advsearch">(Adv)</a></span></li>
+                <li><a href="<?php echo site_url()?>about">About</a></li>
+                <!--<li><a href="<?php echo site_url()?>archives">Archives</a></li>-->
+                <li><a href="<?php echo site_url()?>subscribe">Subscribe</a></li>
+                <li><a href="<?php echo site_url()?>advertise">Advertise</a></li>
+                <li><a href="<?php echo site_url()?>contact">Contact</a></li>
             </ul>
         </div>
         

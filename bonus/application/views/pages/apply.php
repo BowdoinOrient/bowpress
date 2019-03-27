@@ -1,4 +1,4 @@
-<? $this->load->view('template/head'); ?>
+<?php $this->load->view('template/head'); ?>
 
 <style>
 .content {
@@ -19,7 +19,7 @@ iframe {
 
 <body>
 
-<? $this->load->view('template/bodyheader', $headerdata); ?>
+<?php $this->load->view('template/bodyheader', $headerdata); ?>
 
 <div class="content">    
     <!-- 
@@ -32,8 +32,8 @@ iframe {
     <iframe src="https://docs.google.com/forms/d/1cuTLq15EI7i4rLuUOsBnMA99FZoB24mAfZqroX-9edI/viewform?embedded=true" width="100%" height="3002px" frameborder="0" marginheight="0" marginwidth="0" scrolling="no">Loading...</iframe>
 </div>
 
-<? $this->load->view('template/bodyfooter', $footerdata); ?>
-<? $this->load->view('bonus/bonusbar', TRUE); ?>
+<?php $this->load->view('template/bodyfooter', $footerdata); ?>
+<?php $this->load->view('bonus/bonusbar', TRUE); ?>
 
 </body>
 </html>

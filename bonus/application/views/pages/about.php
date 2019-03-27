@@ -1,8 +1,8 @@
-<? $this->load->view('template/head'); ?>
+<?php $this->load->view('template/head'); ?>
 
 <body>
 
-<? $this->load->view('template/bodyheader', $headerdata); ?>
+<?php $this->load->view('template/bodyheader', $headerdata); ?>
 
 <div id="content">
     
@@ -32,9 +32,9 @@
         <figure id="contents">
             <h3>Related links</h3>
             <ul>
-                <li><?=anchor('ethics','Ethical Practices Policy')?></li>
-                <li><?=anchor('nonremoval', 'Web Non-Removal Policy')?></li>
-                <li><?=anchor('comments', 'Comment Policy')?></li>
+                <li><?php echo anchor('ethics','Ethical Practices Policy')?></li>
+                <li><?php echo anchor('nonremoval', 'Web Non-Removal Policy')?></li>
+                <li><?php echo anchor('comments', 'Comment Policy')?></li>
             </ul>
         </figure>
         
@@ -46,7 +46,7 @@
                         
             <h3>Staff</h3>
             <?//Pulling in the masthead?>
-            <?=$content?>
+            <?php echo $content?>
             
             <div style="clear:both;"></div>
             
@@ -69,9 +69,9 @@
 
 </div>
 
-<? $this->load->view('template/bodyfooter', $footerdata); ?>
+<?php $this->load->view('template/bodyfooter', $footerdata); ?>
 
-<? $this->load->view('bonus/bonusbar', TRUE); ?>
+<?php $this->load->view('bonus/bonusbar', TRUE); ?>
 
 </body>
 

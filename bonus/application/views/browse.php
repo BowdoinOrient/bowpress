@@ -1,8 +1,8 @@
-<? $this->load->view('template/head'); ?>
+<?php $this->load->view('template/head'); ?>
 
 <body>
 
-<? $this->load->view('template/bodyheader', $headerdata); ?>
+<?php $this->load->view('template/bodyheader', $headerdata); ?>
 
 <div id="content">
     <!-- Below-the-fold sidebar -->
@@ -14,22 +14,22 @@
         </div>
 
         <!-- ADS -->
-        <? if($ad): ?>
+        <?php if($ad): ?>
             <h2>Sponsored</h2>
-            <? if(isset($ad->link)):?>
-                <a href="<?=$ad->link?>">
-            <? endif; ?>
-            <? if ($ad->type == "html"): ?>
+            <?php if(isset($ad->link)):?>
+                <a href="<?php echo $ad->link?>">
+            <?php endif; ?>
+            <?php if ($ad->type == "html"): ?>
                 <div class="ad">
-                    <?= file_get_contents(base_url()."ads/".$ad->filename); ?>
+                    <?php echo  file_get_contents(base_url()."ads/".$ad->filename); ?>
                 </div>
-            <? elseif ($ad->type == "image"): ?>
-                <img class="ad" src="<?=base_url()."ads/".$ad->filename?>"/>
-            <? endif; ?>
-            <? if(isset($ad->link)):?>
+            <?php elseif ($ad->type == "image"): ?>
+                <img class="ad" src="<?php echo base_url()."ads/".$ad->filename?>"/>
+            <?php endif; ?>
+            <?php if(isset($ad->link)):?>
                 </a>
-            <? endif; ?>
-        <? endif; ?>
+            <?php endif; ?>
+        <?php endif; ?>
         <!-- end ads -->
 
         <!-- Begin MailChimp Signup Form -->
@@ -45,17 +45,17 @@
         <!-- end MailChimp -->
 
         <!-- Scribd issue download -->
-        <? if($scribd_thumb_url): ?>
+        <?php if($scribd_thumb_url): ?>
         <h2>Download issue</h2>
         <div class="scribd_block">
-            <a href="http://www.scribd.com/doc/<?=$issue->scribd?>" target="new">
-            <img src="<?=$scribd_thumb_url?>" class="issue_thumb">
-            Volume <?=$issue->volume;?><br/>
-            Number <?=$issue->issue_number;?><br/>
-            <?=date("F j, Y",strtotime($issue->issue_date))?>
+            <a href="http://www.scribd.com/doc/<?php echo $issue->scribd?>" target="new">
+            <img src="<?php echo $scribd_thumb_url?>" class="issue_thumb">
+            Volume <?php echo $issue->volume;?><br/>
+            Number <?php echo $issue->issue_number;?><br/>
+            <?php echo date("F j, Y",strtotime($issue->issue_date))?>
             </a>
         </div>
-        <? endif; ?>
+        <?php endif; ?>
         <!-- end Scribd -->
 
         <!-- Disqus recent comments -->
@@ -69,76 +69,76 @@
 
     <section id="bignews">
         <div id="lead" class="hidemobile">
-            <div class="dates"><?=dateify($homepage->leadstory->date, $date)?></div>
-            <? if($homepage->leadstory->series): ?><span class="series"><a href="<?=base_url().'series/'.$homepage->leadstory->series?>"><?=$homepage->leadstory->seriesname?>:</span></a><? endif; ?>
-            <h3><a href="<?=site_url()?>article/<?=$homepage->leadstory->id?>"><?=$homepage->leadstory->title?></a></h3>
-            <span class="bignews-subtitle"><?=$homepage->leadstory->subtitle?></span>
-            <p><?=$homepage->leadstory->excerpt?></p>
-            <div class="bonus-overlay <?if(!bonus()):?>dnone<?endif;?>">
-                <button class="bonus-change <?if(!bonus()):?>dnone<?endif;?>" data-container="1">Change</button>
+            <div class="dates"><?php echo dateify($homepage->leadstory->date, $date)?></div>
+            <?php if($homepage->leadstory->series): ?><span class="series"><a href="<?php echo base_url().'series/'.$homepage->leadstory->series?>"><?php echo $homepage->leadstory->seriesname?>:</span></a><?php endif; ?>
+            <h3><a href="<?php echo site_url()?>article/<?php echo $homepage->leadstory->id?>"><?php echo $homepage->leadstory->title?></a></h3>
+            <span class="bignews-subtitle"><?php echo $homepage->leadstory->subtitle?></span>
+            <p><?php echo $homepage->leadstory->excerpt?></p>
+            <div class="bonus-overlay <?php if(!bonus()):?>dnone<?php endif;?>">
+                <button class="bonus-change <?php if(!bonus()):?>dnone<?php endif;?>" data-container="1">Change</button>
             </div>
         </div>
         <div class="lead overlay"></div>
         <div id="photo">
             <div id="bigphoto">
-                <? if (count($homepage->carousel->photos)==1): ?>
-                    <div class="single-photo" style="background-image:url('<?=base_url()?>images/<?=$homepage->carousel->date?>/<?=$homepage->carousel->photos[0]->filename_large?>')"></div>
-                <? else: ?>
+                <?php if (count($homepage->carousel->photos)==1): ?>
+                    <div class="single-photo" style="background-image:url('<?php echo base_url()?>images/<?php echo $homepage->carousel->date?>/<?php echo $homepage->carousel->photos[0]->filename_large?>')"></div>
+                <?php else: ?>
                     <div id='slider' class='swipe'>
                         <div class='swipe-wrap'>
-                            <? foreach ($homepage->carousel->photos as $photo): ?>
-                                <div class="carousel-photo" style="background-image:url('<?=base_url()?>images/<?=$homepage->carousel->date?>/<?=$photo->filename_large?>')"></div>
-                            <? endforeach; ?>
+                            <?php foreach ($homepage->carousel->photos as $photo): ?>
+                                <div class="carousel-photo" style="background-image:url('<?php echo base_url()?>images/<?php echo $homepage->carousel->date?>/<?php echo $photo->filename_large?>')"></div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
-                <? endif; ?>
+                <?php endif; ?>
             </div>
             <div id="caption">
-                <div class="dates"><?=dateify($homepage->carousel->date, $date)?></div>
-                <h3><a href="<?=site_url()?>article/<?=$homepage->carousel->id?>"><?=$homepage->carousel->title?></a></h3>
+                <div class="dates"><?php echo dateify($homepage->carousel->date, $date)?></div>
+                <h3><a href="<?php echo site_url()?>article/<?php echo $homepage->carousel->id?>"><?php echo $homepage->carousel->title?></a></h3>
             </div>
-            <span class="bignews-subtitle"><?=$homepage->carousel->subtitle?></span>
-            <div class="bonus-overlay <?if(!bonus()):?>dnone<?endif;?>">
-                <button class="bonus-change <?if(!bonus()):?>dnone<?endif;?>" data-container="2">Change</button>
+            <span class="bignews-subtitle"><?php echo $homepage->carousel->subtitle?></span>
+            <div class="bonus-overlay <?php if(!bonus()):?>dnone<?php endif;?>">
+                <button class="bonus-change <?php if(!bonus()):?>dnone<?php endif;?>" data-container="2">Change</button>
             </div>
         </div>
         <div class="photo overlay"></div>
         <div id="teasers" class="hidetablet">
-            <? $i = 3; ?>
-            <? foreach($homepage->teasers as $teaser): ?>
+            <?php $i = 3; ?>
+            <?php foreach($homepage->teasers as $teaser): ?>
                 <div class="teaser">
-                    <div class="dates"><?=dateify($teaser->date, $date)?></div>
-                    <? if($teaser->series): ?><span class="series"><a href="<?=base_url().'series/'.$teaser->series?>"><?=$teaser->seriesname?>:</span></a><? endif; ?>
-                    <h4 class="teaser-hed"><a href="<?=site_url()?>article/<?=$teaser->id?>"><?=$teaser->title?></a></h4>
-                    <span class="bignews-subtitle"><?=$teaser->subtitle?></span>
-                    <div class="bonus-overlay <?if(!bonus()):?>dnone<?endif;?>">
-                        <button class="bonus-change <?if(!bonus()):?>dnone<?endif;?>" data-container="<?=$i?>">Change</button>
+                    <div class="dates"><?php echo dateify($teaser->date, $date)?></div>
+                    <?php if($teaser->series): ?><span class="series"><a href="<?php echo base_url().'series/'.$teaser->series?>"><?php echo $teaser->seriesname?>:</span></a><?php endif; ?>
+                    <h4 class="teaser-hed"><a href="<?php echo site_url()?>article/<?php echo $teaser->id?>"><?php echo $teaser->title?></a></h4>
+                    <span class="bignews-subtitle"><?php echo $teaser->subtitle?></span>
+                    <div class="bonus-overlay <?php if(!bonus()):?>dnone<?php endif;?>">
+                        <button class="bonus-change <?php if(!bonus()):?>dnone<?php endif;?>" data-container="<?php echo $i?>">Change</button>
                     </div>
                 </div>
-                <? $i++; ?>
-            <? endforeach; ?>
+                <?php $i++; ?>
+            <?php endforeach; ?>
         </div>
     </section>
 
     <!-- SECTIONS -->
-    <? foreach($sections as $section): ?>
-        <? if(!empty($articles[$section->name])): ?>
-        <section id="<?=$section->name?>" class="issuesection">
-            <h2><?=$section->name?><? if(bonus()): ?><a href="<?=site_url()?>article/add/<?=$issue->volume?>/<?=$issue->issue_number?>/<?=$section->id?>"><button class="bonusbutton" id="addarticlebutton">Add article</button></a><? endif; ?></h2>
-            <?$blocktype = array(
+    <?php foreach($sections as $section): ?>
+        <?php if(!empty($articles[$section->name])): ?>
+        <section id="<?php echo $section->name?>" class="issuesection">
+            <h2><?php echo $section->name?><?php if(bonus()): ?><a href="<?php echo site_url()?>article/add/<?php echo $issue->volume?>/<?php echo $issue->issue_number?>/<?php echo $section->id?>"><button class="bonusbutton" id="addarticlebutton">Add article</button></a><?php endif; ?></h2>
+            <?php $blocktype = array(
                 "blocks"=>$articles[$section->name],
                 "twotier"=>TRUE,
                 "dateified"=>TRUE,
                 "dateoverlay"=>TRUE);?>
-            <?$this->load->view('template/articleblock', $blocktype);?>
+            <?php $this->load->view('template/articleblock', $blocktype);?>
         </section>
-        <? endif; ?>
-    <? endforeach; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
 </div>
 
-<? $this->load->view('template/bodyfooter', $footerdata); ?>
+<?php $this->load->view('template/bodyfooter', $footerdata); ?>
 
-<? $this->load->view('bonus/bonusbar', TRUE); ?>
+<?php $this->load->view('bonus/bonusbar', TRUE); ?>
 
 <script type="text/javascript">
     $(document).ready(function(){
@@ -151,10 +151,10 @@
 
 <script type="text/javascript">
     var selected = 0;
-    <?if(bonus()):?>
-        input_articles = '<? $v=$this->load->view("template/atf-chooser", $articlelists, true); echo(str_replace("'", "\\'", str_replace("\"", "\\\"", str_replace(array("\n", "\r"), "", $v)))); ?>';
-        input_photos = '<? $v=$this->load->view("template/atf-chooser", $photolists, true); echo(str_replace("'", "\\'", str_replace("\"", "\\\"", str_replace(array("\n", "\r"), "", $v)))); ?>';
-    <?endif;?>
+    <?php if(bonus()):?>
+        input_articles = '<?php $v=$this->load->view("template/atf-chooser", $articlelists, true); echo(str_replace("'", "\\'", str_replace("\"", "\\\"", str_replace(array("\n", "\r"), "", $v)))); ?>';
+        input_photos = '<?php $v=$this->load->view("template/atf-chooser", $photolists, true); echo(str_replace("'", "\\'", str_replace("\"", "\\\"", str_replace(array("\n", "\r"), "", $v)))); ?>';
+    <?php endif;?>
 
     $("button.bonus-change").click(function(){
         $button = $(this);

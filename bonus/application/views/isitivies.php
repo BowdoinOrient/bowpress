@@ -46,7 +46,7 @@ p {
 
 <body>
 
-<h1><?= $message; ?></h1>
+<h1><?php echo  $message; ?></h1>
 
 <p><a href="http://bowdoinorientexpress.com/post/21582257886/welcome-to-ivies-2012-5-rules-to-live-by">Five rules to live by (2012)</a></p>
 <p><a href="http://bowdoinorient.com/article/1821">Your guide to surviving Ivies (2006)</a></p>

@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8" />
     <title>The Bowdoin Orient</title>
-    <link rel="shortcut icon" href="<?=base_url()?>/img/favicon.png">
-    <link rel="stylesheet" media="screen" href="<?=base_url()?>/css/orient.css?v=2">
+    <link rel="shortcut icon" href="<?php echo base_url()?>/img/favicon.png">
+    <link rel="stylesheet" media="screen" href="<?php echo base_url()?>/css/orient.css?v=2">
     <meta name = "viewport" content = "initial-scale = 1.0, user-scalable = no">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
     <script type="text/javascript" src="http://use.typekit.com/rmt0nbm.js"></script>
@@ -16,11 +16,11 @@
 
 <header id="mainhead">
     <div id="head-content">
-        <h1 id="wordmark"><a href="<?=site_url()?>"><span class="super">The</span> Bowdoin Orient</a></h1>
+        <h1 id="wordmark"><a href="<?php echo site_url()?>"><span class="super">The</span> Bowdoin Orient</a></h1>
         
         <span id="issuedate" class="plusfluff">&#x25C4; Vol. 140, No. 22 &ndash; May 23, 2011 &#x25BA;</span>
         
-        <span id="issue-viewselect"><a href="index.html"><img src="<?=base_url()?>/img/view-web.png"></a></span>
+        <span id="issue-viewselect"><a href="index.html"><img src="<?php echo base_url()?>/img/view-web.png"></a></span>
         
         <nav class="fluff">
             <ul>
