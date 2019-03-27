@@ -58,7 +58,7 @@ if(empty($page_image)) $page_image=base_url()."img/o-200.png";
     <script type="text/javascript" src="<?php echo base_url()?>js/orient.js?v=2"></script>
     
     <!-- TypeKit -->
-    <script type="text/javascript" src="http://use.typekit.com/rmt0nbm.js"></script>
+    <script type="text/javascript" src="https://use.typekit.com/rmt0nbm.js"></script>
     <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
     
     <!-- SwipeView -->

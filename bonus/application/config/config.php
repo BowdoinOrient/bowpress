@@ -18,7 +18,7 @@
 // Setting the production base url off of $_SERVER scares me a little, so it's bo.com UNLESS
 // it picks up that it's running off a dev computer or from d0g
 
-$config['base_url'] = 'http://bowdoinorient.com/bonus/';
+$config['base_url'] = 'https://bowdoinorient.com/bonus/';
 
 
 if (array_key_exists('SERVER_NAME', $_SERVER)){
