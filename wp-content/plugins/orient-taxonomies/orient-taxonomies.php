@@ -297,3 +297,5 @@ function check_for_coauthors_plus() {
 function child_plugin_notice(){
     echo '<div class="error"><p>The Orient Taxonomies plugin requires the Co-Authors Plus plugin to be installed and active. See the documentation for more details.</p></div>';
 }
+
+include 'custom-fields.php';
