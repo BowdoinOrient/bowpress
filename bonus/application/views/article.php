@@ -91,7 +91,7 @@ $this->load->view('template/head', $headdata); ?>
             <!-- sidebar contains photos, videos, and other attachments -->
             <div id="article-sidebar">
                 <div id="article-attachments">
-                    <?
+                    <?php
                         if($photos) {
                             if(count($photos) == 1 || bonus()) {
                                 foreach($photos as $key => $photo) {
