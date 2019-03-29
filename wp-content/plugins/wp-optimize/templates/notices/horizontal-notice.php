@@ -1,6 +1,6 @@
 <?php if (!defined('WPO_PLUGIN_MAIN_PATH')) die('No direct access allowed'); ?>
 
-<div class="updraft-ad-container updated">
+<div class="updraft-ad-container updated below-h2">
 	<div class="updraft_notice_container">
 		<div class="updraft_advert_content_left">
 			<img src="<?php echo WPO_PLUGIN_URL.'/images/'.$image; ?>" width="60" height="60" alt="<?php _e('notice image', 'wp-optimize'); ?>" />

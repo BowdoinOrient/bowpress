@@ -4,11 +4,11 @@
  */
 namespace The_SEO_Framework;
 
-defined( 'ABSPATH' ) or die;
+defined( 'THE_SEO_FRAMEWORK_PRESENT' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2019 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -34,13 +34,6 @@ defined( 'ABSPATH' ) or die;
 class Feed extends Cache {
 
 	/**
-	 * Constructor, load parent constructor and run functions.
-	 */
-	protected function __construct() {
-		parent::__construct();
-	}
-
-	/**
 	 * Initializes feed actions and hooks.
 	 *
 	 * @since 2.9.0
@@ -53,11 +46,11 @@ class Feed extends Cache {
 		if ( ! $this->is_feed() )
 			return;
 
-		\add_filter( 'the_content_feed', array( $this, 'the_content_feed' ), 10, 2 );
+		\add_filter( 'the_content_feed', [ $this, 'the_content_feed' ], 10, 2 );
 
 		//* Only add the feed link to the excerpt if we're only building excerpts.
 		if ( $this->rss_uses_excerpt() )
-			\add_filter( 'the_excerpt_rss', array( $this, 'the_content_feed' ), 10, 1 );
+			\add_filter( 'the_excerpt_rss', [ $this, 'the_content_feed' ], 10, 1 );
 
 	}
 
@@ -120,15 +113,14 @@ class Feed extends Cache {
 		//* Strip all code and lines.
 		$excerpt = $this->s_excerpt_raw( $content, false );
 
-		$excerpt_len = (int) mb_strlen( $excerpt );
 		/**
-		 * Applies filters the_seo_framework_max_content_feed_length : The max excerpt length.
 		 * @since 2.5.2
+		 * @param int $max_len The maximum feed (multibyte) string length.
 		 */
 		$max_len = (int) \apply_filters( 'the_seo_framework_max_content_feed_length', 400 );
 
 		//* Generate excerpt.
-		$excerpt = $this->trim_excerpt( $excerpt, $excerpt_len, $max_len );
+		$excerpt = $this->trim_excerpt( $excerpt, 0, $max_len );
 
 		$h2_output = '';
 
@@ -169,14 +161,14 @@ class Feed extends Cache {
 	 */
 	protected function get_feed_entry_source_link() {
 		/**
-		 * Applies filters 'the_seo_framework_feed_source_link' : string
-		 *
 		 * @since 2.6.0
 		 * @since 2.7.2 or 2.7.3: Escaped output.
-		 *
 		 * @param string $source The source indication string.
 		 */
-		$source_i18n = (string) \apply_filters( 'the_seo_framework_feed_source_link_text', \_x( 'Source', 'The content source', 'autodescription' ) );
+		$source_i18n = (string) \apply_filters(
+			'the_seo_framework_feed_source_link_text',
+			\_x( 'Source', 'The content source', 'autodescription' )
+		);
 		$content = '<p><a href="' . \esc_url( \get_permalink() ) . '" rel="nofollow">' . \esc_html( $source_i18n ) . '</a></p>';
 
 		return $content;

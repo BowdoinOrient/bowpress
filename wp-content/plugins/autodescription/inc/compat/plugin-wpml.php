@@ -4,7 +4,7 @@
  */
 namespace The_SEO_Framework;
 
-defined( 'ABSPATH' ) and $_this = \the_seo_framework_class() and $this instanceof $_this or die;
+defined( 'THE_SEO_FRAMEWORK_PRESENT' ) and $_this = \the_seo_framework_class() and $this instanceof $_this or die;
 
 /**
  * Warns homepage global title and description about receiving input.
@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) and $_this = \the_seo_framework_class() and $this instanceo
  * @since 2.8.0
  * @access private
  *
- * @param object $current_screen
+ * @param \WP_Screen $current_screen
  */
 function _wpml_do_current_screen_action( $current_screen = '' ) {
 
@@ -39,9 +39,51 @@ function _wpml_do_current_screen_action( $current_screen = '' ) {
  * @param array $languages_links
  * @return array
  */
-function _wpml_remove_all_languages( $languages_links = array() ) {
+function _wpml_remove_all_languages( $languages_links = [] ) {
 
 	unset( $languages_links['all'] );
 
 	return $languages_links;
+}
+
+\add_action( 'the_seo_framework_delete_cache_sitemap', __NAMESPACE__ . '\\_wpml_flush_sitemap', 10, 4 );
+/**
+ * Deletes all sitemap transients, instead of just one.
+ *
+ * @since 3.1.0
+ * @global \wpdb $wpdb
+ * @access private
+ * @staticvar bool $cleared
+ *
+ * @param string $type    The type. Comes in handy when you use a catch-all function.
+ * @param int    $id      The post, page or TT ID. Defaults to $this->get_the_real_ID().
+ * @param array  $args    Additional arguments. They can overwrite $type and $id.
+ * @param bool   $success Whether the action cleared.
+ */
+function _wpml_flush_sitemap( $type, $id, $args, $success ) {
+
+	static $cleared = false;
+	if ( $cleared ) return;
+
+	if ( $success ) {
+		global $wpdb;
+
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM $wpdb->options WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_tsf_sitemap_' ) . '%'
+			)
+		); // No cache OK. DB call ok.
+
+		//? We didn't use a wildcard after "_transient_" to reduce scans.
+		//  A second query is faster on saturated sites.
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM $wpdb->options WHERE option_name LIKE %s",
+				$wpdb->esc_like( '_transient_timeout_tsf_sitemap_' ) . '%'
+			)
+		); // No cache OK. DB call ok.
+
+		$cleared = true;
+	}
 }

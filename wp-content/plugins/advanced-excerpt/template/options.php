@@ -49,6 +49,9 @@
 								<input type="radio" id="finish-none" name="finish" value="exact"<?php echo ( 'exact' == $finish ) ? ' checked="checked"' : ''; ?> />
 								<?php _e( "Exact", 'advanced-excerpt' ); ?>
 								</label><br />
+								<input type="radio" id="finish-exact-2" name="finish" value="exact_w_spaces"<?php echo ( 'exact_w_spaces' == $finish ) ? ' checked="checked"' : ''; ?> />
+								<?php _e( "Exact <small>(count spaces as well)</small>", 'advanced-excerpt' ); ?>
+								</label><br />
 								<label for="finish-word">
 								<input type="radio" id="finish-word" name="finish" value="word"<?php echo ( 'word' == $finish ) ? ' checked="checked"' : ''; ?> />
 								<?php _e( "Word", 'advanced-excerpt' ); ?>
@@ -67,11 +70,35 @@
 							<?php _e( "Read More Link:", 'advanced-excerpt' ); ?>
 						</th>
 						<td>
+							
 							<label for="add-link">
 							<input name="add_link" type="checkbox" id="add-link" value="on" <?php echo ( 1 == $add_link ) ? 'checked="checked"' : ''; ?> />
 							<?php _e( "Add read more link to excerpt", 'advanced-excerpt' ); ?>
 							</label><br />
-							<input name="read_more" type="text" id="read-more" value="<?php echo $read_more; ?>" <?php echo ( 1 !== $add_link ) ? 'disabled="disabled"' : ''; ?> />
+
+							<input name="read_more" type="text" id="read-more" value="<?php echo $read_more; ?>" <?php echo ( 1 !== $add_link ) ? 'disabled="disabled"' : ''; ?> /><br>
+							
+							<ul class="sub-options">
+								<li>
+									<label for="link-new-tab">
+									<input name="link_new_tab" type="checkbox" id="link-new-tab" value="on" <?php echo ( 1 == $link_new_tab ) ? 'checked="checked"' : ''; ?> />
+									<?php _e( "Open read more link in new tab", 'advanced-excerpt' ); ?>
+									</label>
+								</li>
+								<li>
+									<label for="link-screen-reader">
+									<input name="link_screen_reader" type="checkbox" id="link-screen-reader" value="on" <?php echo ( 1 == $link_screen_reader ) ? 'checked="checked"' : ''; ?> />
+									<?php _e( "Screen readers compatibility", 'advanced-excerpt' ); ?> <span class="description"><?php _e( '(appends post title with class .screen-reader-text to the link)', 'advanced-excerpt' ); ?></span>
+									</label><br />
+								</li>
+								<li>
+									<label for="link-exclude-length">
+									<input name="link_exclude_length" type="checkbox" id="link-exclude-length" value="on" <?php echo ( 1 == $link_exclude_length ) ? 'checked="checked"' : ''; ?> />
+									<?php _e( "Remove link if the whole post content shown", 'advanced-excerpt' ); ?>
+									</label><br />
+								</li>
+							</ul>
+
 						</td>
 					</tr>
 					<tr valign="top">

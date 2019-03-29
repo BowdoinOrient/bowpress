@@ -15,6 +15,63 @@ class WP_Optimization_revisions extends WP_Optimization {
 	public $available_for_saving = true;
 
 	/**
+	 * Prepare data for preview widget.
+	 *
+	 * @param array $params
+	 *
+	 * @return array
+	 */
+	public function preview($params) {
+
+		$retention_subquery = '';
+
+		if ('true' == $this->retention_enabled) {
+			$retention_subquery = ' and post_modified < NOW() - INTERVAL ' . $this->retention_period . ' WEEK';
+		}
+
+		// get data requested for preview.
+		$sql = $this->wpdb->prepare(
+			"SELECT `ID`, `post_title`, `post_date`".
+			" FROM `" . $this->wpdb->posts . "`".
+			" WHERE post_type = 'revision'".
+			$retention_subquery.
+			" ORDER BY `ID` LIMIT %d, %d;",
+			array(
+				$params['offset'],
+				$params['limit'],
+			)
+		);
+
+		$posts = $this->wpdb->get_results($sql, ARRAY_A);
+
+		// fix empty revision titles.
+		if (!empty($posts)) {
+			foreach ($posts as $key => $post) {
+				$posts[$key]['post_title'] = '' == $post['post_title'] ? '('.__('no title', 'wp-optimize').')' : $post['post_title'];
+			}
+		}
+
+		// get total count revisions for optimization.
+		$sql = "SELECT COUNT(*) FROM `" . $this->wpdb->posts . "` WHERE post_type = 'revision'".$retention_subquery.";";
+
+		$total = $this->wpdb->get_var($sql);
+
+		return array(
+			'id_key' => 'ID',
+			'columns' => array(
+				'ID' => __('ID', 'wp-optimize'),
+				'post_title' => __('Title', 'wp-optimize'),
+				'post_date' => __('Date', 'wp-optimize'),
+			),
+			'offset' => $params['offset'],
+			'limit' => $params['limit'],
+			'total' => $total,
+			'data' => $this->htmlentities_array($posts, array('ID')),
+			'message' => $total > 0 ? '' : __('No post revisions found', 'wp-optimize'),
+		);
+	}
+
+	/**
 	 * Do actions after optimize() function.
 	 */
 	public function after_optimize() {
@@ -28,7 +85,6 @@ class WP_Optimization_revisions extends WP_Optimization {
 		$this->register_output($message);
 	}
 
-
 	/**
 	 * Do optimization.
 	 */
@@ -39,10 +95,20 @@ class WP_Optimization_revisions extends WP_Optimization {
 			$clean .= '
 				AND post_modified < NOW() - INTERVAL ' . $this->retention_period . ' WEEK';
 		}
+
+		// if posted ids in params, then remove only selected items. used by preview widget.
+		if (isset($this->data['ids'])) {
+			$clean .= ' AND `ID` in ('.join(',', $this->data['ids']).')';
+		}
+
 		$clean .= ';';
 
 		$revisions = $this->query($clean);
 		$this->processed_count += $revisions;
+
+		// clean orphaned post meta.
+		$clean = "DELETE pm FROM `" . $this->wpdb->postmeta . "` pm LEFT JOIN `" . $this->wpdb->posts . "` p ON pm.post_id = p.ID WHERE p.ID IS NULL";
+		$this->query($clean);
 	}
 
 	/**
@@ -57,6 +123,11 @@ class WP_Optimization_revisions extends WP_Optimization {
 
 		if ($this->is_multisite_mode()) {
 			$message .= ' '.sprintf(_n('across %s site', 'across %s sites', count($this->blogs_ids), 'wp-optimize'), count($this->blogs_ids));
+		}
+
+		// add preview link to message.
+		if ($this->found_count > 0) {
+			$message = $this->get_preview_link($message);
 		}
 
 		$this->register_output($message);

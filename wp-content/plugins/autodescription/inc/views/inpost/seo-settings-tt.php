@@ -3,89 +3,62 @@
  * @package The_SEO_Framework\Views\Inpost
  */
 
-defined( 'ABSPATH' ) and $_this = the_seo_framework_class() and $this instanceof $_this or die;
+defined( 'THE_SEO_FRAMEWORK_PRESENT' ) and $_this = the_seo_framework_class() and $this instanceof $_this or die;
 
 //* Get the language the Google page should assume.
 $language = $this->google_language();
 
 //* Fetch Term ID and taxonomy.
-$term_id = $object->term_id;
+$term_id  = $object->term_id;
 $taxonomy = $object->taxonomy;
-$data = $this->get_term_meta( $object->term_id );
+$data     = $this->get_term_meta( $object->term_id );
 
-$title = isset( $data['doctitle'] ) ? $data['doctitle'] : '';
+$title       = isset( $data['doctitle'] ) ? $data['doctitle'] : '';
 $description = isset( $data['description'] ) ? $data['description'] : '';
-$noindex = isset( $data['noindex'] ) ? $data['noindex'] : '';
-$nofollow = isset( $data['nofollow'] ) ? $data['nofollow'] : '';
-$noarchive = isset( $data['noarchive'] ) ? $data['noarchive'] : '';
-
-$generated_doctitle_args = array(
-	'term_id' => $term_id,
-	'taxonomy' => $taxonomy,
-	'placeholder' => true,
-	'get_custom_field' => false,
-);
-
-//* Generate title and description.
-$generated_doctitle = $this->title( '', '', '', $generated_doctitle_args );
-$generated_description = $this->get_generated_description( $term_id );
-
-$blog_name = $this->get_blogname();
-$add_additions = $this->add_title_additions();
-
-/**
- * Separator doesn't matter. Since html_entity_decode is used.
- * Order doesn't matter either. Since it's just used for length calculation.
- *
- * @since 2.3.4
- */
-$doc_pre_rem = $add_additions ? $title . ' | ' . $blog_name : $title;
-$title_len = $title ? $doc_pre_rem : $generated_doctitle;
-$description_len = $description ?: $generated_description;
-
-/**
- * Convert to what Google outputs.
- *
- * This will convert e.g. &raquo; to a single length character.
- * @since 2.3.4
- */
-$tit_len_parsed = html_entity_decode( $title_len );
-$desc_len_parsed = html_entity_decode( $description_len );
+$noindex     = isset( $data['noindex'] ) ? $data['noindex'] : '';
+$nofollow    = isset( $data['nofollow'] ) ? $data['nofollow'] : '';
+$noarchive   = isset( $data['noarchive'] ) ? $data['noarchive'] : '';
 
 /**
  * Generate static placeholder for when title or description is emptied
  *
  * @since 2.2.4
  */
-$title_placeholder = $generated_doctitle;
-$description_placeholder = $generated_description;
+$title_placeholder = $this->get_generated_title( [
+	'id'       => $term_id,
+	'taxonomy' => $taxonomy,
+] );
+$description_placeholder = $this->get_generated_description( [
+	'id'       => $term_id,
+	'taxonomy' => $taxonomy,
+] );
 
-$robots_settings = array(
-	'noindex' => array(
+$robots_settings = [
+	'noindex' => [
 		'value' => $noindex,
-		'info' => $this->make_info(
-			__( 'This tells search engines not to show this page in their search results.', 'autodescription' ),
+		'info'  => $this->make_info(
+			__( 'This tells search engines not to show this term in their search results.', 'autodescription' ),
 			'https://support.google.com/webmasters/answer/93710?hl=' . $language,
 			false
 		),
-	),
-	'nofollow' => array(
+	],
+	'nofollow' => [
 		'value' => $nofollow,
-		'info' => $this->make_info(
-			__( 'This tells search engines not to follow links on this page.', 'autodescription' ),
+		'info'  => $this->make_info(
+			__( 'This tells search engines not to follow links on this term.', 'autodescription' ),
 			'https://support.google.com/webmasters/answer/96569?hl=' . $language,
 			false
 		),
-	),
-	'noarchive' => array(
+	],
+	'noarchive' => [
 		'value' => $noarchive,
-		'info' => $this->make_info(
-			__( 'This tells search engines not to follow links on this page.', 'autodescription' ),
+		'info'  => $this->make_info(
+			__( 'This tells search engines not to save a cached copy of this term.', 'autodescription' ),
 			'https://support.google.com/webmasters/answer/79812?hl=' . $language,
 			false
 		),
-	),
-);
+	],
+];
 
 ?>
 <h3>
@@ -97,7 +70,7 @@ $robots_settings = array(
 
 <table class="form-table">
 	<tbody>
-		<?php if ( 'above' === $this->inpost_seo_bar || $this->is_option_checked( 'display_seo_bar_metabox' ) ) : ?>
+		<?php if ( $this->get_option( 'display_seo_bar_metabox' ) ) : ?>
 		<tr>
 			<th scope="row" valign="top"><?php esc_html_e( 'Doing it Right', 'autodescription' ); ?></th>
 			<td>
@@ -109,16 +82,18 @@ $robots_settings = array(
 		<tr class="form-field">
 			<th scope="row" valign="top">
 				<label for="autodescription-meta[doctitle]">
-					<strong>
-						<?php
-						/* translators: %s = Term type */
-						printf( esc_html__( '%s Title', 'autodescription' ), esc_html( $type ) );
-						?>
-					</strong>
+					<strong><?php esc_html_e( 'Meta Title', 'autodescription' ); ?></strong>
+					<?php
+					echo ' ';
+					$this->make_info(
+						__( 'The meta title can be used to determine the title used on search engine result pages.', 'autodescription' ),
+						'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#page-titles'
+					);
+					?>
 				</label>
 				<?php
 				$this->get_option( 'display_character_counter' )
-					and $this->output_character_counter_wrap( 'autodescription-meta[doctitle]', $tit_len_parsed );
+					and $this->output_character_counter_wrap( 'autodescription-meta[doctitle]' );
 				$this->get_option( 'display_pixel_counter' )
 					and $this->output_pixel_counter_wrap( 'autodescription-meta[doctitle]', 'title' );
 				?>
@@ -134,16 +109,18 @@ $robots_settings = array(
 		<tr class="form-field">
 			<th scope="row" valign="top">
 				<label for="autodescription-meta[description]">
-					<strong>
-						<?php
-						/* translators: %s = Term type */
-						printf( esc_html__( '%s Meta Description', 'autodescription' ), esc_html( $type ) );
-						?>
-					</strong>
+					<strong><?php esc_html_e( 'Meta Description', 'autodescription' ); ?></strong>
+					<?php
+					echo ' ';
+					$this->make_info(
+						__( 'The meta description can be used to determine the text used under the title on search engine results pages.', 'autodescription' ),
+						'https://support.google.com/webmasters/answer/35624?hl=' . $language . '#meta-descriptions'
+					);
+					?>
 				</label>
 				<?php
 				$this->get_option( 'display_character_counter' )
-					and $this->output_character_counter_wrap( 'autodescription-meta[description]', $desc_len_parsed );
+					and $this->output_character_counter_wrap( 'autodescription-meta[description]' );
 				$this->get_option( 'display_pixel_counter' )
 					and $this->output_pixel_counter_wrap( 'autodescription-meta[description]', 'description' );
 				?>
@@ -164,23 +141,21 @@ $robots_settings = array(
 						<?php
 						vprintf(
 							'<label for="%1$s"><input name="%1$s" id="%1$s" type="checkbox" value="1" %2$s />%3$s</label>',
-							array(
+							[
 								sprintf( 'autodescription-meta[%s]', esc_attr( $type ) ),
 								checked( $data['value'], true, false ),
 								vsprintf(
 									'%s %s',
-									array(
+									[
 										sprintf(
 											/* translators: %s = noindex/nofollow/noarchive */
 											esc_html__( 'Apply %s to this term?', 'autodescription' ),
-											//= Already escaped.
 											$this->code_wrap( $type )
 										),
-										//= Already escaped.
 										$data['info'],
-									)
+									]
 								),
-							)
+							]
 						);
 						?>
 					</p>
@@ -194,15 +169,6 @@ $robots_settings = array(
 				</label>
 			</td>
 		</tr>
-
-		<?php if ( 'below' === $this->inpost_seo_bar ) : ?>
-		<tr>
-			<th scope="row" valign="top"><?php esc_html_e( 'Doing it Right', 'autodescription' ); ?></th>
-			<td>
-				<?php $this->post_status( $term_id, $taxonomy, true ); ?>
-			</td>
-		</tr>
-		<?php endif; ?>
 	</tbody>
 </table>
 <?php

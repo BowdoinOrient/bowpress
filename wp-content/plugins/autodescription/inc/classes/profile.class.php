@@ -4,11 +4,11 @@
  */
 namespace The_SEO_Framework;
 
-defined( 'ABSPATH' ) or die;
+defined( 'THE_SEO_FRAMEWORK_PRESENT' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2019 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -32,14 +32,11 @@ defined( 'ABSPATH' ) or die;
  */
 class Profile extends Doing_It_Right {
 
-	public $profile_settings = array();
-
 	/**
-	 * Constructor, loads parent constructor.
+	 * @since 3.0.0
+	 * @var array|object The profile setting fields.
 	 */
-	protected function __construct() {
-		parent::__construct();
-	}
+	public $profile_settings = [];
 
 	/**
 	 * Outputs profile fields and prepares saving thereof.
@@ -52,22 +49,22 @@ class Profile extends Doing_It_Right {
 		if ( ! \current_user_can( 'publish_posts' ) )
 			return;
 
-		$this->profile_settings = (object) array(
-			'keys' => array(
+		$this->profile_settings = (object) [
+			'keys' => [
 				'facebook_page' => 'tsf_facebook_page',
-				'twitter_page' => 'tsf_twitter_page',
-			),
-			'sanitation' => array(
+				'twitter_page'  => 'tsf_twitter_page',
+			],
+			'sanitation' => [
 				'facebook_page' => 's_facebook_profile',
-				'twitter_page' => 's_twitter_name',
-			),
-		);
+				'twitter_page'  => 's_twitter_name',
+			],
+		];
 
-		\add_action( 'show_user_profile', array( $this, '_add_user_author_fields' ), 0, 1 );
-		\add_action( 'edit_user_profile', array( $this, '_add_user_author_fields' ), 0, 1 );
+		\add_action( 'show_user_profile', [ $this, '_add_user_author_fields' ], 0, 1 );
+		\add_action( 'edit_user_profile', [ $this, '_add_user_author_fields' ], 0, 1 );
 
-		\add_action( 'personal_options_update', array( $this, '_update_user_settings' ), 10, 1 );
-		\add_action( 'edit_user_profile_update', array( $this, '_update_user_settings' ), 10, 1 );
+		\add_action( 'personal_options_update', [ $this, '_update_user_settings' ], 10, 1 );
+		\add_action( 'edit_user_profile_update', [ $this, '_update_user_settings' ], 10, 1 );
 	}
 
 	/**
@@ -83,18 +80,22 @@ class Profile extends Doing_It_Right {
 		if ( ! $user->has_cap( 'publish_posts' ) )
 			return;
 
-		$fields = array(
-			$this->profile_settings->keys['facebook_page'] => (object) array(
+		$fields = [
+			$this->profile_settings->keys['facebook_page'] => (object) [
 				'name'        => \__( 'Facebook profile page', 'autodescription' ),
+				'type'        => 'url',
 				'placeholder' => \_x( 'https://www.facebook.com/YourPersonalProfile', 'Example Facebook Personal URL', 'autodescription' ),
 				'value'       => $this->get_user_option( $user->ID, 'facebook_page' ),
-			),
-			$this->profile_settings->keys['twitter_page'] => (object) array(
-				'name'        => \__( 'Twitter profile', 'autodescription' ),
+				'class'       => '',
+			],
+			$this->profile_settings->keys['twitter_page'] => (object) [
+				'name'        => \__( 'Twitter profile name', 'autodescription' ),
+				'type'        => 'text',
 				'placeholder' => \_x( '@your-personal-username', 'Twitter @username', 'autodescription' ),
 				'value'       => $this->get_user_option( $user->ID, 'twitter_page' ),
-			),
-		);
+				'class'       => 'ltr',
+			],
+		];
 
 		$this->get_view( 'profile/author', get_defined_vars() );
 	}
@@ -111,9 +112,10 @@ class Profile extends Doing_It_Right {
 	 */
 	public function _update_user_settings( $user_id ) {
 
-		$le_post = $_POST;
+		\check_admin_referer( 'update-user_' . $user_id );
+		if ( ! \current_user_can( 'edit_user', $user_id ) ) return;
 
-		if ( empty( $le_post ) )
+		if ( empty( $_POST ) ) // input var OK.
 			return;
 
 		$user = new \WP_User( $user_id );
@@ -121,13 +123,13 @@ class Profile extends Doing_It_Right {
 		if ( ! $user->has_cap( 'publish_posts' ) )
 			return;
 
-		$success = array();
+		$success  = [];
 		$defaults = $this->get_default_user_data();
 
 		foreach ( $this->profile_settings->keys as $option => $post_key ) {
-			if ( isset( $le_post[ $post_key ] ) ) {
-				//= Sanitizes value from $_POST.
-				$value = $this->{$this->profile_settings->sanitation[ $option ]}( $le_post[ $post_key ] ) ?: $defaults[ $option ];
+			if ( isset( $_POST[ $post_key ] ) ) { // Input var ok: profile_settings->keys are static.
+				$value = $this->{$this->profile_settings->sanitation[ $option ]}( $_POST[ $post_key ] ) // Input var & sanitization OK.
+					   ?: $defaults[ $option ]; // precision alignment ok.
 
 				$success[] = (bool) $this->update_user_option( $user_id, $option, $value );
 			}

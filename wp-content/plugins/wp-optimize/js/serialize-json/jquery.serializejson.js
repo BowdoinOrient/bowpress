@@ -1,9 +1,9 @@
 /*!
   SerializeJSON jQuery plugin.
   https://github.com/marioizquierdo/jquery.serializeJSON
-  version 2.8.1 (Dec, 2016)
+  version 2.9.0 (Jan, 2018)
 
-  Copyright (c) 2012, 2017 Mario Izquierdo
+  Copyright (c) 2012-2018 Mario Izquierdo
   Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
   and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
 */
@@ -137,8 +137,12 @@
         parsedVal = (valStr === "true");
       } else if (opts.parseNulls    && valStr == "null") { // auto: null
         parsedVal = null;
+      } else if (opts.typeFunctions && opts.typeFunctions["string"]) { // make sure to apply :string type if it was re-defined
+        parsedVal = opts.typeFunctions["string"](valStr);
       }
-      if (opts.parseWithFunction && !type) { // custom parse function (apply after previous parsing options, but not if there's a specific type)
+      
+      // Custom parse function: apply after parsing options, unless there's an explicit type.
+      if (opts.parseWithFunction && !type) {
         parsedVal = opts.parseWithFunction(parsedVal, inputName);
       }
 

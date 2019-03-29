@@ -36,7 +36,7 @@ abstract class Updraft_Notices_1_0 {
 	 */
 	abstract protected function notices_init();
 	
-	protected function is_plugin_installed($product = null, $also_require_active = false) {
+	public function is_plugin_installed($product = null, $also_require_active = false) {
 		if ($also_require_active) return class_exists($product);
 		if (!function_exists('get_plugins')) include_once(ABSPATH.'wp-admin/includes/plugin.php');
 		$plugins = get_plugins();

@@ -4,11 +4,11 @@
  */
 namespace The_SEO_Framework;
 
-defined( 'ABSPATH' ) or die;
+defined( 'THE_SEO_FRAMEWORK_PRESENT' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2019 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -33,59 +33,45 @@ defined( 'ABSPATH' ) or die;
 class Admin_Pages extends Inpost {
 
 	/**
-	 * Page Defaults.
-	 *
 	 * @since 2.2.2
-	 *
-	 * @var array Holds Page output defaults.
+	 * @access private
+	 *         We're going to remove this.
+	 * @var array $page_defaults Holds Page output defaults.
 	 */
-	public $page_defaults = array();
+	public $page_defaults = [];
 
 	/**
-	 * Name of the page hook when the menu is registered.
-	 *
 	 * @since 2.7.0
-	 *
-	 * @var string Page hook
+	 * @var string $seo_settings_page_hook The page hook_suffix added via WP add_menu_page()
 	 */
 	public $seo_settings_page_hook;
 
 	/**
-	 * Load the options.
-	 *
 	 * @since 2.6.0
-	 *
-	 * @var bool Load options.
+	 * @var bool $load_options Determines whether to load the options.
 	 */
 	public $load_options;
 
 	/**
-	 * Constructor. Loads parent constructor, does actions and sets up variables.
-	 */
-	protected function __construct() {
-		parent::__construct();
-	}
-
-	/**
-	 * Enqueue page defaults early.
-	 *
-	 * Applies filter 'the_seo_framework_admin_page_defaults' : Array
-	 * This filter adds i18n support for buttons and notices.
+	 * Enqueues page defaults early.
 	 *
 	 * @since 2.3.1
 	 */
 	public function enqueue_page_defaults() {
-
+		/**
+		 * @since 2.3.1
+		 * @param array $page_defaults The admin default notice sentences.
+		 */
 		$this->page_defaults = (array) \apply_filters(
 			'the_seo_framework_admin_page_defaults',
-			array(
+			[
 				'save_button_text'   => \esc_html__( 'Save Settings', 'autodescription' ),
 				'reset_button_text'  => \esc_html__( 'Reset Settings', 'autodescription' ),
 				'saved_notice_text'  => \esc_html__( 'Settings are saved.', 'autodescription' ),
 				'reset_notice_text'  => \esc_html__( 'Settings are reset.', 'autodescription' ),
 				'error_notice_text'  => \esc_html__( 'Error saving settings.', 'autodescription' ),
 				'plugin_update_text' => \esc_html__( 'New SEO Settings have been updated.', 'autodescription' ),
-			)
+			]
 		);
 	}
 
@@ -105,15 +91,15 @@ class Admin_Pages extends Inpost {
 		if ( $run )
 			return;
 
-		$menu = array(
+		$menu = [
 			'page_title' => \esc_html__( 'SEO Settings', 'autodescription' ),
 			'menu_title' => \esc_html__( 'SEO', 'autodescription' ),
 			'capability' => $this->get_settings_capability(),
 			'menu_slug'  => $this->seo_settings_page_slug,
-			'callback'   => array( $this, '_output_seo_settings_wrap' ),
+			'callback'   => [ $this, '_output_seo_settings_wrap' ],
 			'icon'       => 'dashicons-search',
 			'position'   => '90.9001',
-		);
+		];
 
 		$this->seo_settings_page_hook = \add_menu_page(
 			$menu['page_title'],
@@ -138,11 +124,8 @@ class Admin_Pages extends Inpost {
 			$menu['callback']
 		);
 
-		//* Enqueue styles
-		\add_action( 'admin_print_styles-' . $this->seo_settings_page_hook, array( $this, 'enqueue_admin_css' ), 11 );
-
 		//* Enqueue scripts
-		\add_action( 'admin_print_scripts-' . $this->seo_settings_page_hook, array( $this, 'enqueue_admin_javascript' ), 11 );
+		\add_action( 'admin_print_scripts-' . $this->seo_settings_page_hook, [ $this, '_init_admin_scripts' ], 11 );
 
 		$run = true;
 	}
@@ -160,8 +143,8 @@ class Admin_Pages extends Inpost {
 			$this->handle_update_post();
 
 		//* Output metaboxes.
-		\add_action( $this->seo_settings_page_hook . '_settings_page_boxes', array( $this, '_output_seo_settings_columns' ) );
-		\add_action( 'load-' . $this->seo_settings_page_hook, array( $this, '_register_seo_settings_metaboxes' ) );
+		\add_action( $this->seo_settings_page_hook . '_settings_page_boxes', [ $this, '_output_seo_settings_columns' ] );
+		\add_action( 'load-' . $this->seo_settings_page_hook, [ $this, '_register_seo_settings_metaboxes' ] );
 	}
 
 	/**
@@ -171,8 +154,14 @@ class Admin_Pages extends Inpost {
 	 * @access private
 	 */
 	public function _output_seo_settings_wrap() {
+		/**
+		 * @since 3.0.0
+		 */
 		\do_action( 'the_seo_framework_pre_seo_settings' );
 		$this->get_view( 'admin/seo-settings-wrap', get_defined_vars() );
+		/**
+		 * @since 3.0.0
+		 */
 		\do_action( 'the_seo_framework_pro_seo_settings' );
 	}
 
@@ -190,12 +179,12 @@ class Admin_Pages extends Inpost {
 	 * Registers meta boxes on the Site SEO Settings page.
 	 *
 	 * @since 3.0.0
-	 *
+	 * @access private
 	 * @see $this->general_metabox()     Callback for General Settings box.
 	 * @see $this->title_metabox()       Callback for Title Settings box.
 	 * @see $this->description_metabox() Callback for Description Settings box.
 	 * @see $this->robots_metabox()      Callback for Robots Settings box.
-	 * @see $this->homepage_metabox()    Callback for Home Page Settings box.
+	 * @see $this->homepage_metabox()    Callback for Homepage Settings box.
 	 * @see $this->social_metabox()      Callback for Social Settings box.
 	 * @see $this->schema_metabox()      Callback for Schema Settings box.
 	 * @see $this->webmaster_metabox()   Callback for Webmaster Settings box.
@@ -227,10 +216,10 @@ class Admin_Pages extends Inpost {
 			\add_meta_box(
 				'autodescription-general-settings',
 				\esc_html__( 'General Settings', 'autodescription' ),
-				array( $this, 'general_metabox' ),
+				[ $this, 'general_metabox' ],
 				$this->seo_settings_page_hook,
 				'main',
-				array()
+				[]
 			);
 
 		//* Title Meta Box
@@ -238,10 +227,10 @@ class Admin_Pages extends Inpost {
 			\add_meta_box(
 				'autodescription-title-settings',
 				\esc_html__( 'Title Settings', 'autodescription' ),
-				array( $this, 'title_metabox' ),
+				[ $this, 'title_metabox' ],
 				$this->seo_settings_page_hook,
 				'main',
-				array()
+				[]
 			);
 
 		//* Description Meta Box
@@ -249,21 +238,21 @@ class Admin_Pages extends Inpost {
 			\add_meta_box(
 				'autodescription-description-settings',
 				\esc_html__( 'Description Meta Settings', 'autodescription' ),
-				array( $this, 'description_metabox' ),
+				[ $this, 'description_metabox' ],
 				$this->seo_settings_page_hook,
 				'main',
-				array()
+				[]
 			);
 
-		//* Home Page Meta Box
+		//* Homepage Meta Box
 		if ( $home )
 			\add_meta_box(
 				'autodescription-homepage-settings',
-				\esc_html__( 'Home Page Settings', 'autodescription' ),
-				array( $this, 'homepage_metabox' ),
+				\esc_html__( 'Homepage Settings', 'autodescription' ),
+				[ $this, 'homepage_metabox' ],
 				$this->seo_settings_page_hook,
 				'main',
-				array()
+				[]
 			);
 
 		//* Social Meta Box
@@ -271,21 +260,21 @@ class Admin_Pages extends Inpost {
 			\add_meta_box(
 				'autodescription-social-settings',
 				\esc_html__( 'Social Meta Settings', 'autodescription' ),
-				array( $this, 'social_metabox' ),
+				[ $this, 'social_metabox' ],
 				$this->seo_settings_page_hook,
 				'main',
-				array()
+				[]
 			);
 
 		//* Title Meta Box
 		if ( $schema )
 			\add_meta_box(
 				'autodescription-schema-settings',
-				\esc_html__( 'Schema Settings', 'autodescription' ),
-				array( $this, 'schema_metabox' ),
+				\esc_html__( 'Schema.org Settings', 'autodescription' ),
+				[ $this, 'schema_metabox' ],
 				$this->seo_settings_page_hook,
 				'main',
-				array()
+				[]
 			);
 
 		//* Robots Meta Box
@@ -293,10 +282,10 @@ class Admin_Pages extends Inpost {
 			\add_meta_box(
 				'autodescription-robots-settings',
 				\esc_html__( 'Robots Meta Settings', 'autodescription' ),
-				array( $this, 'robots_metabox' ),
+				[ $this, 'robots_metabox' ],
 				$this->seo_settings_page_hook,
 				'main',
-				array()
+				[]
 			);
 
 		//* Webmaster Meta Box
@@ -304,10 +293,10 @@ class Admin_Pages extends Inpost {
 			\add_meta_box(
 				'autodescription-webmaster-settings',
 				\esc_html__( 'Webmaster Meta Settings', 'autodescription' ),
-				array( $this, 'webmaster_metabox' ),
+				[ $this, 'webmaster_metabox' ],
 				$this->seo_settings_page_hook,
 				'main',
-				array()
+				[]
 			);
 
 		//* Sitemaps Meta Box
@@ -315,10 +304,10 @@ class Admin_Pages extends Inpost {
 			\add_meta_box(
 				'autodescription-sitemap-settings',
 				\esc_html__( 'Sitemap Settings', 'autodescription' ),
-				array( $this, 'sitemaps_metabox' ),
+				[ $this, 'sitemaps_metabox' ],
 				$this->seo_settings_page_hook,
 				'main',
-				array()
+				[]
 			);
 
 		//* Feed Meta Box
@@ -326,29 +315,48 @@ class Admin_Pages extends Inpost {
 			\add_meta_box(
 				'autodescription-feed-settings',
 				\esc_html__( 'Feed Settings', 'autodescription' ),
-				array( $this, 'feed_metabox' ),
+				[ $this, 'feed_metabox' ],
 				$this->seo_settings_page_hook,
 				'main',
-				array()
+				[]
 			);
 	}
 
 	/**
-	 * Display notices on the save or reset of settings.
+	 * Initializes and outputs various notices.
 	 *
 	 * @since 2.2.2
-	 * @securitycheck 3.0.0 OK. NOTE: Users can however MANUALLY trigger these on the SEO settings page.
-	 * @todo convert the "get" into secure "error_notice" option. See TSF Extension Manager.
-	 * @todo convert $this->page_defaults to inline texts. It's now uselessly rendering.
-	 *
-	 * @return void
+	 * @since 3.1.0 1. Added seo plugin check.
+	 *              2. Now marked private.
+	 * @access private
 	 */
 	public function notices() {
 
-		if ( false === $this->is_seo_settings_page( true ) )
-			return;
+		if ( $this->get_static_cache( 'check_seo_plugin_conflicts' ) && \current_user_can( 'activate_plugins' ) ) {
+			$this->detect_seo_plugins()
+				and $this->do_dismissible_notice(
+					\__( 'Multiple SEO tools have been detected. You should only use one.', 'autodescription' ),
+					'warning'
+				);
+			$this->update_static_cache( 'check_seo_plugin_conflicts', 0 );
+		}
 
-		$get = empty( $_GET ) ? null : $_GET;
+		if ( $this->is_seo_settings_page( true ) ) {
+			$this->do_settings_page_notices();
+		}
+	}
+
+	/**
+	 * Display notices on SEO setting changes.
+	 *
+	 * @since 3.1.0
+	 * @securitycheck 3.0.0 OK. NOTE: Users can however MANUALLY trigger these on the SEO settings page.
+	 * @todo convert the "get" into secure "error_notice" option. See TSF Extension Manager.
+	 * @todo convert $this->page_defaults to inline texts. It's now uselessly rendering.
+	 */
+	protected function do_settings_page_notices() {
+
+		$get = empty( $_GET ) ? null : $_GET; // CSRF, input var OK.
 
 		if ( null === $get )
 			return;
@@ -414,7 +422,6 @@ class Admin_Pages extends Inpost {
 	 * @return string Full field id
 	 */
 	public function field_id( $id, $echo = true ) {
-
 		if ( $echo ) {
 			echo \esc_attr( $this->get_field_id( $id ) );
 		} else {
@@ -423,29 +430,235 @@ class Admin_Pages extends Inpost {
 	}
 
 	/**
-	 * Helper function that returns a setting value from this form's settings
-	 * field for use in form fields.
-	 * Fetches blog option.
+	 * Generates dismissible notice.
+	 * Also loads scripts and styles if out of The SEO Framework's context.
 	 *
-	 * @since 2.2.2
+	 * @since 2.6.0
+	 * @since 3.0.6 The messages are no longer auto-styled to "strong".
 	 *
-	 * @param string $key Field key
-	 * @return string Field value
+	 * @param string $message The notice message. Expected to be escaped if $escape is false.
+	 * @param string $type The notice type : 'updated', 'error', 'warning'. Expected to be escaped.
+	 * @param bool $a11y Whether to add an accessibility icon.
+	 * @param bool $escape Whether to escape the whole output.
+	 * @return string The dismissible error notice.
 	 */
-	public function get_field_value( $key ) {
-		return $this->get_option( $key, $this->settings_field );
+	public function generate_dismissible_notice( $message = '', $type = 'updated', $a11y = true, $escape = true ) {
+
+		if ( empty( $message ) ) return '';
+
+		//* Make sure the scripts are loaded.
+		$this->init_admin_scripts();
+
+		//! PHP 5.4 compat: put in var.
+		$scripts = $this->Scripts();
+		$scripts::enqueue();
+
+		if ( 'warning' === $type )
+			$type = 'notice-warning';
+
+		$a11y = $a11y ? 'tsf-show-icon' : '';
+
+		return vsprintf(
+			'<div class="notice %s tsf-notice %s"><p>%s%s</p></div>',
+			[
+				\esc_attr( $type ),
+				( $a11y ? 'tsf-show-icon' : '' ),
+				sprintf(
+					'<a class="hide-if-no-js tsf-dismiss" title="%s" %s></a>',
+					\esc_attr__( 'Dismiss', 'autodescription' ),
+					''
+				),
+				( $escape ? \esc_html( $message ) : $message ),
+			]
+		);
 	}
 
 	/**
-	 * Echo a setting value from this form's settings field for use in form fields.
+	 * Echos generated dismissible notice.
+	 *
+	 * @since 2.7.0
+	 *
+	 * @param $message The notice message. Expected to be escaped if $escape is false.
+	 * @param $type The notice type : 'updated', 'error', 'warning'. Expected to be escaped.
+	 * @param bool $a11y Whether to add an accessibility icon.
+	 * @param bool $escape Whether to escape the whole output.
+	 */
+	public function do_dismissible_notice( $message = '', $type = 'updated', $a11y = true, $escape = true ) {
+		echo $this->generate_dismissible_notice( $message, $type, (bool) $a11y, (bool) $escape ); // xss ok
+	}
+
+	/**
+	 * Generates dismissible notice that stick until the user dismisses it.
+	 * Also loads scripts and styles if out of The SEO Framework's context.
+	 *
+	 * @since 2.9.3
+	 * @see $this->do_dismissible_sticky_notice()
+	 * @uses THE_SEO_FRAMEWORK_UPDATES_CACHE
+	 * @todo make this do something.
+	 * NOTE: This method is a placeholder.
+	 *
+	 * @param string $message The notice message. Expected to be escaped if $escape is false.
+	 * @param string $key     The notice key. Must be unique and tied to the stored updates cache option.
+	 * @param array $args : {
+	 *    'type'   => string Optional. The notification type. Default 'updated'.
+	 *    'a11y'   => bool   Optional. Whether to enable accessibility. Default true.
+	 *    'escape' => bool   Optional. Whether to escape the $message. Default true.
+	 *    'color'  => string Optional. If filled in, it will output the selected color. Default ''.
+	 *    'icon'   => string Optional. If filled in, it will output the selected icon. Default ''.
+	 * }
+	 * @return string The dismissible error notice.
+	 */
+	public function generate_dismissible_sticky_notice( $message, $key, $args = [] ) {
+		return '';
+	}
+
+	/**
+	 * Echos generated dismissible sticky notice.
+	 *
+	 * @since 2.9.3
+	 * @uses $this->generate_dismissible_sticky_notice()
+	 *
+	 * @param string $message The notice message. Expected to be escaped if $escape is false.
+	 * @param string $key     The notice key. Must be unique and tied to the stored updates cache option.
+	 * @param array $args : {
+	 *    'type'   => string Optional. The notification type. Default 'updated'.
+	 *    'a11y'   => bool   Optional. Whether to enable accessibility. Default true.
+	 *    'escape' => bool   Optional. Whether to escape the $message. Default true.
+	 *    'color'  => string Optional. If filled in, it will output the selected color. Default ''.
+	 *    'icon'   => string Optional. If filled in, it will output the selected icon. Default ''.
+	 * }
+	 * @return string The dismissible error notice.
+	 */
+	public function do_dismissible_sticky_notice( $message, $key, $args = [] ) {
+		echo $this->generate_dismissible_sticky_notice( $message, $key, $args ); // xss ok
+	}
+
+	/**
+	 * Mark up content with code tags.
+	 * Escapes all HTML, so `<` gets changed to `&lt;` and displays correctly.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param string $content Content to be wrapped in code tags.
+	 * @return string Content wrapped in code tags.
+	 */
+	public function code_wrap( $content ) {
+		return $this->code_wrap_noesc( \esc_html( $content ) );
+	}
+
+	/**
+	 * Mark up content with code tags.
+	 * Escapes no HTML.
 	 *
 	 * @since 2.2.2
-	 * @uses $this->get_field_value() Constructs value attributes for use in form fields.
 	 *
-	 * @param string $key Field key
+	 * @param string $content Content to be wrapped in code tags.
+	 * @return string Content wrapped in code tags.
 	 */
-	public function field_value( $key ) {
-		echo \esc_attr( $this->get_field_value( $key ) );
+	public function code_wrap_noesc( $content ) {
+		return '<code>' . $content . '</code>';
+	}
+
+	/**
+	 * Mark up content in description wrap.
+	 * Escapes all HTML, so `<` gets changed to `&lt;` and displays correctly.
+	 *
+	 * @since 2.7.0
+	 *
+	 * @param string $content Content to be wrapped in the description wrap.
+	 * @param bool   $block Whether to wrap the content in <p> tags.
+	 * @return string Content wrapped in the description wrap.
+	 */
+	public function description( $content, $block = true ) {
+		$this->description_noesc( \esc_html( $content ), $block );
+	}
+
+	/**
+	 * Mark up content in description wrap.
+	 *
+	 * @since 2.7.0
+	 *
+	 * @param string $content Content to be wrapped in the description wrap. Expected to be escaped.
+	 * @param bool   $block Whether to wrap the content in <p> tags.
+	 * @return string Content wrapped in the description wrap.
+	 */
+	public function description_noesc( $content, $block = true ) {
+		$output = '<span class="description">' . $content . '</span>';
+		echo $block ? '<p>' . $output . '</p>' : $output; // xss: method name explains
+	}
+
+	/**
+	 * Mark up content in attention wrap.
+	 * Escapes all HTML, so `<` gets changed to `&lt;` and displays correctly.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param string $content Content to be wrapped in the attention wrap.
+	 * @param bool   $block Whether to wrap the content in <p> tags.
+	 * @return string Content wrapped in the attention wrap.
+	 */
+	public function attention( $content, $block = true ) {
+		$this->attention_noesc( \esc_html( $content ), $block );
+	}
+
+	/**
+	 * Mark up content in attention wrap.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param string $content Content to be wrapped in the attention wrap. Expected to be escaped.
+	 * @param bool   $block Whether to wrap the content in <p> tags.
+	 * @return string Content wrapped in the attention wrap.
+	 */
+	public function attention_noesc( $content, $block = true ) {
+		$output = '<span class="attention">' . $content . '</span>';
+		echo $block ? '<p>' . $output . '</p>' : $output; // xss: method name explains
+	}
+
+	/**
+	 * Mark up content in a description+attention wrap.
+	 * Escapes all HTML, so `<` gets changed to `&lt;` and displays correctly.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param string $content Content to be wrapped in the wrap. Expected to be escaped.
+	 * @param bool   $block Whether to wrap the content in <p> tags.
+	 * @return string Content wrapped in the wrap.
+	 */
+	public function attention_description( $content, $block = true ) {
+		$this->attention_description_noesc( \esc_html( $content ), $block );
+	}
+
+	/**
+	 * Mark up content in a description+attention wrap.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param string $content Content to be wrapped in the wrap. Expected to be escaped.
+	 * @param bool   $block Whether to wrap the content in <p> tags.
+	 * @return string Content wrapped in the wrap.
+	 */
+	public function attention_description_noesc( $content, $block = true ) {
+		$output = '<span class="description attention">' . $content . '</span>';
+		echo $block ? '<p>' . $output . '</p>' : $output; // xss: method name explains
+	}
+
+	/**
+	 * Google docs language determinator.
+	 *
+	 * @since 2.2.2
+	 * @staticvar string $language
+	 *
+	 * @return string language code
+	 */
+	protected function google_language() {
+
+		static $language = null;
+
+		if ( isset( $language ) ) return $language;
+
+		/* translators: Language shorttag to be used in Google help pages. */
+		return $language = \esc_html_x( 'en', 'e.g. en for English, nl for Dutch, fi for Finish, de for German', 'autodescription' );
 	}
 
 	/**
@@ -463,8 +676,7 @@ class Admin_Pages extends Inpost {
 			$input = implode( PHP_EOL, $input );
 
 		if ( $echo ) {
-			//* Already escaped.
-			echo '<div class="tsf-fields">' . $input . '</div>';
+			echo '<div class="tsf-fields">' . $input . '</div>'; // xss user warning.
 		} else {
 			return '<div class="tsf-fields">' . $input . '</div>';
 		}
@@ -476,6 +688,7 @@ class Admin_Pages extends Inpost {
 	 * @since 2.6.0
 	 * @since 2.7.0 Added escape parameter. Defaults to true.
 	 * @since 3.0.3 Added $disabled parameter. Defaults to false.
+	 * @see $this->make_checkbox_array()
 	 *
 	 * @param string $field_id    The option ID. Must be within the Autodescription settings.
 	 * @param string $label       The checkbox description label.
@@ -485,75 +698,101 @@ class Admin_Pages extends Inpost {
 	 * @return string HTML checkbox output.
 	 */
 	public function make_checkbox( $field_id = '', $label = '', $description = '', $escape = true, $disabled = false ) {
-
-		if ( $escape ) {
-			$description = \esc_html( $description );
-			$label = \esc_html( $label );
-		}
-
-		$description = $description ? '<p class="description tsf-option-spacer">' . $description . '</p>' : '';
-
-		$output = '<span class="tsf-toblock">'
-					. '<label for="'
-						. $this->get_field_id( $field_id ) . '" '
-						. ( $disabled ? 'class=tsf-disabled ' : '' )
-					. '>'
-						. '<input '
-							. 'type="checkbox" '
-							. ( $disabled ? 'class=tsf-disabled disabled ' : '' )
-							. 'name="' . $this->get_field_name( $field_id ) . '" '
-							. 'id="' . $this->get_field_id( $field_id ) . '" '
-							. ( $disabled ? '' : $this->get_is_conditional_checked( $field_id ) . ' ' )
-							. 'value="1" '
-							. \checked( $this->get_field_value( $field_id ), true, false ) .
-						' />'
-						. $label
-					. '</label>'
-				. '</span>'
-				. $description
-				;
-
-		return $output;
+		return $this->make_checkbox_array( [
+			'id'          => $field_id,
+			'index'       => '',
+			'label'       => $label,
+			'description' => $description,
+			'escape'      => $escape,
+			'disabled'    => $disabled,
+		] );
 	}
 
 	/**
-	 * Return a text field wrapper.
+	 * Returns a chechbox wrapper.
 	 *
-	 * @since 2.8.0
-	 * @ignore Unused.
-	 * @access private
+	 * @since 3.1.0
 	 *
-	 * @param string $field_id The option ID. Must be within the Autodescription settings.
-	 * @param string $label The checkbox description label.
-	 * @param string $description Addition description to place beneath the checkbox.
-	 * @param string $placeholder The text field placeholder.
-	 * @param bool $escape Whether to escape the label and description.
-	 * @return string HTML text field output.
+	 * @param array $args : {
+	 *    @type string $id          The option name, used as field ID.
+	 *    @type string $index       The option index, used when the option is an array.
+	 *    @type string $label       The checkbox label description, placed inline of the checkbox.
+	 *    @type string $description The checkbox additional description, placed underneat.
+	 *    @type bool   $escape      Whether to enable escaping of the $label and $description.
+	 *    @type bool   $disabled    Whether to disable the checkbox field.
+	 *    @type bool   $default     Whether to display-as-default. This is autodetermined when no $index is set.
+	 *    @type bool   $warned      Whether to warn the checkbox field value.
+	 * }
+	 * @return string HTML checkbox output.
 	 */
-	public function make_textfield( $field_id = '', $label = '', $description = '', $placeholder = '', $escape = true ) {
+	public function make_checkbox_array( array $args = [] ) {
 
-		if ( $escape ) {
-			$description = \esc_html( $description );
-			$label = \esc_html( $label );
-			$placeholder = \esc_attr( $placeholder );
+		$args = array_merge( [
+			'id'          => '',
+			'index'       => '',
+			'label'       => '',
+			'description' => '',
+			'escape'      => true,
+			'disabled'    => false,
+			'default'     => false,
+			'warned'      => false,
+		], $args );
+
+		if ( $args['escape'] ) {
+			$args['description'] = \esc_html( $args['description'] );
+			$args['label']       = \esc_html( $args['label'] );
 		}
 
-		$description = $description ? '<p class="description tsf-option-spacer">' . $description . '</p>' : '';
+		$index = $this->sanitize_field_id( $args['index'] ?: '' );
 
-		$output = '<p>'
-					. '<label for="' . $this->field_id( $field_id ) . '" class="tsf-toblock">'
-						. '<strong>' . $label . '</strong>'
-					. '</label>'
-				. '</p>'
-				. '<p>'
-					. '<input type="text" name="' . $this->field_name( $field_id ) . '"'
-						. ' class="large-text" id="' . $this->field_id( $field_id ) . '"'
-						. ' placeholder="' . $placeholder . '"'
-						. ' value="' . $this->get_field_value( $field_id ) . '"'
-					. ' />'
-				. '</p>'
-				. $description
-				;
+		$field_id = $field_name = \esc_attr( sprintf(
+			'%s%s',
+			$this->get_field_id( $args['id'] ),
+			$index ? sprintf( '[%s]', $index ) : ''
+		) );
+
+		$value = $this->get_option( $args['id'] );
+		if ( $index ) {
+			$value = isset( $value[ $index ] ) ? $value[ $index ] : '';
+		}
+
+		$cb_class = '';
+		if ( $args['disabled'] ) {
+			$cb_class = 'tsf-disabled';
+		} elseif ( ! $args['index'] ) {
+			// Can't fetch conditionals in index.
+			$cb_class = $this->get_is_conditional_checked( $args['id'], false );
+		} else {
+			if ( $args['default'] ) {
+				$cb_class = 'tsf-default-selected';
+			} elseif ( $args['warned'] ) {
+				$cb_class = 'tsf-warning-selected';
+			}
+		}
+
+		$output = sprintf(
+			'<span class="tsf-toblock">%s</span>',
+			vsprintf(
+				'<label for="%s" %s>%s</label>',
+				[
+					$field_id,
+					( $args['disabled'] ? 'class="tsf-disabled"' : '' ),
+					vsprintf(
+						'<input type=checkbox class="%s" name="%s" id="%s" value="1" %s %s /> %s',
+						[
+							$cb_class,
+							$field_name,
+							$field_id,
+							\checked( $value, true, false ),
+							( $args['disabled'] ? 'disabled' : '' ),
+							$args['label'],
+						]
+					),
+				]
+			)
+		);
+
+		$output .= $args['description'] ? sprintf( '<p class="description tsf-option-spacer">%s</p>', $args['description'] ) : '';
 
 		return $output;
 	}
@@ -573,13 +812,13 @@ class Admin_Pages extends Inpost {
 
 		if ( $link ) {
 			$output = sprintf(
-				'<a href="%1$s" class="tsf-tooltip-item" target="_blank" rel="nofollow noreferrer noopener" title="%2$s" data-desc="%2$s">[?]</a>',
-				\esc_url( $link, array( 'http', 'https' ) ),
+				'<a href="%1$s" class="tsf-tooltip-item tsf-help" target="_blank" rel="nofollow noreferrer noopener" title="%2$s" data-desc="%2$s">[?]</a>',
+				\esc_url( $link, [ 'http', 'https' ] ),
 				\esc_attr( $description )
 			);
 		} else {
 			$output = sprintf(
-				'<span class="tsf-tooltip-item" title="%1$s" data-desc="%1$s">[?]</span>',
+				'<span class="tsf-tooltip-item tsf-help" title="%1$s" data-desc="%1$s">[?]</span>',
 				\esc_attr( $description )
 			);
 		}
@@ -587,8 +826,7 @@ class Admin_Pages extends Inpost {
 		$output = sprintf( '<span class="tsf-tooltip-wrap">%s</span>', $output );
 
 		if ( $echo ) {
-			//* Already escaped.
-			echo $output;
+			echo $output; // xss ok
 		} else {
 			return $output;
 		}
@@ -601,7 +839,7 @@ class Admin_Pages extends Inpost {
 	 */
 	public function load_assets() {
 		//* Hook scripts method
-		\add_action( "load-{$this->seo_settings_page_hook}", array( $this, 'metabox_scripts' ) );
+		\add_action( "load-{$this->seo_settings_page_hook}", [ $this, 'metabox_scripts' ] );
 	}
 
 	/**
@@ -621,18 +859,20 @@ class Admin_Pages extends Inpost {
 	 * This function does nothing special. But is merely a simple wrapper.
 	 * Just like code_wrap.
 	 *
-	 * @param string $key required The option name which returns boolean.
-	 * @param string $setting optional The settings field
-	 * @param bool $wrap optional output class="" or just the class name.
-	 * @param bool $echo optional echo or return the output.
-	 *
 	 * @since 2.2.5
+	 * @since 3.1.0 Deprecated second parameter.
+	 *
+	 * @param string $key  The option name which returns boolean.
+	 * @param string $depr Deprecated
+	 * @param bool   $wrap Whether to wrap the class name in `class="%s"`
+	 * @param bool   $echo Whether to echo or return the output.
+	 * @return string Empty on echo or the class name with an optional wrapper.
 	 */
-	public function is_default_checked( $key, $setting = '', $wrap = true, $echo = true ) {
+	public function is_default_checked( $key, $depr = '', $wrap = true, $echo = true ) {
 
 		$class = '';
 
-		$default = $this->get_default_settings( $key, $setting );
+		$default = $this->get_default_settings( $key );
 
 		if ( 1 === $default )
 			$class = 'tsf-default-selected';
@@ -655,18 +895,19 @@ class Admin_Pages extends Inpost {
 	 * Returns the HTML class wrap for warning Checkbox options.
 	 *
 	 * @since 2.3.4
+	 * @since 3.1.0 Deprecated second parameter.
 	 *
-	 * @param string $key required The option name which returns boolean.
-	 * @param string $setting optional The settings field
-	 * @param bool $wrap optional output class="" or just the class name.
-	 * @param bool $echo optional echo or return the output.
-	 * @return string Empty on echo or The class with an optional wrapper.
+	 * @param string $key  The option name which returns boolean.
+	 * @param string $deprecated Deprecated.
+	 * @param bool   $wrap Whether to wrap the class name in `class="%s"`
+	 * @param bool   $echo Whether to echo or return the output.
+	 * @return string Empty on echo or the class name with an optional wrapper.
 	 */
-	public function is_warning_checked( $key, $setting = '', $wrap = true, $echo = true ) {
+	public function is_warning_checked( $key, $deprecated = '', $wrap = true, $echo = true ) {
 
 		$class = '';
 
-		$warned = $this->get_warned_settings( $key, $setting );
+		$warned = $this->get_warned_settings( $key, $deprecated );
 
 		if ( 1 === $warned )
 			$class = 'tsf-warning-selected';
@@ -686,37 +927,36 @@ class Admin_Pages extends Inpost {
 	}
 
 	/**
-	 * Helper function that constructs id attributes for use in form fields.
+	 * Returns the HTML class wrap for warning/default Checkbox options.
 	 *
 	 * @since 2.6.0
+	 * @since 3.1.0 Added the $wrap parameter
 	 *
-	 * @param string $key The option name which returns boolean.
+	 * @param string $key  The option name which returns boolean.
+	 * @param bool   $wrap Whether to wrap the class name in `class="%s"`
 	 */
-	public function get_is_conditional_checked( $key ) {
-		return $this->is_conditional_checked( $key, $this->settings_field, true, false );
+	public function get_is_conditional_checked( $key, $wrap = true ) {
+		return $this->is_conditional_checked( $key, '', $wrap, false );
 	}
 
 	/**
 	 * Returns the HTML class wrap for warning/default Checkbox options.
 	 *
-	 * This function does nothing special. But is merely a simple wrapper.
-	 * Just like code_wrap.
-	 *
-	 * @param string $key required The option name which returns boolean.
-	 * @param string $setting optional The settings field
-	 * @param bool $wrap optional output class="" or just the class name.
-	 * @param bool $echo optional echo or return the output.
-	 *
 	 * @since 2.3.4
+	 * @since 3.1.0 Deprecated second parameter.
 	 *
-	 * @return string Empty on echo or The class with an optional wrapper.
+	 * @param string $key  The option name which returns boolean.
+	 * @param string $setting optional The settings field.
+	 * @param bool   $wrap Whether to wrap the class name in `class="%s"`
+	 * @param bool   $echo Whether to echo or return the output.
+	 * @return string Empty on echo or the class name with an optional wrapper.
 	 */
-	public function is_conditional_checked( $key, $setting = '', $wrap = true, $echo = true ) {
+	public function is_conditional_checked( $key, $deprecated = '', $wrap = true, $echo = true ) {
 
 		$class = '';
 
-		$default = $this->is_default_checked( $key, $setting, false, false );
-		$warned = $this->is_warning_checked( $key, $setting, false, false );
+		$default = $this->is_default_checked( $key, $deprecated, false, false );
+		$warned  = $this->is_warning_checked( $key, $deprecated, false, false );
 
 		if ( '' !== $default && '' !== $warned ) {
 			$class = $default . ' ' . $warned;
@@ -741,48 +981,11 @@ class Admin_Pages extends Inpost {
 	}
 
 	/**
-	 * Returns the HTML class wrap for default radio options.
-	 *
-	 * @since 2.2.5
-	 *
-	 * @TODO use this
-	 * @priority low 2.8.0+
-	 *
-	 * @param string $key required The option name which returns boolean.
-	 * @param string $value required The option value which returns boolean.
-	 * @param string $setting optional The settings field
-	 * @param bool $wrap optional output class="" or just the class name.
-	 * @param bool $echo optional echo or return the output.
-	 * @return string|null the default selected class.
-	 */
-	public function is_default_radio( $key, $value, $setting = '', $wrap = true, $echo = true ) {
-
-		$class = '';
-
-		$default = $this->get_default_settings( $key, $setting );
-
-		if ( $value === $default )
-			$class = 'tsf-default-selected';
-
-		if ( $echo ) {
-			if ( $wrap ) {
-				printf( 'class="%s"', \esc_attr( $class ) );
-			} else {
-				echo \esc_attr( $class );
-			}
-		} else {
-			if ( $wrap )
-				return sprintf( 'class="%s"', $class );
-
-			return $class;
-		}
-	}
-
-	/**
 	 * Returns social image uploader form button.
 	 * Also registers additional i18n strings for JS.
 	 *
 	 * @since 2.8.0
+	 * @since 3.1.0 No longer prepares media l10n data.
 	 *
 	 * @param string $input_id Required. The HTML input id to pass URL into.
 	 * @return string The image uploader button.
@@ -795,9 +998,9 @@ class Admin_Pages extends Inpost {
 		$s_input_id = \esc_attr( $input_id );
 
 		$content = vsprintf(
-			'<a href="%1$s" class="tsf-set-social-image button button-primary button-small" title="%2$s" id="%3$s-select"
-				data-inputid="%3$s" data-width="%4$s" data-height="%5$s" data-flex="%6$d">%7$s</a>',
-			array(
+			'<button type=button data-href="%1$s" class="tsf-set-image-button button button-primary button-small" title="%2$s" id="%3$s-select"
+				data-input-id="%3$s" data-input-type="social" data-width="%4$s" data-height="%5$s" data-flex="%6$d">%7$s</button>',
+			[
 				\esc_url( \get_upload_iframe_src( 'image', $this->get_the_real_ID() ) ),
 				\esc_attr_x( 'Select social image', 'Button hover', 'autodescription' ),
 				$s_input_id,
@@ -805,21 +1008,8 @@ class Admin_Pages extends Inpost {
 				'630',
 				true,
 				\esc_html__( 'Select Image', 'autodescription' ),
-			)
+			]
 		);
-
-		$button_labels = array(
-			'select' => \esc_attr__( 'Select Image', 'autodescription' ),
-			'select_title' => \esc_attr_x( 'Select social image', 'Button hover', 'autodescription' ),
-			'change' => \esc_attr__( 'Change Image', 'autodescription' ),
-			'remove' => \esc_attr__( 'Remove Image', 'autodescription' ),
-			'remove_title' => \esc_attr__( 'Remove selected social image', 'autodescription' ),
-			'frame_title' => \esc_attr_x( 'Select Social Image', 'Frame title', 'autodescription' ),
-			'frame_button' => \esc_attr__( 'Use this image', 'autodescription' ),
-		);
-
-		//* Already escaped. Turn off escaping.
-		$this->additional_js_l10n( $s_input_id, $button_labels, false, false );
 
 		return $content;
 	}
@@ -829,6 +1019,7 @@ class Admin_Pages extends Inpost {
 	 * Also registers additional i18n strings for JS.
 	 *
 	 * @since 3.0.0
+	 * @since 3.1.0 No longer prepares media l10n data.
 	 *
 	 * @param string $input_id Required. The HTML input id to pass URL into.
 	 * @return string The image uploader button.
@@ -841,9 +1032,9 @@ class Admin_Pages extends Inpost {
 		$s_input_id = \esc_attr( $input_id );
 
 		$content = vsprintf(
-			'<a href="%1$s" class="tsf-set-social-image button button-primary button-small" title="%2$s" id="%3$s-select"
-				data-inputid="%3$s" data-width="%4$s" data-height="%5$s" data-flex="%6$d">%7$s</a>',
-			array(
+			'<button type=button data-href="%1$s" class="tsf-set-image-button button button-primary button-small" title="%2$s" id="%3$s-select"
+				data-input-id="%3$s" data-input-type="logo" data-width="%4$s" data-height="%5$s" data-flex="%6$d">%7$s</button>',
+			[
 				\esc_url( \get_upload_iframe_src( 'image', $this->get_the_real_ID() ) ),
 				'',
 				$s_input_id,
@@ -851,21 +1042,8 @@ class Admin_Pages extends Inpost {
 				'512',
 				false,
 				\esc_html__( 'Select Logo', 'autodescription' ),
-			)
+			]
 		);
-
-		$button_labels = array(
-			'select' => \esc_attr__( 'Select Logo', 'autodescription' ),
-			'select_title' => '',
-			'change' => \esc_attr__( 'Change Logo', 'autodescription' ),
-			'remove' => \esc_attr__( 'Remove Logo', 'autodescription' ),
-			'remove_title' => \esc_attr__( 'Unset selected logo', 'autodescription' ),
-			'frame_title' => \esc_attr_x( 'Select Logo', 'Frame title', 'autodescription' ),
-			'frame_button' => \esc_attr__( 'Use this image', 'autodescription' ),
-		);
-
-		//* Already escaped. Turn off escaping.
-		$this->additional_js_l10n( $s_input_id, $button_labels, false, false );
 
 		return $content;
 	}
@@ -876,12 +1054,10 @@ class Admin_Pages extends Inpost {
 	 * @since 3.0.4
 	 */
 	public function output_js_title_elements() {
-		?>
-		<span id="tsf-title-reference" style="display:none"></span>
-		<span id="tsf-title-offset" class="hide-if-no-js"></span>
-		<span id="tsf-title-placeholder" class="hide-if-no-js"></span>
-		<span id="tsf-title-placeholder-prefix" class="hide-if-no-js"></span>
-		<?php
+		echo '<span id="tsf-title-reference" style="display:none"></span>';
+		echo '<span id="tsf-title-offset" class="hide-if-no-js"></span>';
+		echo '<span id="tsf-title-placeholder" class="hide-if-no-js"></span>';
+		echo '<span id="tsf-title-placeholder-prefix" class="hide-if-no-js"></span>';
 	}
 
 	/**
@@ -890,33 +1066,37 @@ class Admin_Pages extends Inpost {
 	 * @since 3.0.4
 	 */
 	public function output_js_description_elements() {
-		?>
-		<span id="tsf-description-reference" style="display:none"></span>
-		<?php
+		echo '<span id="tsf-description-reference" style="display:none"></span>';
 	}
 
 	/**
 	 * Outputs character counter wrap for both JavaScript and no-Javascript.
 	 *
 	 * @since 3.0.0
+	 * @since 3.1.0 : 1. Added an "what if you click" onhover-title.
+	 *                2. Removed second parameter's usage. For passing the expected string.
+	 *                3. The whole output is now hidden from no-js.
 	 *
 	 * @param string $for     The input ID it's for.
-	 * @param string $initial The initial value for no-JS.
-	 * @param bool   $display Whether to display the counter.
+	 * @param string $initial The initial value for no-JS. Deprecated.
+	 * @param bool   $display Whether to display the counter. (options page gimmick)
 	 */
-	public function output_character_counter_wrap( $for, $initial = 0, $display = true ) {
-		printf(
-			'<div class="tsf-counter-wrap" %s><span class="description tsf-counter">%s</span><span class="hide-if-no-js tsf-ajax"></span></div>',
-			$display ? '' : 'style="display:none;"',
-			sprintf(
-				/* translators: %s = number */
-				\esc_html__( 'Characters Used: %s', 'autodescription' ),
+	public function output_character_counter_wrap( $for, $initial = '', $display = true ) {
+		vprintf(
+			'<div class="tsf-counter-wrap hide-if-no-js" %s><span class="description tsf-counter" title="%s">%s</span><span class="tsf-ajax"></span></div>',
+			[
+				( $display ? '' : 'style="display:none;"' ),
+				\esc_attr( 'Click to change the counter type', 'autodescription' ),
 				sprintf(
-					'<span id="%s_chars">%s</span>',
-					\esc_attr( $for ),
-					(int) mb_strlen( $initial )
-				)
-			)
+					/* translators: %s = number */
+					\esc_html__( 'Characters Used: %s', 'autodescription' ),
+					sprintf(
+						'<span id="%s_chars">%s</span>',
+						\esc_attr( $for ),
+						0
+					)
+				),
+			]
 		);
 	}
 
@@ -927,21 +1107,23 @@ class Admin_Pages extends Inpost {
 	 *
 	 * @param string $for  The input ID it's for.
 	 * @param string $type Whether it's a 'title' or 'description' counter.
-	 * @param bool   $display Whether to display the counter.
+	 * @param bool   $display Whether to display the counter. (options page gimmick)
 	 */
 	public function output_pixel_counter_wrap( $for, $type, $display = true ) {
-		printf(
+		vprintf(
 			'<div class="tsf-pixel-counter-wrap hide-if-no-js" %s>%s%s</div>',
-			$display ? '' : 'style="display:none;"',
-			sprintf(
-				'<div id="%s_pixels" class="tsf-tooltip-wrap">%s</div>',
-				\esc_attr( $for ),
-				'<span class="tsf-pixel-counter-bar tsf-tooltip-item" aria-label="" data-desc=""><span class="tsf-pixel-counter-fluid"></span></span>'
-			),
-			sprintf(
-				'<div class="tsf-pixel-shadow-wrap"><span class="tsf-pixel-counter-shadow tsf-%s-pixel-counter-shadow"></span></div>',
-				\esc_attr( $type )
-			)
+			[
+				( $display ? '' : 'style="display:none;"' ),
+				sprintf(
+					'<div id="%s_pixels" class="tsf-tooltip-wrap">%s</div>',
+					\esc_attr( $for ),
+					'<span class="tsf-pixel-counter-bar tsf-tooltip-item" aria-label="" data-desc=""><span class="tsf-pixel-counter-fluid"></span></span>'
+				),
+				sprintf(
+					'<div class="tsf-pixel-shadow-wrap"><span class="tsf-pixel-counter-shadow tsf-%s-pixel-counter-shadow"></span></div>',
+					\esc_attr( $type )
+				),
+			]
 		);
 	}
 }

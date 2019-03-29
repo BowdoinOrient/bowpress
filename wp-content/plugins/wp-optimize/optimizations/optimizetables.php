@@ -24,6 +24,8 @@ class WP_Optimization_optimizetables extends WP_Optimization {
 
 	public $run_multisite = false;
 
+	public $support_preview = false;
+
 	/**
 	 * Run optimization.
 	 */
@@ -35,7 +37,7 @@ class WP_Optimization_optimizetables extends WP_Optimization {
 		if (isset($this->data['optimization_table']) && '' != $this->data['optimization_table']) {
 			$table = $this->optimizer->get_table($this->data['optimization_table']);
 
-			$this->optimize_table($table, $force);
+			if (false !== $table) $this->optimize_table($table, $force);
 		} else {
 			$tables = $this->optimizer->get_tables();
 
@@ -58,9 +60,12 @@ class WP_Optimization_optimizetables extends WP_Optimization {
 
 		if ($table_obj->is_type_supported) {
 			$this->logger->info('Optimizing: ' . $table_obj->Name);
-			$this->query('OPTIMIZE TABLE ' . $table_obj->Name);
+			$this->query('OPTIMIZE TABLE `' . $table_obj->Name . '`');
 
-			$this->optimizer->update_total_cleaned(strval($table_obj->Data_free));
+			// For InnoDB Data_free doesn't contain free size.
+			if ('InnoDB' != $table_obj->Engine) {
+				$this->optimizer->update_total_cleaned(strval($table_obj->Data_free));
+			}
 
 			$this->register_output(__('Optimizing Table:', 'wp-optimize') . ' ' . $table_obj->Name);
 		}
@@ -88,7 +93,7 @@ class WP_Optimization_optimizetables extends WP_Optimization {
 					$this->register_output(sprintf(__('Other tables will be optimized (%s).', 'wp-optimize'), $tablesstatus['non_inno_db_tables']));
 				}
 
-				$faq_url = apply_filters('wpo_faq_url', 'https://wordpress.org/plugins/wp-optimize/#faq');
+				$faq_url = apply_filters('wpo_faq_url', 'https://getwpo.com/faqs/');
 				$force_db_option = $this->options->get_option('innodb-force-optimize', 'false');
 				$this->register_output('<input id="innodb_force_optimize" name="innodb-force-optimize" type="checkbox" value="true" '.checked($force_db_option, 'true').'><label for="innodb_force_optimize">'.__('Optimize InnoDB tables anyway.', 'wp-optimize').'</label><br><a href="'.$faq_url.'" target="_blank">'.__('Warning: you should read the FAQ on the risks of this operation first.', 'wp-optimize').'</a>');
 			}

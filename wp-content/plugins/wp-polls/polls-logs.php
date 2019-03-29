@@ -120,7 +120,7 @@ if( ! empty( $_POST['do'] ) ) {
         <?php printf(_n('<strong>&raquo;</strong> <strong>%s</strong> vote is cast by guests', '<strong>&raquo;</strong> <strong>%s</strong> votes are cast by guests', $poll_guest, 'wp-polls'), number_format_i18n($poll_guest)); ?>
     </p>
 </div>
-<?php if($poll_totalrecorded > 0 && apply_filters( 'poll_log_show_log_filter', true )) { ?>
+<?php if($poll_totalrecorded > 0 && apply_filters( 'wp_polls_log_show_log_filter', true )) { ?>
 <div class="wrap">
     <h3><?php _e('Filter Poll\'s Logs', 'wp-polls') ?></h3>
     <table width="100%"  border="0" cellspacing="0" cellpadding="0">
@@ -299,7 +299,7 @@ if( ! empty( $_POST['do'] ) ) {
                         }
                         echo "<tr $style>\n";
                         echo "<td>{$pollip_answers[$pollip_aid]}</td>\n";
-                        echo "<td><a href=\"http://ipinfo.io/$pollip_ip\" title=\"$pollip_ip\">$pollip_ip</a></td>\n";
+                        echo "<td>$pollip_ip</td>\n";
                         echo "<td>$pollip_host</td>\n";
                         echo "<td>$pollip_date</td>\n";
                         echo "</tr>\n";
@@ -310,7 +310,7 @@ if( ! empty( $_POST['do'] ) ) {
                 } else {
                     foreach($poll_ips as $poll_ip) {
                         $pollip_aid = (int) $poll_ip->pollip_aid;
-                        $pollip_user = apply_filters( 'poll_log_secret_ballot', removeslashes($poll_ip->pollip_user) );
+                        $pollip_user = apply_filters( 'wp_polls_log_secret_ballot', removeslashes( $poll_ip->pollip_user ) );
                         $pollip_ip = $poll_ip->pollip_ip;
                         $pollip_host = $poll_ip->pollip_host;
                         $pollip_date = mysql2date(sprintf(__('%s @ %s', 'wp-polls'), get_option('date_format'), get_option('time_format')), gmdate('Y-m-d H:i:s', $poll_ip->pollip_timestamp));
@@ -325,7 +325,7 @@ if( ! empty( $_POST['do'] ) ) {
                             echo "<tr class=\"thead\">\n";
                             echo "<th>".__('No.', 'wp-polls')."</th>\n";
                             echo "<th>".__('User', 'wp-polls')."</th>\n";
-                            echo "<th>".__('IP/Host', 'wp-polls')."</th>\n";
+                            echo "<th>".__('Hashed IP / Host', 'wp-polls')."</th>\n";
                             echo "<th>".__('Date', 'wp-polls')."</th>\n";
                             echo "</tr>\n";
                             $i = 1;
@@ -338,7 +338,7 @@ if( ! empty( $_POST['do'] ) ) {
                         echo "<tr $style>\n";
                         echo "<td>".number_format_i18n($i)."</td>\n";
                         echo "<td>$pollip_user</td>\n";
-                        echo "<td><a href=\"http://ipinfo.io/$pollip_ip\" title=\"$pollip_ip\">$pollip_ip</a> / $pollip_host</td>\n";
+                        echo "<td>$pollip_ip / $pollip_host</td>\n";
                         echo "<td>$pollip_date</td>\n";
                         echo "</tr>\n";
                         $poll_last_aid = $pollip_aid;
