@@ -73,15 +73,7 @@ class WPP_Admin {
         if ( 1 == $this->options['tools']['log']['limit'] ) {
 
             if ( !wp_next_scheduled( 'wpp_cache_event' ) ) {
-                $tomorrow = time() + 86400;
-                $midnight  = mktime(
-                    0,
-                    0,
-                    0,
-                    date( "m", $tomorrow ),
-                    date( "d", $tomorrow ),
-                    date( "Y", $tomorrow )
-                );
+                $midnight = strtotime( 'midnight' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) + DAY_IN_SECONDS;
                 wp_schedule_event( $midnight, 'daily', 'wpp_cache_event' );
             }
 
@@ -307,33 +299,32 @@ class WPP_Admin {
 
     public function chart_query_fields( $fields, $options ){
 
-        if ( 'comments' == $options['order_by'] ) {
-            return "DATE(c.comment_date_gmt) AS 'date', COUNT(c.comment_post_ID) AS 'comment_count'";
-        }
+        if ( 'comments' == $options['order_by'] )
+            return "DATE(comment_date_gmt) AS 'comments_date', COUNT(comment_post_ID) AS 'comment_count'";
 
-        return "v.view_date AS 'date', SUM(v.pageviews) AS 'pageviews'";
+        return "SUM(pageviews) AS 'pageviews', view_date";
 
     }
 
     public function chart_query_table( $table, $options ){
 
-        if ( 'comments' == $options['order_by'] ) {
-            global $wpdb;
-            return "`{$wpdb->prefix}comments` c";
-        }
+        global $wpdb;
 
-        return $table;
+        if ( 'comments' == $options['order_by'] )
+            return "`{$wpdb->comments}` c";
+
+        return "`{$wpdb->prefix}popularpostssummary` v";
 
     }
 
     public function chart_query_join( $join, $options ){
 
-        if ( 'comments' == $options['order_by'] ) {
-            global $wpdb;
-            return "INNER JOIN `{$wpdb->prefix}posts` p ON c.comment_post_ID = p.ID";
-        }
+        global $wpdb;
 
-        return $join;
+        if ( 'comments' == $options['order_by'] )
+            return "INNER JOIN `{$wpdb->posts}` p ON comment_post_ID = p.ID";
+
+        return "INNER JOIN `{$wpdb->posts}` p ON postid = p.ID";
 
     }
 
@@ -432,6 +423,20 @@ class WPP_Admin {
             $post_types
         );
 
+        if ( $dates ) {
+            if ( 'comments' == $options['order_by'] ) {
+                $where .= " AND comment_date_gmt BETWEEN '{$dates[0]} 00:00:00' AND '{$dates[1]} 23:59:59' AND comment_approved = '1'";
+            } else {
+                $where .= " AND view_datetime BETWEEN '{$dates[0]} 00:00:00' AND '{$dates[1]} 23:59:59'";
+            }
+        } else {
+            if ( 'comments' == $options['order_by'] ) {
+                $where .= " AND comment_date_gmt > DATE_SUB('{$now}', INTERVAL {$interval})";
+            } else {
+                $where .= " AND view_datetime > DATE_SUB('{$now}', INTERVAL {$interval})";
+            }
+        }
+
         // Get entries published within the specified time range
         if ( isset( $options['freshness'] ) && $options['freshness'] ) {
 
@@ -444,29 +449,20 @@ class WPP_Admin {
 
         }
 
-        if ( 'comments' == $options['order_by'] ) {
-
-            if ( $dates ) {
-                return $where . " AND c.comment_date_gmt BETWEEN '{$dates[0]} 00:00:00' AND '{$dates[1]} 23:59:59' AND c.comment_approved = 1 AND p.post_password = '' AND p.post_status = 'publish'";
-            }
-
-            return $where . " AND c.comment_date_gmt > DATE_SUB('{$now}', INTERVAL {$interval}) AND c.comment_approved = 1 AND p.post_password = '' AND p.post_status = 'publish'";
-        }
-
-        if ( $dates ) {
-            return $where . " AND v.view_datetime BETWEEN '{$dates[0]} 00:00:00' AND '{$dates[1]} 23:59:59' AND p.post_password = '' AND p.post_status = 'publish' ";
-        }
-
-        return $where . " AND v.view_datetime  > DATE_SUB('{$now}', INTERVAL {$interval}) AND p.post_password = '' AND p.post_status = 'publish' ";
+        return $where . " AND p.post_password = '' AND p.post_status = 'publish' ";
 
     }
 
     public function chart_query_group_by( $groupby, $options ){
-        return "GROUP BY date";
+        if ( 'comments' == $options['order_by'] )
+            return "GROUP BY comments_date";
+        return "GROUP BY view_date";
     }
 
     public function chart_query_order_by( $orderby, $options ){
-        return "ORDER BY date ASC";
+        if ( 'comments' == $options['order_by'] )
+            return "ORDER BY comments_date ASC";
+        return "ORDER BY view_date ASC";
     }
 
     public function chart_query_limit( $fields, $options ){
@@ -587,6 +583,8 @@ class WPP_Admin {
         }
 
         add_filter( 'wpp_query_fields', array( $this, 'chart_query_fields' ), 1, 2 );
+        add_filter( 'wpp_query_table', array( $this, 'chart_query_table' ), 1, 2 );
+        add_filter( 'wpp_query_join', array( $this, 'chart_query_join' ), 1, 2 );
         add_filter( 'wpp_query_where', array( $this, 'chart_query_where' ), 1, 2 );
         add_filter( 'wpp_query_group_by', array( $this, 'chart_query_group_by' ), 1, 2 );
         add_filter( 'wpp_query_order_by', array( $this, 'chart_query_order_by' ), 1, 2 );
@@ -602,6 +600,8 @@ class WPP_Admin {
         $views_data = $most_viewed->get_posts();
 
         remove_filter( 'wpp_query_fields', array( $this, 'chart_query_fields' ), 1 );
+        remove_filter( 'wpp_query_table', array( $this, 'chart_query_table' ), 1 );
+        remove_filter( 'wpp_query_join', array( $this, 'chart_query_join' ), 1 );
         remove_filter( 'wpp_query_where', array( $this, 'chart_query_where' ), 1 );
         remove_filter( 'wpp_query_group_by', array( $this, 'chart_query_group_by' ), 1 );
         remove_filter( 'wpp_query_order_by', array( $this, 'chart_query_order_by' ), 1 );
@@ -639,8 +639,8 @@ class WPP_Admin {
 
             if ( ( is_array($views_data) && !empty($views_data) ) ) {
                 foreach( $views_data as $views ) {
-                    if ( isset( $data['dates'][$views->date] ) ) {
-                        $data['dates'][$views->date]['views'] = $views->pageviews;
+                    if ( isset( $data['dates'][$views->view_date] ) ) {
+                        $data['dates'][$views->view_date]['views'] = $views->pageviews;
                         $data['totals']['views'] += $views->pageviews;
                     }
                 }
@@ -648,8 +648,8 @@ class WPP_Admin {
 
             if ( ( is_array($comments_data) && !empty($comments_data) ) ) {
                 foreach( $comments_data as $comments ) {
-                    if ( isset( $data['dates'][$comments->date] ) ) {
-                        $data['dates'][$comments->date]['comments'] = $comments->comment_count;
+                    if ( isset( $data['dates'][$comments->comments_date] ) ) {
+                        $data['dates'][$comments->comments_date]['comments'] = $comments->comment_count;
                         $data['totals']['comments'] += $comments->comment_count;
                     }
                 }
@@ -757,10 +757,93 @@ class WPP_Admin {
                 )
             )
         );
-        add_filter( 'wpp_query_where', array( $this, 'chart_query_where' ), 1, 2 );
+
+        add_filter('wpp_query_join', function($join, $options){
+
+            global $wpdb;
+            $dates = null;
+
+            if ( isset( $_GET['dates']) ) {
+
+                $dates = explode( " ~ ", $_GET['dates'] );
+
+                if (
+                    !is_array( $dates )
+                    || empty( $dates )
+                    || !WPP_Helper::is_valid_date( $dates[0] )
+                ) {
+                    $dates = null;
+                } else {
+                    if (
+                        !isset( $dates[1] )
+                        || !WPP_Helper::is_valid_date( $dates[1] )
+                    ) {
+                        $dates[1] = $dates[0];
+                    }
+
+                    $end_date = $dates[1];
+                    $start_date = $dates[0];
+                }
+
+            }
+
+            if ( $dates ) {
+                return "INNER JOIN (SELECT SUM(pageviews) AS pageviews, view_date, postid FROM `{$wpdb->prefix}popularpostssummary` WHERE view_datetime BETWEEN '{$dates[0]} 00:00:00' AND '{$dates[1]} 23:59:59' GROUP BY postid) v ON p.ID = v.postid";
+            }
+
+            $now = WPP_Helper::now();
+
+            // Determine time range
+            switch( $options['range'] ){
+                case "last24hours":
+                case "daily":
+                    $interval = "24 HOUR";
+                    break;
+
+                case "today":
+                    $hours = date( 'H', strtotime($now) );
+                    $minutes = $hours * 60 + (int) date( 'i', strtotime($now) );
+                    $interval = "{$minutes} MINUTE";
+                    break;
+
+                case "last7days":
+                case "weekly":
+                    $interval = "6 DAY";
+                    break;
+
+                case "last30days":
+                case "monthly":
+                    $interval = "29 DAY";
+                    break;
+
+                case "custom":
+                    $time_units = array( "MINUTE", "HOUR", "DAY" );
+                    $interval = "24 HOUR";
+
+                    // Valid time unit
+                    if (
+                        isset( $options['time_unit'] )
+                        && in_array( strtoupper( $options['time_unit'] ), $time_units )
+                        && isset( $options['time_quantity'] )
+                        && filter_var( $options['time_quantity'], FILTER_VALIDATE_INT )
+                        && $options['time_quantity'] > 0
+                    ) {
+                        $interval = "{$options['time_quantity']} " . strtoupper( $options['time_unit'] );
+                    }
+
+                    break;
+
+                default:
+                    $interval = "1 DAY";
+                    break;
+            }
+
+            return "INNER JOIN (SELECT SUM(pageviews) AS pageviews, view_date, postid FROM `{$wpdb->prefix}popularpostssummary` WHERE view_datetime > DATE_SUB('{$now}', INTERVAL {$interval}) GROUP BY postid) v ON p.ID = v.postid";
+
+        }, 1, 2);
         $most_viewed = new WPP_query( $args );
-        remove_filter( 'wpp_query_where', array( $this, 'chart_query_where' ), 1 );
         $posts = $most_viewed->get_posts();
+        remove_all_filters('wpp_query_join', 1);
 
         if (
             is_array( $posts )
@@ -812,10 +895,93 @@ class WPP_Admin {
                 )
             )
         );
-        add_filter( 'wpp_query_where', array( $this, 'chart_query_where' ), 1, 2 );
+
+        add_filter('wpp_query_join', function($join, $options){
+
+            global $wpdb;
+            $dates = null;
+
+            if ( isset( $_GET['dates']) ) {
+
+                $dates = explode( " ~ ", $_GET['dates'] );
+
+                if (
+                    !is_array( $dates )
+                    || empty( $dates )
+                    || !WPP_Helper::is_valid_date( $dates[0] )
+                ) {
+                    $dates = null;
+                } else {
+                    if (
+                        !isset( $dates[1] )
+                        || !WPP_Helper::is_valid_date( $dates[1] )
+                    ) {
+                        $dates[1] = $dates[0];
+                    }
+
+                    $end_date = $dates[1];
+                    $start_date = $dates[0];
+                }
+
+            }
+
+            if ( $dates ) {
+                return "INNER JOIN (SELECT comment_post_ID, COUNT(comment_post_ID) AS comment_count, comment_date_gmt FROM `{$wpdb->comments}` WHERE comment_date_gmt BETWEEN '{$dates[0]} 00:00:00' AND '{$dates[1]} 23:59:59' AND comment_approved = '1' GROUP BY comment_post_ID) c ON p.ID = c.comment_post_ID";
+            }
+
+            $now = WPP_Helper::now();
+
+            // Determine time range
+            switch( $options['range'] ){
+                case "last24hours":
+                case "daily":
+                    $interval = "24 HOUR";
+                    break;
+
+                case "today":
+                    $hours = date( 'H', strtotime($now) );
+                    $minutes = $hours * 60 + (int) date( 'i', strtotime($now) );
+                    $interval = "{$minutes} MINUTE";
+                    break;
+
+                case "last7days":
+                case "weekly":
+                    $interval = "6 DAY";
+                    break;
+
+                case "last30days":
+                case "monthly":
+                    $interval = "29 DAY";
+                    break;
+
+                case "custom":
+                    $time_units = array( "MINUTE", "HOUR", "DAY" );
+                    $interval = "24 HOUR";
+
+                    // Valid time unit
+                    if (
+                        isset( $options['time_unit'] )
+                        && in_array( strtoupper( $options['time_unit'] ), $time_units )
+                        && isset( $options['time_quantity'] )
+                        && filter_var( $options['time_quantity'], FILTER_VALIDATE_INT )
+                        && $options['time_quantity'] > 0
+                    ) {
+                        $interval = "{$options['time_quantity']} " . strtoupper( $options['time_unit'] );
+                    }
+
+                    break;
+
+                default:
+                    $interval = "1 DAY";
+                    break;
+            }
+
+            return "INNER JOIN (SELECT comment_post_ID, COUNT(comment_post_ID) AS comment_count, comment_date_gmt FROM `{$wpdb->comments}` WHERE comment_date_gmt > DATE_SUB('{$now}', INTERVAL {$interval}) AND comment_approved = '1' GROUP BY comment_post_ID) c ON p.ID = c.comment_post_ID";
+
+        }, 1, 2);
         $most_commented = new WPP_query( $args );
-        remove_filter( 'wpp_query_where', array( $this, 'chart_query_where' ), 1 );
         $posts = $most_commented->get_posts();
+        remove_all_filters('wpp_query_join', 1);
 
         if (
             is_array( $posts )
@@ -1278,67 +1444,5 @@ class WPP_Admin {
         delete_option( 'wpp_update' );
 
     } // end __upgrade
-
-    /**
-     * Checks if the technical requirements are met.
-     *
-     * @since	2.4.0
-     * @access  private
-     * @link	http://wordpress.stackexchange.com/questions/25910/uninstall-activate-deactivate-a-plugin-typical-features-how-to/25979#25979
-     * @global	string $wp_version
-     * @return	array
-     */
-    private function check_requirements() {
-
-        global $wp_version;
-
-        $php_min_version = '5.3';
-        $wp_min_version = '4.7';
-        $php_current_version = phpversion();
-        $errors = array();
-
-        if ( version_compare( $php_min_version, $php_current_version, '>' ) ) {
-            $errors[] = sprintf(
-                __( 'Your PHP installation is too old. WordPress Popular Posts requires at least PHP version %1$s to function correctly. Please contact your hosting provider and ask them to upgrade PHP to %1$s or higher.', 'wordpress-popular-posts' ),
-                $php_min_version
-            );
-        }
-
-        if ( version_compare( $wp_min_version, $wp_version, '>' ) ) {
-            $errors[] = sprintf(
-                __( 'Your WordPress version is too old. WordPress Popular Posts requires at least WordPress version %1$s to function correctly. Please update your blog via Dashboard &gt; Update.', 'wordpress-popular-posts' ),
-                $wp_min_version
-            );
-        }
-
-        return $errors;
-
-    } // end check_requirements
-
-    /**
-     * Outputs error messages to wp-admin.
-     *
-     * @since	2.4.0
-     */
-    public function check_admin_notices() {
-
-        $errors = $this->check_requirements();
-
-        if ( empty($errors) )
-            return;
-
-        if ( isset($_GET['activate']) )
-            unset($_GET['activate']);
-
-        printf(
-            __('<div class="notice notice-error"><p>%1$s</p><p><i>%2$s</i> has been <strong>deactivated</strong>.</p></div>', 'wordpress-popular-posts'),
-            join( '</p><p>', $errors ),
-            'WordPress Popular Posts'
-        );
-
-        $plugin_file = 'wordpress-popular-posts/wordpress-popular-posts.php';
-        deactivate_plugins( $plugin_file );
-
-    } // end check_admin_notices
 
 } // End WPP_Admin class

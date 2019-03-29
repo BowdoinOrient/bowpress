@@ -4,11 +4,11 @@
  */
 namespace The_SEO_Framework;
 
-defined( 'ABSPATH' ) or die;
+defined( 'THE_SEO_FRAMEWORK_PRESENT' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2019 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -39,19 +39,18 @@ final class Load extends Feed implements Debug_Interface {
 	 * @since 2.2.9
 	 *
 	 * @var bool Whether debug is enabled.
-	 * @var bool Whether debug is hidden in HTMl.
 	 * @var bool Whether transients are enabled.
 	 * @var bool Whether script debugging is enabled.
 	 */
-	public $the_seo_framework_debug = false,
-	       $the_seo_framework_debug_hidden = false,
-	       $the_seo_framework_use_transients = true,
-	       $script_debug = false;
+	public $the_seo_framework_debug          = false;
+	public $the_seo_framework_use_transients = true;
+	public $script_debug                     = false;
 
 	/**
 	 * Constructor, setup debug vars and then load parent constructor.
 	 *
 	 * @staticvar int $count Prevents duplicated constructor loading.
+	 *
 	 * @return null If called twice or more.
 	 */
 	public function __construct() {
@@ -61,10 +60,41 @@ final class Load extends Feed implements Debug_Interface {
 		if ( $count++ )
 			return null;
 
-		//* Setup debug vars before initializing parents.
+		//= Setup debug vars before initializing anything else.
 		$this->init_debug_vars();
 
-		parent::__construct();
+		if ( $this->the_seo_framework_debug ) {
+			$debug_instance = Debug::get_instance();
+
+			\add_action( 'the_seo_framework_do_before_output', [ $debug_instance, '_set_debug_query_output_cache' ] );
+			\add_action( 'admin_footer', [ $debug_instance, '_debug_output' ] );
+			\add_action( 'wp_footer', [ $debug_instance, '_debug_output' ] );
+		}
+
+		//= Register the capabilities early.
+		\add_filter( "option_page_capability_{$this->settings_field}", [ $this, 'get_settings_capability' ] );
+
+		/**
+		 * @since 2.2.2
+		 * @param bool $load_options Whether to show or hide option pages.
+		 */
+		$this->load_options = (bool) \apply_filters( 'the_seo_framework_load_options', true );
+
+		/**
+		 * @since 2.4.3
+		 * @since 2.8.0 : Uses method $this->use_object_cache() as default.
+		 * @param bool $use_object_cache Whether to enable object caching.
+		 */
+		$this->use_object_cache = (bool) \apply_filters( 'the_seo_framework_use_object_cache', $this->use_object_cache() );
+
+		//? We always use this, because we need to test whether the sitemap must be outputted.
+		$this->pretty_permalinks = '' !== \get_option( 'permalink_structure' );
+
+		//= Load plugin at init 0.
+		\add_action( 'init', [ $this, 'init_the_seo_framework' ], 0 );
+
+		//= Prepare all compatibility files early.
+		$this->load_early_compat_files();
 	}
 
 	/**
@@ -76,10 +106,7 @@ final class Load extends Feed implements Debug_Interface {
 
 		$this->the_seo_framework_debug = defined( 'THE_SEO_FRAMEWORK_DEBUG' ) && THE_SEO_FRAMEWORK_DEBUG ?: $this->the_seo_framework_debug;
 		if ( $this->the_seo_framework_debug ) {
-			//* No need to set these to true if no debugging is enabled.
-			$this->the_seo_framework_debug_hidden = defined( 'THE_SEO_FRAMEWORK_DEBUG_HIDDEN' ) && THE_SEO_FRAMEWORK_DEBUG_HIDDEN ?: $this->the_seo_framework_debug_hidden;
-
-			$instance = \The_SEO_Framework\Debug::set_instance( $this->the_seo_framework_debug, $this->the_seo_framework_debug_hidden );
+			$instance = \The_SEO_Framework\Debug::_set_instance( $this->the_seo_framework_debug );
 		}
 
 		$this->the_seo_framework_use_transients = defined( 'THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS' ) && THE_SEO_FRAMEWORK_DISABLE_TRANSIENTS ? false : $this->the_seo_framework_use_transients;
@@ -92,7 +119,7 @@ final class Load extends Feed implements Debug_Interface {
 	 * Wrapper for function calling through parameters. The golden nugget.
 	 *
 	 * @since 2.2.2
-	 * @access private
+	 * @since 3.1.0 Is now protected.
 	 * @NOTE _doing_it_wrong notices go towards the callback. Unless this
 	 *      function is used wrongfully. Then the notice is about this function.
 	 *
@@ -101,43 +128,37 @@ final class Load extends Feed implements Debug_Interface {
 	 * @param array|string $args The arguments passed to the function.
 	 * @return mixed $output The function called.
 	 */
-	public function call_function( $callback, $version = '', $args = array() ) {
+	protected function call_function( $callback, $version = '', $args = [] ) {
 
 		$output = '';
 
-		/**
-		 * Convert string/object to array
-		 */
+		//? Convert string/object to array
 		if ( is_object( $callback ) ) {
-			$function = array( $callback, '' );
+			$function = [ $callback, '' ];
 		} else {
 			$function = (array) $callback;
 		}
 
-		/**
-		 * Convert string/object to array
-		 */
+		//? Convert string/object to array
 		if ( is_object( $args ) ) {
-			$args = array( $args, '' );
+			$args = [ $args, '' ];
 		} else {
 			$args = (array) $args;
 		}
 
-		$class = reset( $function );
+		$class  = reset( $function );
 		$method = next( $function );
 
-		/**
-		 * Fetch method/function
-		 */
+		// Fetch method/function
 		if ( ( is_object( $class ) || is_string( $class ) ) && $class && is_string( $method ) && $method ) {
 			if ( get_class( $this ) === get_class( $class ) ) {
 				if ( method_exists( $this, $method ) ) {
 					if ( empty( $args ) ) {
 						// In-Object calling.
-						$output = call_user_func( array( $this, $method ) );
+						$output = call_user_func( [ $this, $method ] );
 					} else {
 						// In-Object calling.
-						$output = call_user_func_array( array( $this, $method ), $args );
+						$output = call_user_func_array( [ $this, $method ], $args );
 					}
 				} else {
 					$this->_inaccessible_p_or_m( \esc_html( get_class( $class ) . '->' . $method . '()' ), 'Class or Method not found.', \esc_html( $version ) );
@@ -145,9 +166,9 @@ final class Load extends Feed implements Debug_Interface {
 			} else {
 				if ( method_exists( $class, $method ) ) {
 					if ( empty( $args ) ) {
-						$output = call_user_func( array( $class, $method ) );
+						$output = call_user_func( [ $class, $method ] );
 					} else {
-						$output = call_user_func_array( array( $class, $method ), $args );
+						$output = call_user_func_array( [ $class, $method ], $args );
 					}
 				} else {
 					$this->_inaccessible_p_or_m( \esc_html( get_class( $class ) . '::' . $method . '()' ), 'Class or Method not found.', \esc_html( $version ) );
@@ -196,8 +217,8 @@ final class Load extends Feed implements Debug_Interface {
 	 * @param string $version     The version of WordPress that deprecated the function.
 	 * @param string $replacement Optional. The function that should have been called. Default null.
 	 */
-	public function _deprecated_function( $function, $version, $replacement = null ) {
-		Debug::get_instance()->_deprecated_function( $function, $version, $replacement );
+	public function _deprecated_function( $function, $version, $replacement = null ) { // phpcs:ignore -- invalid xss warning
+		Debug::get_instance()->_deprecated_function( $function, $version, $replacement ); // phpcs:ignore -- invalid xss warning
 	}
 
 	/**
@@ -212,13 +233,12 @@ final class Load extends Feed implements Debug_Interface {
 	 * @param string $message  A message explaining what has been done incorrectly.
 	 * @param string $version  The version of WordPress where the message was added.
 	 */
-	public function _doing_it_wrong( $function, $message, $version = null ) {
-		Debug::get_instance()->_doing_it_wrong( $function, $message, $version );
+	public function _doing_it_wrong( $function, $message, $version = null ) { // phpcs:ignore -- invalid xss warning
+		Debug::get_instance()->_doing_it_wrong( $function, $message, $version ); // phpcs:ignore -- invalid xss warning
 	}
 
 	/**
 	 * Mark a property or method inaccessible when it has been used.
-
 	 * The current behavior is to trigger a user error if WP_DEBUG is true.
 	 *
 	 * @since 2.7.0
@@ -229,24 +249,5 @@ final class Load extends Feed implements Debug_Interface {
 	 */
 	public function _inaccessible_p_or_m( $p_or_m, $message = '' ) {
 		Debug::get_instance()->_inaccessible_p_or_m( $p_or_m, $message );
-	}
-	/**
-	 * Debug init. Simplified way of debugging a function, only works in admin.
-	 *
-	 * @since 2.6.0
-	 * @access private
-	 *
-	 * @param string $method The function name.
-	 * @param bool $store Whether to store the output in cache for next run to pick up on.
-	 * @param double $debug_key Use $debug_key as variable, it's reserved.
-	 * @param mixed function args.
-	 * @return void early if debugging is disabled or when storing cache values.
-	 */
-	public function debug_init( $method, $store, $debug_key = null ) {
-		if ( func_num_args() >= 4 ) {
-			Debug::get_instance()->debug_init( $method, $store, $debug_key, array_slice( func_get_args(), 3 ) );
-		} else {
-			Debug::get_instance()->debug_init( $method, $store, $debug_key );
-		}
 	}
 }

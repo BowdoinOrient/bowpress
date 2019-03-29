@@ -4,11 +4,11 @@
  */
 namespace The_SEO_Framework;
 
-defined( 'ABSPATH' ) or die;
+defined( 'THE_SEO_FRAMEWORK_PRESENT' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2019 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -42,49 +42,12 @@ class Init extends Query {
 	protected $use_object_cache = true;
 
 	/**
-	 * Constructor. Initializes actions and loads parent constructor.
-	 */
-	protected function __construct() {
-		parent::__construct();
-
-		/**
-		 * Applies filters 'the_seo_framework_load_options'
-		 * Allows the options page to be removed
-		 *
-		 * @since 2.2.2
-		 *
-		 * @param bool $load_options
-		 */
-		$this->load_options = (bool) \apply_filters( 'the_seo_framework_load_options', true );
-
-		/**
-		 * Applies filters 'the_seo_framework_use_object_cache'
-		 * Enables object caching usage.
-		 *
-		 * @since 2.4.3
-		 * @since 2.8.0 : Uses method $this->use_object_cache() as default.
-		 *
-		 * @param bool $use_object_cache
-		 */
-		$this->use_object_cache = (bool) \apply_filters( 'the_seo_framework_use_object_cache', $this->use_object_cache() );
-
-		//* Determines Whether we're using pretty permalinks.
-		$this->pretty_permalinks = '' !== $this->permalink_structure();
-
-		\add_action( 'init', array( $this, 'init_the_seo_framework' ), 0 );
-
-		$this->load_early_compat_files();
-	}
-
-	/**
-	 * Runs the plugin on the front-end.
-	 *
-	 * To overwrite any of the filters, use (n>0):
-	 * `add_action( 'init', callback, n );`
+	 * A true legacy. Ran the plugin on the front-end.
 	 *
 	 * @since 1.0.0
 	 * @since 2.8.0 Silently deprecated. Displaying legacy roots.
 	 * @deprecated
+	 * @ignore
 	 */
 	public function autodescription_run() {
 		$this->init_the_seo_framework();
@@ -97,10 +60,10 @@ class Init extends Query {
 	 */
 	public function init_the_seo_framework() {
 
-		//* Don't initialize cache or cause other issues on preview.
-		if ( $this->is_preview() )
-			return;
-
+		/**
+		 * Runs before the plugin is initialized.
+		 * @since 2.8.0
+		 */
 		\do_action( 'the_seo_framework_init' );
 
 		$this->init_global_actions();
@@ -112,6 +75,13 @@ class Init extends Query {
 			$this->init_front_end_actions();
 			$this->init_front_end_filters();
 		}
+
+		/**
+		 * Runs after the plugin is initialized.
+		 * Use this to remove filters and actions.
+		 * @since 3.1.0
+		 */
+		\do_action( 'the_seo_framework_after_init' );
 	}
 
 	/**
@@ -126,10 +96,10 @@ class Init extends Query {
 		}
 
 		//* Add query strings for sitemap rewrite.
-		\add_action( 'init', array( $this, 'rewrite_rule_sitemap' ), 1 );
+		\add_action( 'init', [ $this, 'rewrite_rule_sitemap' ], 1 );
 
 		//* Enqueue sitemap rewrite flush
-		\add_action( 'shutdown', array( $this, 'maybe_flush_rewrite' ), 999 );
+		\add_action( 'shutdown', [ $this, 'maybe_flush_rewrite' ], 999 );
 	}
 
 	/**
@@ -140,10 +110,10 @@ class Init extends Query {
 	public function init_global_filters() {
 
 		//* Add query strings for sitemap rewrite.
-		\add_filter( 'query_vars', array( $this, 'enqueue_sitemap_query_vars' ), 1, 1 );
+		\add_filter( 'query_vars', [ $this, 'enqueue_sitemap_query_vars' ], 1, 1 );
 
 		//* Adjust category link to accommodate primary term.
-		\add_filter( 'post_link_category', array( $this, '_adjust_post_link_category' ), 10, 3 );
+		\add_filter( 'post_link_category', [ $this, '_adjust_post_link_category' ], 10, 3 );
 	}
 
 	/**
@@ -166,6 +136,7 @@ class Init extends Query {
 	public function init_admin_actions() {
 
 		/**
+		 * Runs before the plugin is initialized in the admin screens.
 		 * @since 2.8.0
 		 */
 		\do_action( 'the_seo_framework_admin_init' );
@@ -180,71 +151,68 @@ class Init extends Query {
 		$this->initialize_term_meta();
 
 		//* Save post data.
-		\add_action( 'save_post', array( $this, 'inpost_seo_save' ), 1, 2 );
-		\add_action( 'edit_attachment', array( $this, 'inattachment_seo_save' ), 1 );
-		\add_action( 'save_post', array( $this, '_save_inpost_primary_term' ), 1, 2 );
+		\add_action( 'save_post', [ $this, 'inpost_seo_save' ], 1, 2 );
+		\add_action( 'edit_attachment', [ $this, 'inattachment_seo_save' ], 1 );
+		\add_action( 'save_post', [ $this, '_save_inpost_primary_term' ], 1, 2 );
 
 		//* Enqueues admin scripts.
-		\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ), 0, 1 );
+		\add_action( 'admin_enqueue_scripts', [ $this, '_init_admin_scripts' ], 0, 1 );
 
 		//* Add plugin links to the plugin activation page.
-		\add_filter( 'plugin_action_links_' . THE_SEO_FRAMEWORK_PLUGIN_BASENAME, array( $this, 'plugin_action_links' ), 10, 2 );
+		\add_filter( 'plugin_action_links_' . THE_SEO_FRAMEWORK_PLUGIN_BASENAME, [ $this, '_add_plugin_action_links' ], 10, 2 );
+		\add_filter( 'plugin_row_meta', [ $this, '_add_plugin_row_meta' ], 10, 2 );
 
 		//* Initialize post states.
-		\add_action( 'current_screen', array( $this, 'post_state' ) );
+		\add_action( 'current_screen', [ $this, 'post_state' ] );
 
-		if ( $this->is_option_checked( 'display_seo_bar_tables' ) ) {
+		if ( $this->get_option( 'display_seo_bar_tables' ) ) {
 			//* Initialize columns.
-			\add_action( 'current_screen', array( $this, 'init_columns' ) );
+			\add_action( 'current_screen', [ $this, 'init_columns' ] );
 
 			//* Ajax handlers for columns.
-			\add_action( 'wp_ajax_add-tag', array( $this, '_init_columns_wp_ajax_add_tag' ), -1 );
-			\add_action( 'wp_ajax_inline-save', array( $this, '_init_columns_wp_ajax_inline_save' ), -1 );
-			\add_action( 'wp_ajax_inline-save-tax', array( $this, '_init_columns_wp_ajax_inline_save_tax' ), -1 );
+			\add_action( 'wp_ajax_add-tag', [ $this, '_init_columns_wp_ajax_add_tag' ], -1 );
+			\add_action( 'wp_ajax_inline-save', [ $this, '_init_columns_wp_ajax_inline_save' ], -1 );
+			\add_action( 'wp_ajax_inline-save-tax', [ $this, '_init_columns_wp_ajax_inline_save_tax' ], -1 );
 		}
 
 		if ( $this->load_options ) :
 			// Enqueue i18n defaults.
-			\add_action( 'admin_init', array( $this, 'enqueue_page_defaults' ), 1 );
+			\add_action( 'admin_init', [ $this, 'enqueue_page_defaults' ], 1 );
 
 			//* Set up site settings and save/reset them
-			\add_action( 'admin_init', array( $this, 'register_settings' ), 5 );
+			\add_action( 'admin_init', [ $this, 'register_settings' ], 5 );
 
 			//* Load the SEO admin page content and handlers.
-			\add_action( 'admin_init', array( $this, 'settings_init' ), 10 );
-
-			//* Update site options at plugin update.
-			\add_action( 'admin_init', array( $this, 'site_updated_plugin_option' ), 30 );
+			\add_action( 'admin_init', [ $this, 'settings_init' ], 10 );
 
 			//* Enqueue Inpost meta boxes.
-			\add_action( 'add_meta_boxes', array( $this, 'add_inpost_seo_box_init' ), 5 );
-
-			//* Enqueue Inpost primary term template.
-			\add_action( 'admin_footer', array( $this, '_include_primary_term_selector_template' ) );
+			\add_action( 'add_meta_boxes', [ $this, 'add_inpost_seo_box_init' ], 5 );
 
 			//* Enqueue Taxonomy meta output.
-			\add_action( 'current_screen', array( $this, 'add_taxonomy_seo_box_init' ), 10 );
+			\add_action( 'current_screen', [ $this, 'add_taxonomy_seo_box_init' ], 10 );
 
 			// Add menu links and register $this->seo_settings_page_hook
-			\add_action( 'admin_menu', array( $this, 'add_menu_link' ) );
+			\add_action( 'admin_menu', [ $this, 'add_menu_link' ] );
 
 			// Set up notices
-			\add_action( 'admin_notices', array( $this, 'notices' ) );
+			\add_action( 'admin_notices', [ $this, 'notices' ] );
 
 			// Load nessecary assets
-			\add_action( 'admin_init', array( $this, 'load_assets' ) );
+			\add_action( 'admin_init', [ $this, 'load_assets' ] );
 
 			//* Admin AJAX for counter options.
-			\add_action( 'wp_ajax_the_seo_framework_update_counter', array( $this, 'wp_ajax_update_counter_type' ) );
+			\add_action( 'wp_ajax_the_seo_framework_update_counter', [ $this, '_wp_ajax_update_counter_type' ] );
 
 			//* Admin AJAX for TSF Cropper
-			\add_action( 'wp_ajax_tsf-crop-image', array( $this, 'wp_ajax_crop_image' ) );
+			\add_action( 'wp_ajax_tsf-crop-image', [ $this, '_wp_ajax_crop_image' ] );
 
 			// Add extra removable query arguments to the list.
-			\add_filter( 'removable_query_args', array( $this, 'add_removable_query_args' ) );
+			\add_filter( 'removable_query_args', [ $this, 'add_removable_query_args' ] );
 		endif;
 
 		/**
+		 * Runs after the plugin is initialized in the admin screens.
+		 * Use this to remove actions.
 		 * @since 2.9.4
 		 */
 		\do_action( 'the_seo_framework_after_admin_init' );
@@ -261,6 +229,7 @@ class Init extends Query {
 	protected function init_front_end_actions() {
 
 		/**
+		 * Runs before the plugin is initialized on the front-end.
 		 * @since 2.8.0
 		 */
 		\do_action( 'the_seo_framework_front_init' );
@@ -277,31 +246,38 @@ class Init extends Query {
 		//* Earlier removal of the generator tag. Doesn't require filter.
 		\remove_action( 'wp_head', 'wp_generator' );
 
+		//* Adds site icon tags to the sitemap stylesheet.
+		\add_action( 'the_seo_framework_xsl_head', 'wp_site_icon', 99 );
+
 		/**
 		 * Outputs sitemap or stylesheet on request.
 		 *
 		 * Adding a higher priority will cause a trailing slash to be added.
 		 * We need to be in front of the queue to prevent this from happening.
+		 *
+		 * This brings other issues we had to fix. @see $this->validate_sitemap_scheme()
 		 */
-		\add_action( 'template_redirect', array( $this, 'maybe_output_sitemap' ), 1 );
-		\add_action( 'template_redirect', array( $this, 'maybe_output_sitemap_stylesheet' ), 1 );
+		\add_action( 'template_redirect', [ $this, 'maybe_output_sitemap' ], 1 );
+		\add_action( 'template_redirect', [ $this, 'maybe_output_sitemap_stylesheet' ], 1 );
 
 		//* Initialize 301 redirects.
-		\add_action( 'template_redirect', array( $this, '_init_custom_field_redirect' ) );
+		\add_action( 'template_redirect', [ $this, '_init_custom_field_redirect' ] );
 
 		//* Initialize feed alteration.
-		\add_action( 'template_redirect', array( $this, '_init_feed_output' ) );
+		\add_action( 'template_redirect', [ $this, '_init_feed_output' ] );
 
 		//* Output meta tags.
-		\add_action( 'wp_head', array( $this, 'html_output' ), 1 );
+		\add_action( 'wp_head', [ $this, 'html_output' ], 1 );
 
-		if ( $this->is_option_checked( 'alter_archive_query' ) )
+		if ( $this->get_option( 'alter_archive_query' ) )
 			$this->init_alter_archive_query();
 
-		if ( $this->is_option_checked( 'alter_search_query' ) )
+		if ( $this->get_option( 'alter_search_query' ) )
 			$this->init_alter_search_query();
 
 		/**
+		 * Runs before the plugin is initialized on the front-end.
+		 * Use this to remove actions.
 		 * @since 2.9.4
 		 */
 		\do_action( 'the_seo_framework_after_front_init' );
@@ -314,14 +290,12 @@ class Init extends Query {
 	 */
 	protected function init_front_end_filters() {
 
-		//* Edit the robots.txt file
-		\add_filter( 'robots_txt', array( $this, 'robots_txt' ), 10, 2 );
+		//* Overwrite the robots.txt file
+		\add_filter( 'robots_txt', [ $this, 'robots_txt' ], 10, 2 );
 
 		/**
-		 * Applies filters 'the_seo_framework_overwrite_titles'
-		 *
 		 * @since 2.9.3
-		 * @param bool $overwrite_titles
+		 * @param bool $overwrite_titles Whether to enable title overwriting.
 		 */
 		$overwrite_titles = \apply_filters( 'the_seo_framework_overwrite_titles', true );
 
@@ -330,20 +304,18 @@ class Init extends Query {
 			\remove_all_filters( 'pre_get_document_title', false );
 
 			//* New WordPress 4.4.0 filter. Hurray! It's also much faster :)
-			\add_filter( 'pre_get_document_title', array( $this, 'title_from_cache' ), 10 );
-			//* Override AnsPress Theme Title
-			\add_filter( 'ap_title', array( $this, 'title_from_cache' ), 99, 1 );
-			//* Override Woo Themes Title
-			\add_filter( 'woo_title', array( $this, 'title_from_cache' ), 99 );
+			\add_filter( 'pre_get_document_title', [ $this, 'get_document_title' ], 10 );
+			//* Override WooThemes Title TODO move this to wc compat file.
+			\add_filter( 'woo_title', [ $this, 'get_document_title' ], 99 );
 
 			/**
-			 * Applies filters 'the_seo_framework_manipulate_title' : boolean
-			 * Disables the title tag manipulation on old themes.
 			 * @since 2.4.1
+			 * @param bool $overwrite_titles Whether to enable title overwriting.
 			 */
 			if ( \apply_filters( 'the_seo_framework_manipulate_title', true ) ) {
+				\remove_all_filters( 'wp_title', false );
 				//* Override WordPress Title
-				\add_filter( 'wp_title', array( $this, 'title_from_cache' ), 9, 3 );
+				\add_filter( 'wp_title', [ $this, 'get_wp_title' ], 9, 3 );
 			}
 		}
 	}
@@ -351,43 +323,34 @@ class Init extends Query {
 	/**
 	 * Runs header actions.
 	 *
-	 * @since 2.2.6
-	 * @uses The_SEO_Framework_Load::call_function()
+	 * @since 3.1.0
+	 * @uses $this->call_function()
 	 *
-	 * @param string|array $args the arguments that will be passed onto the callback.
-	 * @param bool $before if the header actions should be before or after the SEO Frameworks output
+	 * @param string $location Either 'before' or 'after'.
 	 * @return string The filter output.
 	 */
-	public function header_actions( $args = '', $before = true ) {
+	public function get_legacy_header_filters_output( $location = 'before' ) {
 
 		$output = '';
 
-		//* Placeholder callback and args.
-		$functions = array();
-
 		/**
 		 * @since 2.2.6
-		 *
-		 * Applies filters 'the_seo_framework_before_output' : array before functions output
-		 * Applies filters 'the_seo_framework_after_output' : array after functions output
 		 * @param array $functions {
 		 *    'callback' => string|array The function to call.
 		 *    'args'     => scalar|array Arguments. When array, each key is a new argument.
 		 * }
 		 */
-		$filter_tag = $before ? 'the_seo_framework_before_output' : 'the_seo_framework_after_output';
-		$filter = (array) \apply_filters( $filter_tag, $functions );
+		$functions = (array) \apply_filters( "the_seo_framework_{$location}_output", [] );
 
-		$functions = \wp_parse_args( $args, $filter );
-
-		if ( $functions && is_array( $functions ) ) :
-			foreach ( $functions as $function ) :
-				$arguments = isset( $function['args'] ) ? $function['args'] : '';
-
-				if ( isset( $function['callback'] ) )
-					$output .= $this->call_function( $function['callback'], '2.2.6', $arguments );
-			endforeach;
-		endif;
+		foreach ( $functions as $function ) {
+			if ( isset( $function['callback'] ) ) {
+				$output .= $this->call_function(
+					$function['callback'],
+					'3.1.0',
+					isset( $function['args'] ) ? $function['args'] : ''
+				);
+			}
+		}
 
 		return $output;
 	}
@@ -398,9 +361,16 @@ class Init extends Query {
 	 * @since 1.0.0
 	 * @since 2.8.0 Cache is busted on each new release.
 	 * @since 3.0.0 Now converts timezone if needed.
+	 * @since 3.1.0 1. Now no longer outputs anything on preview.
+	 *              2. Now no longer outputs anything on blocked post types.
 	 */
 	public function html_output() {
 
+		if ( $this->is_preview() || $this->is_post_type_disabled() ) return;
+
+		/**
+		 * @since 2.6.0
+		 */
 		\do_action( 'the_seo_framework_do_before_output' );
 
 		/**
@@ -412,11 +382,11 @@ class Init extends Query {
 		$init_start = microtime( true );
 
 		if ( $this->use_object_cache ) {
-			$cache_key = $this->get_meta_output_cache_key();
-			$output = $this->object_cache_get( $cache_key );
+			$cache_key = $this->get_meta_output_cache_key_by_query();
+			$output    = $this->object_cache_get( $cache_key );
 		} else {
 			$cache_key = '';
-			$output = false;
+			$output    = false;
 		}
 
 		if ( false === $output ) :
@@ -424,22 +394,24 @@ class Init extends Query {
 			$robots = $this->robots();
 
 			/**
-			 * Applies filters 'the_seo_framework_pre' : string
 			 * Adds content before the output and caches it through Object caching.
 			 * @since 2.6.0
+			 * @param string $before The content before the SEO output.
 			 */
 			$before = (string) \apply_filters( 'the_seo_framework_pre', '' );
 
-			$before_actions = $this->header_actions( '', true );
+			$before_legacy = $this->get_legacy_header_filters_output( 'before' );
 
-			//* Limit processing on 404 or search
+			//* Limit processing and redundant tags on 404 and search.
 			if ( $this->is_search() ) :
 				$output = $this->og_locale()
 						. $this->og_type()
 						. $this->og_title()
 						. $this->og_url()
 						. $this->og_sitename()
+						. $this->shortlink()
 						. $this->canonical()
+						. $this->paged_urls()
 						. $this->google_site_output()
 						. $this->bing_site_output()
 						. $this->yandex_site_output()
@@ -484,26 +456,16 @@ class Init extends Query {
 				$set_timezone and $this->reset_timezone();
 			endif;
 
-			$after_actions = $this->header_actions( '', false );
+			$after_legacy = $this->get_legacy_header_filters_output( 'after' );
 
 			/**
-			 * Applies filters 'the_seo_framework_pro' : string
 			 * Adds content after the output and caches it through Object caching.
 			 * @since 2.6.0
+			 * @param string $after The content after the SEO output.
 			 */
 			$after = (string) \apply_filters( 'the_seo_framework_pro', '' );
 
-			/**
-			 * Applies filters 'the_seo_framework_generator_tag' : String generator tag content.
-			 * @since 2.0.1
-			 * @see https://wordpress.org/plugins/generator-the-seo-framework/ For an alternative.
-			 */
-			$generator = (string) \apply_filters( 'the_seo_framework_generator_tag', '' );
-
-			if ( $generator )
-				$generator = '<meta name="generator" content="' . \esc_attr( $generator ) . '" />' . PHP_EOL;
-
-			$output = $robots . $before . $before_actions . $output . $after_actions . $after . $generator;
+			$output = $robots . $before . $before_legacy . $output . $after_legacy . $after;
 
 			$this->use_object_cache and $this->object_cache_set( $cache_key, $output, DAY_IN_SECONDS );
 		endif;
@@ -512,27 +474,31 @@ class Init extends Query {
 				. $output
 				. $this->get_plugin_indicator( 'after', $init_start );
 
-		//* Already escaped.
-		echo PHP_EOL . $output . PHP_EOL;
+		echo PHP_EOL . $output . PHP_EOL; // xss ok
 
+		/**
+		 * @since 2.6.0
+		 */
 		\do_action( 'the_seo_framework_do_after_output' );
-
 	}
 
 	/**
 	 * Redirects singular page to an alternate URL.
 	 *
 	 * @since 2.9.0
+	 * @since 3.1.0 1. Now no longer redirects on preview.
+	 *              2. Now listens to post type settings.
 	 * @access private
 	 *
 	 * @return void early on non-singular pages.
 	 */
 	public function _init_custom_field_redirect() {
 
-		if ( $this->is_singular() ) {
-			$url = $this->get_custom_field( 'redirect' );
-			$url && $this->do_redirect( $url );
-		}
+		if ( ! $this->is_singular() || $this->is_preview() || $this->is_post_type_disabled() )
+			return;
+
+		$url = $this->get_custom_field( 'redirect' );
+		$url and $this->do_redirect( $url );
 	}
 
 	/**
@@ -559,10 +525,7 @@ class Init extends Query {
 		}
 
 		/**
-		 * Applies filters 'the_seo_framework_redirect_status_code' : Absolute integer.
-		 *
 		 * @since 2.8.0
-		 *
 		 * @param int <unsigned> $redirect_type
 		 */
 		$redirect_type = \absint( \apply_filters( 'the_seo_framework_redirect_status_code', 301 ) );
@@ -573,14 +536,15 @@ class Init extends Query {
 		if ( ! $this->allow_external_redirect() ) {
 			//= Only HTTP/HTTPS and home URLs are allowed.
 			$path = $this->set_url_scheme( $url, 'relative' );
-			$url = \trailingslashit( $this->get_home_host() ) . ltrim( $path, ' /' );
+			$url  = \trailingslashit( $this->get_home_host() ) . ltrim( $path, ' /' );
+
 			$scheme = $this->is_ssl() ? 'https' : 'http';
 
 			\wp_safe_redirect( $this->set_url_scheme( $url, $scheme ), $redirect_type );
 			exit;
 		}
 
-		\wp_redirect( $url, $redirect_type );
+		\wp_redirect( $url, $redirect_type ); // phpcs:ignore -- intended feature. Disable via $this->allow_external_redirect().
 		exit;
 	}
 
@@ -632,12 +596,9 @@ class Init extends Query {
 			$site_path = ( ! empty( $site_url['path'] ) ) ? \esc_attr( $site_url['path'] ) : '';
 
 			/**
-			 * Applies filters 'the_seo_framework_robots_txt_pre'
 			 * Don't forget to add line breaks ( "\r\n" || PHP_EOL )
-			 *
 			 * @since 2.5.0
-			 *
-			 * @param string $pre
+			 * @param string $pre The output before this plugin's output.
 			 */
 			$output .= (string) \apply_filters( 'the_seo_framework_robots_txt_pre', '' );
 
@@ -647,19 +608,17 @@ class Init extends Query {
 			$output .= "Allow: $site_path/wp-admin/admin-ajax.php\r\n";
 
 			/**
-			 * Applies filters the_seo_framework_robots_disallow_queries : boolean
-			 * Determines whether to allow queries for robots.
 			 * @since 2.5.0
+			 * @param bool $disallow Whether to disallow robots queries.
 			 */
 			if ( \apply_filters( 'the_seo_framework_robots_disallow_queries', false ) ) {
 				$output .= "Disallow: $home_path/*?*\r\n";
 			}
 
 			/**
-			 * Applies filters 'the_seo_framework_robots_txt_pro'
 			 * Don't forget to add line breaks ( "\r\n" || PHP_EOL )
-			 *
-			 * @param string $pro
+			 * @since 2.5.0
+			 * @param string $pro The output after this plugin's output.
 			 */
 			$output .= (string) \apply_filters( 'the_seo_framework_robots_txt_pro', '' );
 
@@ -689,13 +648,13 @@ class Init extends Query {
 		$type = $this->get_option( 'alter_search_query_type' );
 
 		switch ( $type ) :
-			case 'post_query' :
-				\add_filter( 'the_posts', array( $this, '_alter_search_query_post' ), 10, 2 );
+			case 'post_query':
+				\add_filter( 'the_posts', [ $this, '_alter_search_query_post' ], 10, 2 );
 				break;
 
-			default :
-			case 'in_query' :
-				\add_action( 'pre_get_posts', array( $this, '_alter_search_query_in' ), 9999, 1 );
+			default:
+			case 'in_query':
+				\add_action( 'pre_get_posts', [ $this, '_alter_search_query_in' ], 9999, 1 );
 				break;
 		endswitch;
 	}
@@ -710,13 +669,13 @@ class Init extends Query {
 		$type = $this->get_option( 'alter_archive_query_type' );
 
 		switch ( $type ) :
-			case 'post_query' :
-				\add_filter( 'the_posts', array( $this, '_alter_archive_query_post' ), 10, 2 );
+			case 'post_query':
+				\add_filter( 'the_posts', [ $this, '_alter_archive_query_post' ], 10, 2 );
 				break;
 
-			default :
-			case 'in_query' :
-				\add_action( 'pre_get_posts', array( $this, '_alter_archive_query_in' ), 9999, 1 );
+			default:
+			case 'in_query':
+				\add_action( 'pre_get_posts', [ $this, '_alter_archive_query_in' ], 9999, 1 );
 				break;
 		endswitch;
 	}
@@ -852,30 +811,33 @@ class Init extends Query {
 	 * Determines whether the archive query adjustment is blocked.
 	 *
 	 * @since 2.9.4
+	 * @since 3.1.0 Now checks for the post type.
 	 *
-	 * @param \WP_Query $wp_query WP_Query object. Passed by reference.
+	 * @param \WP_Query $wp_query WP_Query object. Passed by reference for performance.
 	 * @return bool
 	 */
 	protected function is_archive_query_adjustment_blocked( &$wp_query ) {
 
 		static $has_filter = null;
 
+		$blocked = false;
+
 		if ( null === $has_filter ) {
 			$has_filter = \has_filter( 'the_seo_framework_do_adjust_archive_query' );
 		}
 		if ( $has_filter ) {
 			/**
-			 * Applies filters 'the_seo_framework_do_adjust_archive_query' : boolean
-			 *
 			 * @since 2.9.4
-			 *
-			 * @param bool   $do Whether to execute adjustment.
-			 * @param object $wp_query The current query. Passed by reference.
+			 * @param bool      $do       True is unblocked (do adjustment), false is blocked (don't do adjustment).
+			 * @param \WP_Query $wp_query The current query. Passed by reference.
 			 */
-			if ( ! \apply_filters_ref_array( 'the_seo_framework_do_adjust_archive_query', array( true, &$wp_query ) ) )
-				return true;
+			if ( ! \apply_filters_ref_array( 'the_seo_framework_do_adjust_archive_query', [ true, $wp_query ] ) )
+				$blocked = true;
 		}
 
-		return false;
+		if ( isset( $wp_query->query_vars->post_type ) )
+			$blocked = $this->is_post_type_disabled( $wp_query->query_vars->post_type );
+
+		return $blocked;
 	}
 }

@@ -4,11 +4,11 @@
  */
 namespace The_SEO_Framework;
 
-defined( 'ABSPATH' ) or die;
+defined( 'THE_SEO_FRAMEWORK_PRESENT' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2019 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -33,13 +33,6 @@ defined( 'ABSPATH' ) or die;
 class Post_Data extends Detect {
 
 	/**
-	 * Constructor, load parent constructor
-	 */
-	protected function __construct() {
-		parent::__construct();
-	}
-
-	/**
 	 * Return custom field post meta data.
 	 *
 	 * Return only the first value of custom field. Return false if field is
@@ -54,11 +47,11 @@ class Post_Data extends Detect {
 	 */
 	public function get_custom_field( $field, $post_id = null ) {
 
-		//* If field is falsy, get_post_meta() will return an array.
+		//* If field is falsesque, get_post_meta() will return an array.
 		if ( ! $field )
 			return false;
 
-		static $field_cache = array();
+		static $field_cache = [];
 
 		if ( isset( $field_cache[ $field ][ $post_id ] ) )
 			return $field_cache[ $field ][ $post_id ];
@@ -86,6 +79,7 @@ class Post_Data extends Detect {
 	 *
 	 * @since 3.0.6
 	 * @uses $this->inpost_seo_save()
+	 * @access private
 	 *
 	 * @param integer $post_id Post ID.
 	 * @return void
@@ -102,6 +96,7 @@ class Post_Data extends Detect {
 	 * @since 2.9.3 : Added 'exclude_from_archive'.
 	 * @securitycheck 3.0.0 OK. NOTE: Check is done at save_custom_fields().
 	 * @uses $this->save_custom_fields() : Perform security checks and saves post meta / custom field data to a post or page.
+	 * @access private
 	 *
 	 * @param integer  $post_id Post ID.
 	 * @param \WP_Post $post    Post object.
@@ -109,84 +104,97 @@ class Post_Data extends Detect {
 	 */
 	public function inpost_seo_save( $post_id, $post ) {
 
-		//* Nonce is done at the end of this function.
-		if ( empty( $_POST['autodescription'] ) )
+		if ( empty( $_POST['autodescription'] ) ) // CSRF ok, this is an early test to improve performance.
 			return;
 
-		$defaults = array(
-			'_genesis_title'          => '',
-			'_genesis_description'    => '',
-			'_genesis_canonical_uri'  => '',
-			'redirect'                => '', // Will be displayed in custom fields when set...
-			'_social_image_url'       => '',
-			'_social_image_id'        => 0,
-			'_genesis_noindex'        => 0,
-			'_genesis_nofollow'       => 0,
-			'_genesis_noarchive'      => 0,
-			'exclude_local_search'    => 0, // Will be displayed in custom fields when set...
-			'exclude_from_archive'    => 0, // Will be displayed in custom fields when set...
-			'_open_graph_title'       => '',
-			'_open_graph_description' => '',
-			'_twitter_title'          => '',
-			'_twitter_description'    => '',
-		);
+		/**
+		 * @since 3.1.0
+		 * @param array    $defaults
+		 * @param integer  $post_id Post ID.
+		 * @param \WP_Post $post    Post object.
+		 */
+		$defaults = (array) \apply_filters_ref_array( 'the_seo_framework_inpost_seo_save_defaults', [
+			[
+				'_genesis_title'          => '',
+				'_tsf_title_no_blogname'  => 0, //? The prefix I should've used from the start...
+				'_genesis_description'    => '',
+				'_genesis_canonical_uri'  => '',
+				'redirect'                => '', //! Will be displayed in custom fields when set...
+				'_social_image_url'       => '',
+				'_social_image_id'        => 0,
+				'_genesis_noindex'        => 0,
+				'_genesis_nofollow'       => 0,
+				'_genesis_noarchive'      => 0,
+				'exclude_local_search'    => 0, //! Will be displayed in custom fields when set...
+				'exclude_from_archive'    => 0, //! Will be displayed in custom fields when set...
+				'_open_graph_title'       => '',
+				'_open_graph_description' => '',
+				'_twitter_title'          => '',
+				'_twitter_description'    => '',
+			],
+			$post_id,
+			$post,
+		] );
 
 		/**
 		 * Merge user submitted options with fallback defaults
 		 * Passes through nonce at the end of the function.
 		 */
-		$data = \wp_parse_args( $_POST['autodescription'], $defaults );
+		// phpcs:ignore -- wp_unslash() is nonsense.
+		$data = (array) \wp_parse_args( $_POST['autodescription'], $defaults );
 
-		foreach ( (array) $data as $key => $value ) :
+		foreach ( $data as $key => &$value ) :
 			switch ( $key ) :
-				case '_genesis_title' :
-				case '_open_graph_title' :
-				case '_twitter_title' :
-					$data[ $key ] = $this->s_title_raw( $value );
+				case '_genesis_title':
+				case '_open_graph_title':
+				case '_twitter_title':
+					$value = $this->s_title_raw( $value );
 					continue 2;
 
-				case '_genesis_description' :
-				case '_open_graph_description' :
-				case '_twitter_description' :
-					$data[ $key ] = $this->s_description_raw( $value );
+				case '_genesis_description':
+				case '_open_graph_description':
+				case '_twitter_description':
+					$value = $this->s_description_raw( $value );
 					continue 2;
 
-				case '_genesis_canonical_uri' :
-				case '_social_image_url' :
+				case '_genesis_canonical_uri':
+				case '_social_image_url':
 					/**
 					 * Remove unwanted query parameters. They're allowed by Google, but very much rather not.
 					 * Also, they will only cause bugs.
 					 * Query parameters are also only used when no pretty permalinks are used. Which is bad.
 					 */
-					$data[ $key ] = $this->s_url_query( $value );
+					$value = $this->s_url_query( $value );
 					continue 2;
 
-				case '_social_image_id' :
+				case '_social_image_id':
 					//* Bound to _social_image_url.
-					$data[ $key ] = $data['_social_image_url'] ? $this->s_absint( $value ) : 0;
+					$value = $data['_social_image_url'] ? $this->s_absint( $value ) : 0;
 					continue 2;
 
-				case 'redirect' :
+				case 'redirect':
 					//* Let's keep this as the output really is.
-					$data[ $key ] = $this->s_redirect_url( $value );
+					$value = $this->s_redirect_url( $value );
 					continue 2;
 
-				case '_genesis_noindex' :
-				case '_genesis_nofollow' :
-				case '_genesis_noarchive' :
-				case 'exclude_local_search' :
-				case 'exclude_from_archive' :
-					$data[ $key ] = $this->s_one_zero( $value );
+				case '_tsf_title_no_blogname':
+				case '_genesis_noindex':
+				case '_genesis_nofollow':
+				case '_genesis_noarchive':
+				case 'exclude_local_search':
+				case 'exclude_from_archive':
+					$value = $this->s_one_zero( $value );
 					continue 2;
 
-				default :
+				default:
+					// Don't process extraneous data for third party support.
+					//* TODO set a filterable list of "allowed" option keys? -> Option Generator
 					break;
 			endswitch;
 		endforeach;
 
-		//* Perform nonce and save fields.
+		//* Perform nonce check and save fields.
 		$this->save_custom_fields( $data, $this->inpost_nonce_field, $this->inpost_nonce_name, $post );
-
 	}
 
 	/**
@@ -207,13 +215,14 @@ class Post_Data extends Detect {
 	 * @param array    $data         Key/Value pairs of data to save in '_field_name' => 'value' format.
 	 * @param string   $nonce_action Nonce action for use with wp_verify_nonce().
 	 * @param string   $nonce_name   Name of the nonce to check for permissions.
-	 * @param \WP_Post|integer $post  Post object or ID.
+	 * @param \WP_Post|integer $post Post object or ID.
 	 * @return mixed Return null if permissions incorrect, doing autosave, ajax or future post, false if update or delete
 	 *               failed, and true on success.
 	 */
 	public function save_custom_fields( array $data, $nonce_action, $nonce_name, $post ) {
 
 		//* Verify the nonce
+		// phpcs:ignore -- wp_unslash() is nonsense.
 		if ( ! isset( $_POST[ $nonce_name ] ) || ! \wp_verify_nonce( $_POST[ $nonce_name ], $nonce_action ) )
 			return;
 
@@ -243,6 +252,16 @@ class Post_Data extends Detect {
 		//* Check that the user is allowed to edit the post
 		if ( ! \current_user_can( 'edit_post', $post->ID ) )
 			return;
+
+		/**
+		 * @since 3.1.0
+		 * @param array    $data The data that's going to be saved.
+		 * @param \WP_Post $post The post object.
+		 */
+		$data = (array) \apply_filters_ref_array( 'the_seo_framework_save_custom_fields', [
+			$data,
+			$post,
+		] );
 
 		//* Cycle through $data, insert value or delete field
 		foreach ( (array) $data as $field => $value ) {
@@ -288,15 +307,16 @@ class Post_Data extends Detect {
 			return;
 
 		$_taxonomies = $this->get_hierarchical_taxonomies_as( 'names', $post_type );
-		$values = array();
+		$values = [];
 
 		foreach ( $_taxonomies as $_taxonomy ) {
 			$_post_key = '_primary_term_' . $_taxonomy;
-			$values[ $_taxonomy ] = array(
+
+			$values[ $_taxonomy ] = [
 				'action' => $this->inpost_nonce_field . '_pt',
-				'name' => $this->inpost_nonce_name . '_pt_' . $_taxonomy,
-				'value' => isset( $_POST['autodescription'][ $_post_key ] ) ? \absint( $_POST['autodescription'][ $_post_key ] ) : false,
-			);
+				'name'   => $this->inpost_nonce_name . '_pt_' . $_taxonomy,
+				'value'  => isset( $_POST['autodescription'][ $_post_key ] ) ? \absint( $_POST['autodescription'][ $_post_key ] ) : 0,
+			];
 		}
 
 		foreach ( $values as $t => $v ) {
@@ -311,26 +331,24 @@ class Post_Data extends Detect {
 	 *
 	 * @since 1.0.0
 	 * @since 2.8.2 : Added 4th parameter for escaping.
+	 * @since 3.1.0 1. No longer returns anything for terms.
+	 *              2. Now strips plausible embeds URLs.
 	 *
 	 * @param string $excerpt the Excerpt.
-	 * @param int $the_id The Post ID.
-	 * @param int $tt_id The Taxonomy Term ID.
-	 * @param int $tt_id The Taxonomy Term ID.
-	 * @return string The escaped Excerpt.
+	 * @param int    $the_id The Post ID.
+	 * @param null   $deprecated No longer used.
+	 * @param bool   $escape Whether to escape the excerpt.
+	 * @return string The trimmed excerpt.
 	 */
-	public function get_excerpt_by_id( $excerpt = '', $the_id = '', $tt_id = '', $escape = true ) {
+	public function get_excerpt_by_id( $excerpt = '', $id = '', $deprecated = null, $escape = true ) {
 
 		if ( empty( $excerpt ) )
-			$excerpt = $this->fetch_excerpt( $the_id, $tt_id );
+			$excerpt = $this->fetch_excerpt( $id );
 
 		//* No need to parse an empty excerpt.
-		if ( '' === $excerpt )
-			return '';
+		if ( ! $excerpt ) return '';
 
-		if ( $escape )
-			return $this->s_excerpt( $excerpt );
-
-		return $this->s_excerpt_raw( $excerpt );
+		return $escape ? $this->s_excerpt( $excerpt ) : $this->s_excerpt_raw( $excerpt );
 	}
 
 	/**
@@ -340,17 +358,15 @@ class Post_Data extends Detect {
 	 *
 	 * @since 2.5.2
 	 * @since 2.6.6 Detects Page builders.
+	 * @since 3.1.0 1. No longer returns anything for terms.
+	 *              2. Now strips plausible embeds URLs.
 	 *
-	 * @param int $the_id The Post ID.
-	 * @param int $tt_id The Taxonomy Term ID.
+	 * @param \WP_Post|int|null $post The Post or Post ID. Leave null to automatically get.
 	 * @return string The excerpt.
 	 */
-	public function fetch_excerpt( $the_id = '', $tt_id = '' ) {
+	public function fetch_excerpt( $post = null ) {
 
-		$post = $this->fetch_post_by_id( $the_id, $tt_id, OBJECT );
-
-		if ( empty( $post ) )
-			return '';
+		$post = \get_post( $post );
 
 		/**
 		 * Fetch custom excerpt, if not empty, from the post_excerpt field.
@@ -360,101 +376,16 @@ class Post_Data extends Detect {
 			$excerpt = $post->post_excerpt;
 		} elseif ( isset( $post->post_content ) ) {
 			$excerpt = $this->uses_page_builder( $post->ID ) ? '' : $post->post_content;
+
+			if ( $excerpt ) {
+				$excerpt = $this->strip_newline_urls( $excerpt );
+				$excerpt = $this->strip_paragraph_urls( $excerpt );
+			}
 		} else {
 			$excerpt = '';
 		}
 
 		return $excerpt;
-	}
-
-	/**
-	 * Returns Post Array from ID.
-	 * Also returns latest post from blog or archive if applicable.
-	 *
-	 * @since 2.6.0
-	 * @since 2.6.6 Added $output parameter.
-	 *
-	 * @param int $the_id The Post ID.
-	 * @param int $tt_id The Taxonomy Term ID
-	 * @param mixed $output The value type to return. Accepts OBJECT, ARRAY_A, or ARRAY_N
-	 * @return string|array The Post Array.
-	 */
-	protected function fetch_post_by_id( $the_id = '', $tt_id = '', $output = ARRAY_A ) {
-
-		if ( '' === $the_id && '' === $tt_id ) {
-			$the_id = $this->get_the_real_ID();
-
-			if ( false === $the_id )
-				return '';
-		}
-
-		/**
-		 * @since 2.2.8 Use the 2nd parameter.
-		 * @since 2.3.3 Now casts to array
-		 */
-		if ( '' !== $the_id ) {
-			if ( $this->is_blog_page( $the_id ) ) {
-				$args = array(
-					'posts_per_page' => 1,
-					'offset'         => 0,
-					'category'       => '',
-					'category_name'  => '',
-					'orderby'        => 'date',
-					'order'          => 'DESC',
-					'post_type'      => 'post',
-					'post_status'    => 'publish',
-					'cache_results'  => false,
-				);
-
-				$post = \get_posts( $args );
-			} else {
-				$post = \get_post( $the_id );
-			}
-		} elseif ( '' !== $tt_id ) {
-			/**
-			 * @since 2.3.3 Match the descriptions in admin as on the front end.
-			 */
-			$args = array(
-				'posts_per_page' => 1,
-				'offset'         => 0,
-				'category'       => $tt_id,
-				'category_name'  => '',
-				'post_type'      => 'post',
-				'post_status'    => 'publish',
-				'cache_results'  => false,
-			);
-
-			$post = \get_posts( $args );
-		} else {
-			$post = \get_post( $the_id );
-		}
-
-		/**
-		 * @since 2.6.5 Transform post array to object (on Archives).
-		 */
-		if ( is_array( $post ) && isset( $post[0] ) && is_object( $post[0] ) )
-			$post = $post[0];
-
-		//* Something went wrong, nothing to be found. Return empty.
-		if ( empty( $post ) )
-			return '';
-
-		//* Stop getting something that doesn't exists. E.g. 404
-		if ( isset( $post->ID ) && 0 === $post->ID )
-			return '';
-
-		/**
-		 * @since 2.6.6
-		 */
-		if ( ARRAY_A === $output || ARRAY_N === $output ) {
-			$_post = \WP_Post::get_instance( $post );
-			$post = $_post->to_array();
-
-			if ( ARRAY_N === $output )
-				$post = array_values( $post );
-		}
-
-		return $post;
 	}
 
 	/**
@@ -474,17 +405,17 @@ class Post_Data extends Detect {
 		if ( null !== $post_id )
 			return $post_id;
 
-		$query = new \WP_Query( array(
+		$query = new \WP_Query( [
 			'posts_per_page'   => 1,
-			'post_type'        => array( 'post', 'page' ),
+			'post_type'        => [ 'post', 'page' ],
 			'orderby'          => 'date',
 			'order'            => 'DESC',
-			'post_status'      => array( 'publish', 'future', 'pending' ),
+			'post_status'      => [ 'publish', 'future', 'pending' ],
 			'fields'           => 'ids',
 			'cache_results'    => false,
 			'suppress_filters' => true,
 			'no_found_rows'    => true,
-		) );
+		] );
 
 		return $post_id = reset( $query->posts );
 	}
@@ -493,20 +424,16 @@ class Post_Data extends Detect {
 	 * Fetches Post content.
 	 *
 	 * @since 2.6.0
+	 * @since 3.1.0 1. No longer applies WordPress' default filters.
+	 *              2. No longer used internally.
+	 * @todo deprecate, unused.
 	 *
 	 * @param int $id The post ID.
 	 * @return string The post content.
 	 */
 	public function get_post_content( $id = 0 ) {
-
-		$id = $id ?: $this->get_the_real_ID();
-
-		$content = \get_post_field( 'post_content', $id );
-
-		if ( is_string( $content ) )
-			return $content;
-
-		return '';
+		$post = \get_post( $id ?: $this->get_the_real_ID() );
+		return empty( $post->post_content ) ? '' : $post->post_content;
 	}
 
 	/**
@@ -514,12 +441,14 @@ class Post_Data extends Detect {
 	 * Doesn't use plugin detection features as some builders might be incorporated within themes.
 	 *
 	 * Detects the following builders:
+	 * - Elementor by Elementor LTD
 	 * - Divi Builder by Elegant Themes
 	 * - Visual Composer by WPBakery
 	 * - Page Builder by SiteOrigin
 	 * - Beaver Builder by Fastline Media
 	 *
 	 * @since 2.6.6
+	 * @since 3.1.0 Added Elementor detection
 	 *
 	 * @param int $post_id
 	 * @return boolean
@@ -529,23 +458,26 @@ class Post_Data extends Detect {
 		$meta = \get_post_meta( $post_id );
 
 		/**
-		 * Applies filters 'the_seo_framework_detect_page_builder' : boolean
 		 * Determines whether a page builder has been detected.
 		 * @since 2.6.6
-		 *
-		 * @param boolean The current state.
-		 * @param int $post_id The current Post ID.
-		 * @param array $meta The current post meta.
+		 * @since 3.1.0 1: Now defaults to `null`
+		 *              2: Now, when a boolean (either true or false) is defined, it'll short-circuit this function.
+		 * @param boolean|null $detected Whether a builder should be detected.
+		 * @param int          $post_id The current Post ID.
+		 * @param array        $meta The current post meta.
 		 */
-		$detected = (bool) \apply_filters( 'the_seo_framework_detect_page_builder', false, $post_id, $meta );
+		$detected = \apply_filters( 'the_seo_framework_detect_page_builder', null, $post_id, $meta );
 
-		if ( $detected )
-			return true;
+		if ( is_bool( $detected ) )
+			return $detected;
 
 		if ( empty( $meta ) )
 			return false;
 
-		if ( isset( $meta['_et_pb_use_builder'][0] ) && 'on' === $meta['_et_pb_use_builder'][0] && defined( 'ET_BUILDER_VERSION' ) ) :
+		if ( isset( $meta['_elementor_edit_mode'][0] ) && '' !== $meta['_elementor_edit_mode'][0] && defined( 'ELEMENTOR_VERSION' ) ) :
+			//* Elementor by Elementor LTD
+			return true;
+		elseif ( isset( $meta['_et_pb_use_builder'][0] ) && 'on' === $meta['_et_pb_use_builder'][0] && defined( 'ET_BUILDER_VERSION' ) ) :
 			//* Divi Builder by Elegant Themes
 			return true;
 		elseif ( isset( $meta['_wpb_vc_js_status'][0] ) && 'true' === $meta['_wpb_vc_js_status'][0] && defined( 'WPB_VC_VERSION' ) ) :
@@ -555,7 +487,7 @@ class Post_Data extends Detect {
 			//* Page Builder by SiteOrigin
 			return true;
 		elseif ( isset( $meta['_fl_builder_enabled'][0] ) && '1' === $meta['_fl_builder_enabled'][0] && defined( 'FL_BUILDER_VERSION' ) ) :
-			//* Beaver Builder by Fastline Media
+			//* Beaver Builder by Fastline Media...
 			return true;
 		endif;
 
@@ -571,21 +503,12 @@ class Post_Data extends Detect {
 	 *              2. Input parameter now default to null.
 	 *                 This currently doesn't affect how it works.
 	 *
-	 * @param int|null|\WP_Post The post ID or WP Post object.
-	 * @return bool True if protected, false otherwise.
+	 * @param int|null|\WP_Post $post The post ID or WP Post object.
+	 * @return bool True if protected or private, false otherwise.
 	 */
-	public function is_protected( $id = null ) {
-
-		$post = \get_post( $id, OBJECT );
-		$ret = false;
-
-		if ( isset( $post->post_password ) && '' !== $post->post_password ) {
-			$ret = true;
-		} elseif ( isset( $post->post_status ) && 'private' === $post->post_status ) {
-			$ret = true;
-		}
-
-		return $ret;
+	public function is_protected( $post = null ) {
+		$post = \get_post( $post ); // This is here so we don't create another instance.
+		return $this->is_password_protected( $post ) || $this->is_private( $post );
 	}
 
 	/**
@@ -593,18 +516,12 @@ class Post_Data extends Detect {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param int|null|\WP_Post The post ID or WP Post object.
-	 * @return bool True if private, false otherwise.
+	 * @param int|null|\WP_Post $post The post ID or WP Post object.
+	 * @return bool True if protected, false otherwise.
 	 */
-	public function is_password_protected( $id = null ) {
-
-		$post = \get_post( $id, OBJECT );
-		$ret = false;
-
-		if ( isset( $post->post_password ) && '' !== $post->post_password )
-			$ret = true;
-
-		return $ret;
+	public function is_password_protected( $post = null ) {
+		$post = \get_post( $post );
+		return isset( $post->post_password ) && '' !== $post->post_password;
 	}
 
 	/**
@@ -612,18 +529,25 @@ class Post_Data extends Detect {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param int|null|\WP_Post The post ID or WP Post object.
+	 * @param int|null|\WP_Post $post The post ID or WP Post object.
 	 * @return bool True if private, false otherwise.
 	 */
-	public function is_private( $id = null ) {
+	public function is_private( $post = null ) {
+		$post = \get_post( $post );
+		return isset( $post->post_status ) && 'private' === $post->post_status;
+	}
 
-		$post = \get_post( $id, OBJECT );
-		$ret = false;
-
-		if ( isset( $post->post_status ) && 'private' === $post->post_status )
-			$ret = true;
-
-		return $ret;
+	/**
+	 * Determines if the current post is a draft.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @param int|null|\WP_Post The post ID or WP Post object.
+	 * @return bool True if draft, false otherwise.
+	 */
+	public function is_draft( $post = null ) {
+		$post = \get_post( $post );
+		return isset( $post->post_status ) && in_array( $post->post_status, [ 'draft', 'auto-draft', 'pending' ], true );
 	}
 
 	/**
@@ -634,15 +558,7 @@ class Post_Data extends Detect {
 	 * @return array The excluded post IDs.
 	 */
 	public function get_ids_excluded_from_search() {
-
-		$cache = $this->get_excluded_ids_from_cache();
-		$ids = array();
-
-		if ( ! empty( $cache['search'] ) ) {
-			$ids = $cache['search'];
-		}
-
-		return $ids;
+		return $this->get_excluded_ids_from_cache()['search'] ?: [];
 	}
 
 	/**
@@ -653,15 +569,26 @@ class Post_Data extends Detect {
 	 * @return array The excluded post IDs.
 	 */
 	public function get_ids_excluded_from_archive() {
+		return $this->get_excluded_ids_from_cache()['archive'] ?: [];
+	}
 
-		$cache = $this->get_excluded_ids_from_cache();
-		$ids = array();
+	/**
+	 * Returns the post type object label. Either plural or singular.
+	 *
+	 * @since 3.1.0
+	 * @see $this->get_tax_type_label() For the taxonomical alternative.
+	 *
+	 * @param string $post_type The post type. Required.
+	 * @param bool   $singular  Wether to get the singlural or plural name.
+	 * @return string The Post Type name/label, if found.
+	 */
+	public function get_post_type_label( $post_type, $singular = true ) {
 
-		if ( ! empty( $cache['archive'] ) ) {
-			$ids = $cache['archive'];
-		}
+		$pto = \get_post_type_object( $post_type );
 
-		return $ids;
+		return $singular
+			? ( isset( $pto->labels->singular_name ) ? $pto->labels->singular_name : '' )
+			: ( isset( $pto->labels->name ) ? $pto->labels->name : '' );
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <?php if (!defined('WPO_PLUGIN_MAIN_PATH')) die('No direct access allowed'); ?>
 
-<div id="wp-optimize-dashnotice" class="updated">
+<div id="wp-optimize-dashnotice" class="updated below-h2">
 
 	<div style="float:right;"><a href="#" onclick="jQuery('#wp-optimize-dashnotice').slideUp(); jQuery.post(ajaxurl, {action: 'wp_optimize_ajax', subaction: 'dismiss_dash_notice_until', nonce: '<?php echo wp_create_nonce('wp-optimize-ajax-nonce'); ?>' });"><?php printf(__('Dismiss (for %s months)', 'wp-optimize'), 12); ?></a></div>
 

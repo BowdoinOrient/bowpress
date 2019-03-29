@@ -37,11 +37,11 @@ class WP_Optimize_Commands {
 	}
 
 	public function get_status_box_contents() {
-		return WP_Optimize()->include_template('status-box-contents.php', true, array('optimize_db' => false));
+		return WP_Optimize()->include_template('settings/status-box-contents.php', true, array('optimize_db' => false));
 	}
 	
 	public function get_optimizations_table() {
-		return WP_Optimize()->include_template('optimizations-table.php', true);
+		return WP_Optimize()->include_template('database/optimizations-table.php', true);
 	}
 
 	/**
@@ -51,7 +51,8 @@ class WP_Optimize_Commands {
 	 * @return array An array containing the WPO translations and the "WP Optimize" tab's rendered contents
 	 */
 	public function get_wp_optimize_contents() {
-		$content = WP_Optimize()->include_template('optimize-table.php', true, array('optimize_db' => false));
+		$content = WP_Optimize()->include_template('database/optimize-table.php', true, array('optimize_db' => false));
+		$content .= $this->get_status_box_contents();
 
 		return array(
 			'content' => $content,
@@ -66,7 +67,7 @@ class WP_Optimize_Commands {
 	 * @return array An array containing the WPO translations and the "Table Information" tab's rendered contents
 	 */
 	public function get_table_information_contents() {
-		$content = WP_Optimize()->include_template('tables.php', true, array('optimize_db' => false));
+		$content = WP_Optimize()->include_template('database/tables.php', true, array('optimize_db' => false));
 
 		return array(
 			'content' => $content,
@@ -81,10 +82,13 @@ class WP_Optimize_Commands {
 	 * @return array An array containing the WPO translations and the "Settings" tab's rendered contents
 	 */
 	public function get_settings_contents() {
-		$admin_settings = WP_Optimize()->include_template('admin-settings-general.php', true, array('optimize_db' => false));
-		$admin_settings .= WP_Optimize()->include_template('admin-settings-auto-cleanup.php', true, array('optimize_db' => false));
-		$admin_settings .= WP_Optimize()->include_template('admin-settings-logging.php', true, array('optimize_db' => false));
-		$admin_settings .= WP_Optimize()->include_template('admin-settings-sidebar.php', true, array('optimize_db' => false));
+		$admin_settings = '<form action="#" method="post" enctype="multipart/form-data" name="settings_form" id="settings_form">';
+		$admin_settings .= WP_Optimize()->include_template('settings/settings-general.php', true, array('optimize_db' => false));
+		$admin_settings .= WP_Optimize()->include_template('settings/settings-auto-cleanup.php', true, array('optimize_db' => false));
+		$admin_settings .= WP_Optimize()->include_template('settings/settings-logging.php', true, array('optimize_db' => false));
+		$admin_settings .= '<input id="wp-optimize-settings-save" class="button button-primary" type="submit" name="wp-optimize-settings" value="' . esc_attr('Save settings', 'wp-optimize') .'" />';
+		$admin_settings .= '</form>';
+		$admin_settings .= WP_Optimize()->include_template('settings/settings-trackback-and-comments.php', true, array('optimize_db' => false));
 		$content = $admin_settings;
 
 		return array(
@@ -111,6 +115,12 @@ class WP_Optimize_Commands {
 		return $translations;
 	}
 
+	/**
+	 * Save settings command.
+	 *
+	 * @param string $data
+	 * @return array
+	 */
 	public function save_settings($data) {
 		
 		parse_str(stripslashes($data), $posted_settings);
@@ -120,6 +130,20 @@ class WP_Optimize_Commands {
 			'save_results' => $this->options->save_settings($posted_settings),
 			'status_box_contents' => $this->get_status_box_contents(),
 			'optimizations_table' => $this->get_optimizations_table(),
+		);
+	}
+
+	/**
+	 * Save lazy load settings.
+	 *
+	 * @param string $data
+	 * @return array
+	 */
+	public function save_lazy_load_settings($data) {
+		parse_str(stripslashes($data), $posted_settings);
+
+		return array(
+			'save_result' => $this->options->save_lazy_load_settings($posted_settings)
 		);
 	}
 
@@ -189,6 +213,49 @@ class WP_Optimize_Commands {
 	}
 
 	/**
+	 * Preview command, used to show information about data should be optimized in popup tool.
+	 *
+	 * @param array $params Should have keys 'optimization_id', 'offset' and 'limit'.
+	 *
+	 * @return array
+	 */
+	public function preview($params) {
+		if (!isset($params['optimization_id'])) {
+			$results = array(
+				'result' => false,
+				'messages' => array(),
+				'errors' => array(
+					__('No optimization was indicated.', 'wp-optimize')
+				)
+			);
+		} else {
+			$optimization_id = $params['optimization_id'];
+			$data = isset($params['data']) ? $params['data'] : array();
+			$params['offset'] = isset($params['offset']) ? (int) $params['offset'] : 0;
+			$params['limit'] = isset($params['limit']) ? (int) $params['limit'] : 50;
+
+			$optimization = $this->optimizer->get_optimization($optimization_id, $data);
+
+			if (is_a($optimization, 'WP_Optimization')) {
+				if (isset($params['site_id'])) {
+					$optimization->switch_to_blog((int) $params['site_id']);
+				}
+				$result = $optimization->preview($params);
+			} else {
+				$result = null;
+			}
+
+			$results = array(
+				'result' => $result,
+				'messages' => array(),
+				'errors' => array()
+			);
+		}
+
+		return $results;
+	}
+
+	/**
 	 * Get information about requested optimization.
 	 *
 	 * @param array $params Should have keys 'optimization_id' and 'data'.
@@ -226,7 +293,7 @@ class WP_Optimize_Commands {
 		list ($total_size, $part2) = $this->optimizer->get_current_db_size();
 	
 		return array(
-			'table_list' => WP_Optimize()->include_template('tables-body.php', true, array('optimize_db' => false)),
+			'table_list' => WP_Optimize()->include_template('database/tables-body.php', true, array('optimize_db' => false)),
 			'total_size' => $total_size
 		);
 	}
@@ -239,6 +306,7 @@ class WP_Optimize_Commands {
 	 */
 	public function optimizations_done() {
 
+		$this->options->update_option('total-cleaned', 0);
 		// Run action after all optimizations completed.
 		do_action('wp_optimize_after_optimizations');
 
@@ -301,6 +369,27 @@ class WP_Optimize_Commands {
 	}
 
 	/**
+	 * Enable or disable Gzip compression.
+	 *
+	 * @param array $params - ['enable' => true|false]
+	 * @return array
+	 */
+	public function enable_gzip_compression($params) {
+		return WP_Optimize()->get_gzip_compression()->enable_gzip_command_handler($params);
+	}
+
+
+	/**
+	 * Enable or disable browser cache.
+	 *
+	 * @param array $params - ['browser_cache_expire' => '1 month 15 days 2 hours' || '' - for disable cache]
+	 * @return array
+	 */
+	public function enable_browser_cache($params) {
+		return WP_Optimize()->get_browser_cache()->enable_browser_cache_command_handler($params);
+	}
+
+	/**
 	 * Import WP-Optimize settings.
 	 *
 	 * @param array $params array with 'settings' item where 'settings' json-encoded string.
@@ -316,7 +405,8 @@ class WP_Optimize_Commands {
 
 		$settings = json_decode($params['settings'], true);
 
-		// check if valid json file posted.
+		// check if valid json file posted (requires PHP 5.3+)
+		// @codingStandardsIgnoreLine
 		if ((function_exists('json_last_error') && 0 != json_last_error()) || empty($settings)) {
 			return array('errors' => array(__('Please upload a valid settings file.', 'wp-optimize')));
 		}

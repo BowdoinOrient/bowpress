@@ -4,11 +4,11 @@
  */
 namespace The_SEO_Framework;
 
-defined( 'ABSPATH' ) or die;
+defined( 'THE_SEO_FRAMEWORK_PRESENT' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2019 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -33,13 +33,6 @@ defined( 'ABSPATH' ) or die;
 class User_Data extends Term_Data {
 
 	/**
-	 * Constructor, load parent constructor
-	 */
-	protected function __construct() {
-		parent::__construct();
-	}
-
-	/**
 	 * Returns default user meta.
 	 *
 	 * @since 3.0.0
@@ -47,20 +40,22 @@ class User_Data extends Term_Data {
 	 * @return array The default user meta index and values.
 	 */
 	public function get_default_user_data() {
-		return array(
-			'counter_type' => 3,
+		return [
+			'counter_type'  => 3,
 			'facebook_page' => '',
-			'twitter_page' => '',
-		);
+			'twitter_page'  => '',
+		];
 	}
 
 	/**
 	 * Returns the current post author ID.
 	 *
 	 * @since 3.0.0
+	 * @since 3.2.2: 1. Now no longer returns the latest post author ID on home-as-blog pages.
+	 *               2. Now always returns an integer.
 	 * @staticvar $cache
 	 *
-	 * @return int|bool Post author on success, false on failure.
+	 * @return int Post author ID on success, 0 on failure.
 	 */
 	public function get_current_post_author_id() {
 
@@ -69,9 +64,16 @@ class User_Data extends Term_Data {
 		if ( isset( $cache ) )
 			return $cache;
 
-		$post = \get_post( $this->get_the_real_ID() );
+		if ( $this->is_singular() ) {
+			$post  = \get_post( $this->get_the_real_ID() );
+			$cache = isset( $post->post_author ) ? (int) $post->post_author : 0;
+		}
+		// This works... but the function name needs to be rewritten; Also, the related meta yields no social "SEO" value.
+		// elseif ( $this->is_author() ) {
+		// 	$cache = $this->get_the_real_ID();
+		// }
 
-		return $cache = isset( $post->post_author ) ? (int) $post->post_author : false;
+		return $cache ?: $cache = 0;
 	}
 
 	/**
@@ -109,14 +111,14 @@ class User_Data extends Term_Data {
 	public function get_user_meta( $user_id, $key = THE_SEO_FRAMEWORK_USER_OPTIONS, $use_cache = true ) {
 
 		if ( false === $use_cache )
-			return ( $meta = \get_user_meta( $user_id, $key, true ) ) && is_array( $meta ) ? $meta : array();
+			return ( $meta = \get_user_meta( $user_id, $key, true ) ) && is_array( $meta ) ? $meta : [];
 
-		static $usermeta_cache = array();
+		static $usermeta_cache = [];
 
 		if ( isset( $usermeta_cache[ $user_id ][ $key ] ) )
 			return $usermeta_cache[ $user_id ][ $key ];
 
-		return $usermeta_cache[ $user_id ][ $key ] = ( $meta = \get_user_meta( $user_id, $key, true ) ) && is_array( $meta ) ? $meta : array();
+		return $usermeta_cache[ $user_id ][ $key ] = ( $meta = \get_user_meta( $user_id, $key, true ) ) && is_array( $meta ) ? $meta : [];
 	}
 
 	/**
@@ -179,8 +181,7 @@ class User_Data extends Term_Data {
 		if ( ! $user_id )
 			return $default;
 
-		static $options_cache = array(),
-		       $notfound_cache = array();
+		static $options_cache = [], $notfound_cache = [];
 
 		if ( isset( $options_cache[ $user_id ][ $option ] ) )
 			return $options_cache[ $user_id ][ $option ];
@@ -226,7 +227,7 @@ class User_Data extends Term_Data {
 		/**
 		 * @since 2.8.0 initializes new array on empty values.
 		 */
-		is_array( $meta ) or $meta = array();
+		is_array( $meta ) or $meta = [];
 
 		$meta[ $option ] = $value;
 

@@ -4,11 +4,11 @@
  */
 namespace The_SEO_Framework;
 
-defined( 'ABSPATH' ) or die;
+defined( 'THE_SEO_FRAMEWORK_PRESENT' ) or die;
 
 /**
  * The SEO Framework plugin
- * Copyright (C) 2015 - 2018 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
+ * Copyright (C) 2015 - 2019 Sybre Waaijer, CyberWire (https://cyberwire.nl/)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published
@@ -33,35 +33,46 @@ defined( 'ABSPATH' ) or die;
 class Query extends Compat {
 
 	/**
-	 * Constructor. Load parent constructor.
+	 * Checks for pretty permalinks.
+	 *
+	 * @since 2.2.9
+	 * @since 3.1.0 Now public.
+	 *
+	 * @var bool true if pretty
 	 */
-	protected function __construct() {
-		parent::__construct();
-	}
+	public $pretty_permalinks;
 
 	/**
 	 * Checks whether $wp_query or $current_screen is set.
 	 *
 	 * @since 2.6.1
-	 * @since 2.9.0: Added doing it wrong notice.
-	 * @access private
+	 * @since 2.9.0 Added doing it wrong notice.
+	 * @since 3.1.0 1. Is now protected.
+	 *              2. Now asks for and passes $method.
+	 *              3. Now returns false on WP CLI.
+	 * @since 3.2.2 No longer spits out errors on production websites.
 	 * @staticvar bool $cache : Always true if set.
-	 * @global object $wp_query
-	 * @global object|null $current_screen
+	 * @global \WP_Query $wp_query
+	 * @global \WP_Screen|null $current_screen
 	 *
+	 * @param string $method The method that invokes this.
 	 * @return bool True when wp_query or current_screen has been initialized.
 	 */
-	public function can_cache_query() {
+	protected function can_cache_query( $method ) {
 
 		static $cache;
 
 		if ( isset( $cache ) )
 			return $cache;
 
+		if ( defined( 'WP_CLI' ) && WP_CLI )
+			return $cache = false;
+
 		if ( isset( $GLOBALS['wp_query']->query ) || isset( $GLOBALS['current_screen'] ) )
 			return $cache = true;
 
-		$this->do_query_error_notice( __METHOD__ );
+		$this->the_seo_framework_debug
+			and $this->do_query_error_notice( $method );
 
 		return false;
 	}
@@ -71,8 +82,9 @@ class Query extends Compat {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param string $method The original error method, from 2.9.0.
+	 * @param string $method The original caller method.
 	 */
+	// phpcs:disable -- Method unused in production.
 	protected function do_query_error_notice( $method ) {
 
 		$message = "You've initiated a method that uses queries too early.";
@@ -83,36 +95,45 @@ class Query extends Compat {
 			$message .= ' - On line: ' . $trace[3]['line'];
 		}
 
-		$this->_doing_it_wrong( $method, \esc_html( $message ), '2.9.0' );
+		$this->_doing_it_wrong( \esc_html( $method ), \esc_html( $message ), '2.9.0' );
 
 		//* Backtrace debugging.
-		if ( $this->the_seo_framework_debug ) {
-			static $_more = true;
-			$catch_all = false;
-			$depth = 10;
-			if ( $catch_all || $_more ) {
-				error_log( var_export( debug_backtrace( DEBUG_BACKTRACE_PROVIDE_OBJECT, $depth ), true ) );
-				$_more = false;
-			}
-		}
+		// $depth = 10;
+		// if ( $_more ) {
+		// 	error_log( var_export( debug_backtrace( DEBUG_BACKTRACE_PROVIDE_OBJECT, $depth ), true ) );
+		// 	$_more = false;
+		// }
+	} // phpcs:enable
+
+	/**
+	 * Returns the post type name from current screen.
+	 *
+	 * @since 3.1.0
+	 * @global \WP_Screen $current_screen
+	 *
+	 * @return string
+	 */
+	public function get_admin_post_type() {
+		global $current_screen;
+		return isset( $current_screen->post_type ) ? $current_screen->post_type : '';
 	}
 
 	/**
 	 * Get the real page ID, also from CPT, archives, author, blog, etc.
 	 *
 	 * @since 2.5.0
+	 * @since 3.1.0 No longer checks if we can cache the query when $use_cache is false.
 	 * @staticvar int $id the ID.
 	 *
 	 * @param bool $use_cache Whether to use the cache or not.
 	 * @return int|false The ID.
 	 */
-	public function get_the_real_ID( $use_cache = true ) {
+	public function get_the_real_ID( $use_cache = true ) { // phpcs:ignore -- ID is capitalized because WordPress does that too: get_the_ID().
 
 		if ( $this->is_admin() )
 			return $this->get_the_real_admin_ID();
 
-		$can_cache = $this->can_cache_query();
-		$use_cache = $can_cache ? $use_cache : false;
+		$use_cache = $use_cache && $this->can_cache_query( __METHOD__ );
 
 		if ( $use_cache ) {
 			static $id = null;
@@ -121,25 +142,20 @@ class Query extends Compat {
 				return $id;
 		}
 
-		//* Try to get ID from plugins.
-		$id = $can_cache ? $this->check_the_real_ID() : 0;
+		//* Try to get ID from plugins when caching is available.
+		$id = $use_cache ? $this->check_the_real_ID() : 0;
 
-		if ( empty( $id ) ) {
+		if ( ! $id ) {
 			//* This catches most ID's. Even Post IDs.
 			$id = \get_queried_object_id();
 		}
 
 		/**
-		 * Applies filters 'the_seo_framework_current_object_id' : integer
-		 * Can be either the Post ID, or the Term ID.
-		 *
-		 * @param int $id
-		 * @param bool Whether the globals WP_Query or current_screen are set.
-		 * @see The_SEO_Framework_Query::can_cache_query()
-		 *
 		 * @since 2.6.2
+		 * @param int $id Can be either the Post ID, or the Term ID.
+		 * @param bool    Whether this value is stored in runtime caching.
 		 */
-		return $id = (int) \apply_filters( 'the_seo_framework_current_object_id', $id, $can_cache );
+		return $id = (int) \apply_filters( 'the_seo_framework_current_object_id', $id, $use_cache );
 	}
 
 	/**
@@ -151,12 +167,12 @@ class Query extends Compat {
 	 *
 	 * @return int The admin ID.
 	 */
-	public function get_the_real_admin_ID() {
+	public function get_the_real_admin_ID() { // phpcs:ignore -- ID is capitalized because WordPress does that too: get_the_ID().
 
 		$id = \get_the_ID();
 
 		//* Current term ID (outside loop).
-		if ( empty( $id ) && $this->is_archive_admin() )
+		if ( ! $id && $this->is_archive_admin() )
 			$id = $this->get_admin_term_id();
 
 		return (int) \apply_filters( 'the_seo_framework_current_admin_id', $id );
@@ -169,35 +185,44 @@ class Query extends Compat {
 	 * functions for the current ID in the admin.
 	 *
 	 * @since 2.5.0
+	 * @since 3.1.0 1. Now checks for the feed.
+	 *              2. No longer caches.
 	 *
 	 * @return int The admin ID.
 	 */
-	public function check_the_real_ID() {
+	public function check_the_real_ID() { // phpcs:ignore -- ID is capitalized because WordPress does that too: get_the_ID().
 
-		if ( null !== $cache = $this->get_query_cache( __METHOD__ ) )
-			return $cache;
+		$id = 0;
 
-		$id = '';
-
-		if ( $this->is_wc_shop() ) {
-			//* WooCommerce Shop
+		if ( $this->is_feed() ) {
+			$id = \get_the_ID();
+		} elseif ( $this->is_wc_shop() ) {
+			//* WooCommerce Shop. TODO set in compat file?
 			$id = \get_option( 'woocommerce_shop_page_id' );
 		} elseif ( function_exists( 'get_question_id' ) && \did_action( 'template_redirect' ) ) {
-			//* AnsPress
+			//* AnsPress. TODO set in compat file.
 			$id = \get_question_id();
 		}
 
 		/**
-		 * Applies filters the_seo_framework_real_id : The Real ID for plugins on front-end.
 		 * @since 2.5.0
-		 * @TODO add to Filters API.
+		 * @param int $id
 		 */
-		$this->set_query_cache(
-			__METHOD__,
-			$id = (int) \apply_filters( 'the_seo_framework_real_id', $id )
-		);
+		return (int) \apply_filters( 'the_seo_framework_real_id', $id );
+	}
 
-		return $id;
+	/**
+	 * Returns the front page ID, if home is a page.
+	 *
+	 * @since 2.6.0
+	 *
+	 * @return int the ID.
+	 */
+	public function get_the_front_page_ID() { // phpcs:ignore -- ID is capitalized because WordPress does that too: get_the_ID().
+		static $front_id;
+		return isset( $front_id )
+			? $front_id
+			: $front_id = ( $this->has_page_on_front() ? (int) \get_option( 'page_on_front' ) : 0 );
 	}
 
 	/**
@@ -205,50 +230,44 @@ class Query extends Compat {
 	 *
 	 * @since 2.6.0
 	 * @since 2.6.6 Moved from class The_SEO_Framework_Term_Data.
-	 * @securitycheck 3.0.0 OK.
+	 * @since 3.1.0 1. Removed WP 4.5 compat. Now uses global $tag_ID.
+	 *              2. Removed caching
+	 * @global int $tag_ID
+	 *
+	 * TODO consider making the function name id -> ID.
 	 *
 	 * @return int Term ID.
 	 */
 	public function get_admin_term_id() {
 
-		if ( null !== $cache = $this->get_query_cache( __METHOD__ ) )
-			return $cache;
-
 		if ( false === $this->is_archive_admin() )
 			return 0;
 
-		$term_id = 0;
-
-		/**
-		 * is_archive_admin() determines if admin referer checks have run
-		 * through global $current_screen. Will output 'Invalid taxonomy' on try.
-		 */
-		if ( ! empty( $_GET['tag_ID'] ) ) {
-			//* WordPress 4.5+.
-			$term_id = $_GET['tag_ID'];
-		} elseif ( ! empty( $_GET['term_id'] ) ) {
-			//* Older WordPress versions.
-			$term_id = $_GET['term_id'];
-		}
-
-		$this->set_query_cache(
-			__METHOD__,
-			$term_id = intval( $term_id ) ? \absint( $term_id ) : 0
+		return \absint(
+			! empty( $GLOBALS['tag_ID'] ) ? $GLOBALS['tag_ID'] : 0
 		);
-
-		return $term_id;
 	}
 
 	/**
 	 * Returns the current taxonomy, if any.
 	 *
 	 * @since 3.0.0
+	 * @since 3.1.0 1. Now works in the admin.
+	 *              2. Added caching
+	 * @global \WP_Screen $current_screen
+	 * @staticvar string $cache
 	 *
 	 * @return string The queried taxonomy type.
 	 */
 	public function get_current_taxonomy() {
-		$_object = \get_queried_object();
-		return ! empty( $_object->taxonomy ) ? $_object->taxonomy : '';
+
+		static $cache;
+
+		if ( isset( $cache ) ) return $cache;
+
+		$_object = $this->is_admin() ? $GLOBALS['current_screen'] : \get_queried_object();
+
+		return $cache = ! empty( $_object->taxonomy ) ? $_object->taxonomy : '';
 	}
 
 	/**
@@ -299,10 +318,22 @@ class Query extends Compat {
 	}
 
 	/**
+	 * Determines whether the content type is both singular and archival.
+	 * Simply put, it detects a blog page and WooCommerce shop page.
+	 *
+	 * @since 3.1.0
+	 *
+	 * @return bool
+	 */
+	public function is_singular_archive() {
+		return $this->is_blog_page() || $this->is_wc_shop();
+	}
+
+	/**
 	 * Detects archive pages. Also in admin.
 	 *
 	 * @since 2.6.0
-	 * @global object $wp_query
+	 * @global \WP_Query $wp_query
 	 *
 	 * @return bool
 	 */
@@ -314,7 +345,7 @@ class Query extends Compat {
 		if ( \is_archive() && false === $this->is_singular() )
 			return true;
 
-		if ( $this->can_cache_query() && false === $this->is_singular() ) {
+		if ( $this->can_cache_query( __METHOD__ ) && false === $this->is_singular() ) {
 			global $wp_query;
 
 			if ( $wp_query->is_post_type_archive || $wp_query->is_date || $wp_query->is_author || $wp_query->is_category || $wp_query->is_tag || $wp_query->is_tax )
@@ -328,24 +359,20 @@ class Query extends Compat {
 	 * Extends default WordPress is_archive() and determines screen in admin.
 	 *
 	 * @since 2.6.0
-	 * @global object $current_screen
+	 * @global \WP_Screen $current_screen
 	 *
 	 * @return bool Post Type is archive
 	 */
 	public function is_archive_admin() {
 		global $current_screen;
-
-		if ( isset( $current_screen->base ) && ( 'edit-tags' === $current_screen->base || 'term' === $current_screen->base ) )
-			return true;
-
-		return false;
+		return isset( $current_screen->base ) && in_array( $current_screen->base, [ 'edit-tags', 'term' ], true );
 	}
 
 	/**
 	 * Detects Term edit screen in WP Admin.
 	 *
 	 * @since 2.6.0
-	 * @global object $current_screen
+	 * @global \WP_Screen $current_screen
 	 *
 	 * @return bool True if on Term Edit screen. False otherwise.
 	 */
@@ -356,19 +383,9 @@ class Query extends Compat {
 
 		global $current_screen;
 
-		$is_term_edit = false;
-
-		if ( $this->wp_version( '4.4.9999', '>' ) ) {
-			if ( isset( $current_screen->base ) && ( 'term' === $current_screen->base ) )
-				$is_term_edit = true;
-		} else {
-			if ( isset( $current_screen->base ) && ( 'edit-tags' === $current_screen->base ) )
-				$is_term_edit = true;
-		}
-
 		$this->set_query_cache(
 			__METHOD__,
-			$is_term_edit
+			$is_term_edit = isset( $current_screen->base ) && ( 'term' === $current_screen->base )
 		);
 
 		return $is_term_edit;
@@ -378,36 +395,26 @@ class Query extends Compat {
 	 * Detects Post edit screen in WP Admin.
 	 *
 	 * @since 2.6.0
-	 * @global object $current_screen
+	 * @global \WP_Screen $current_screen
 	 *
 	 * @return bool We're on Post Edit screen.
 	 */
 	public function is_post_edit() {
 		global $current_screen;
-
-		if ( isset( $current_screen->base ) && 'post' === $current_screen->base )
-			return true;
-
-		return false;
+		return isset( $current_screen->base ) && 'post' === $current_screen->base;
 	}
 
 	/**
 	 * Detects Post or Archive Lists in Admin.
 	 *
 	 * @since 2.6.0
-	 * @global object $current_screen
-	 * @access private
+	 * @global \WP_Screen $current_screen
 	 *
 	 * @return bool We're on the edit screen.
 	 */
 	public function is_wp_lists_edit() {
 		global $current_screen;
-
-		//* @NOTE WP >= 4.5 & WP < 4.5 conflict.
-		if ( isset( $current_screen->base ) && ( 'edit' === $current_screen->base || 'edit-tags' === $current_screen->base ) )
-			return true;
-
-		return false;
+		return isset( $current_screen->base ) && in_array( $current_screen->base, [ 'edit-tags', 'edit' ], true );
 	}
 
 	/**
@@ -446,22 +453,25 @@ class Query extends Compat {
 	 */
 	public function is_blog_page( $id = 0 ) {
 
-		if ( empty( $id ) )
-			$id = $this->get_the_real_ID();
+		if ( ! $this->has_page_on_front() )
+			return false;
+
+		$id = $id ?: $this->get_the_real_ID();
 
 		if ( null !== $cache = $this->get_query_cache( __METHOD__, null, $id ) )
 			return $cache;
 
 		$is_blog_page = false;
 
-		$pfp = (int) \get_option( 'page_for_posts' );
+		static $pfp = null;
 
-		if ( $this->has_page_on_front() ) {
-			if ( $id && $id === $pfp && false === \is_archive() ) {
-				$is_blog_page = true;
-			} elseif ( \is_home() ) {
-				$is_blog_page = true;
-			}
+		if ( is_null( $pfp ) )
+			$pfp = (int) \get_option( 'page_for_posts' );
+
+		if ( $id && $id === $pfp && false === \is_archive() ) {
+			$is_blog_page = true;
+		} elseif ( \is_home() ) {
+			$is_blog_page = true;
 		}
 
 		$this->set_query_cache(
@@ -503,7 +513,8 @@ class Query extends Compat {
 	 * Extends default WordPress is_category() and determines screen in admin.
 	 *
 	 * @since 2.6.0
-	 * @global object $current_screen
+	 * @since 3.1.0 No longer guesses category by name. It now only matches WordPress' built-in category.
+	 * @global \WP_Screen $current_screen
 	 *
 	 * @return bool Post Type is category
 	 */
@@ -517,15 +528,7 @@ class Query extends Compat {
 		$is_category = false;
 
 		if ( $this->is_archive_admin() && isset( $current_screen->taxonomy ) ) {
-
-			$tax = $current_screen->taxonomy;
-			$len = strlen( $tax );
-
-			if ( $len >= 8 && false !== strrpos( $tax, 'category', -8 ) ) {
-				$is_category = true;
-			} elseif ( $len >= 3 && false !== strrpos( $tax, 'cat', -3 ) ) {
-				$is_category = true;
-			}
+			$is_category = 'category' === $current_screen->taxonomy;
 		}
 
 		$this->set_query_cache(
@@ -605,15 +608,37 @@ class Query extends Compat {
 	}
 
 	/**
+	 * Checks for front page by input ID without engaging into the query.
+	 *
+	 * @NOTE This doesn't check for anomalies in the query.
+	 * So, don't use this to test user-engaged WordPress queries, ever.
+	 * WARNING: This will lead to **FALSE POSITIVES** for Date, PTA, Search, and other archives.
+	 *
+	 * @see $this->is_front_page_by_id(), which supports query checking.
+	 * @see $this->is_real_front_page(), which solely uses query checking.
+	 *
+	 * @since 3.2.2
+	 *
+	 * @param int $id The tested ID.
+	 * @return bool
+	 */
+	public function is_real_front_page_by_id( $id ) {
+		return $id === $this->get_the_front_page_ID();
+	}
+
+	/**
 	 * Checks for front page by input ID.
 	 *
-	 * Returns true if on SEO settings page and when ID is 0.
+	 * Doesn't always return true when the ID is 0, although the homepage might be.
+	 * This is because it checks for the query, to prevent conflicts.
+	 * @see $this->is_real_front_page_by_id().
 	 *
 	 * @since 2.9.0
-	 * @since 2.9.3 Now tests for archive and 404 before testing home page as blog.
+	 * @since 2.9.3 Now tests for archive and 404 before testing homepage as blog.
+	 * @since 3.2.2: Removed SEO settings page check. This now returns false on that page.
 	 *
 	 * @param int The page ID, required. Can be 0.
-	 * @return bool True if ID if for the home page.
+	 * @return bool True if ID if for the homepage.
 	 */
 	public function is_front_page_by_id( $id ) {
 
@@ -625,32 +650,26 @@ class Query extends Compat {
 		$is_front_page = false;
 		$sof = \get_option( 'show_on_front' );
 
-		//* Elegant Themes Support. Yay.
-		if ( 0 === $id && $this->is_home() ) {
-			if ( 'page' !== $sof && 'posts' !== $sof )
-				$is_front_page = true;
-		}
-
 		//* Compare against $id
-		if ( false === $is_front_page ) {
-			if ( 'page' === $sof ) {
-				if ( (int) \get_option( 'page_on_front' ) === $id ) {
+		if ( 'page' === $sof ) {
+			if ( (int) \get_option( 'page_on_front' ) === $id ) {
+				$is_front_page = true;
+			}
+		} elseif ( 'posts' === $sof ) {
+			if ( 0 === $id ) {
+				//* 0 as ID causes many issues. Just test for is_home().
+				if ( $this->is_home() ) {
 					$is_front_page = true;
 				}
-			} elseif ( 'posts' === $sof ) {
-				if ( 0 === $id ) {
-					//* 0 as ID causes a lot of issues. Just test for is_home().
-					if ( $this->is_home() ) {
-						$is_front_page = true;
-					}
-				} elseif ( (int) \get_option( 'page_for_posts' ) === $id ) {
-					$is_front_page = true;
-				}
+			} elseif ( (int) \get_option( 'page_for_posts' ) === $id ) {
+				$is_front_page = true;
+			}
+		} else {
+			// Elegant Themes' Extra support
+			if ( 0 === $id && $this->is_home() ) {
+				$is_front_page = true;
 			}
 		}
-
-		if ( false === $is_front_page && 0 === $id && $this->is_seo_settings_page() )
-			$is_front_page = true;
 
 		$this->set_query_cache(
 			__METHOD__,
@@ -662,7 +681,7 @@ class Query extends Compat {
 	}
 
 	/**
-	 * Detects home page.
+	 * Determines whether the query is for the blog page.
 	 *
 	 * @since 2.6.0
 	 * @staticvar bool $cache
@@ -720,7 +739,7 @@ class Query extends Compat {
 	 *
 	 * @since 2.6.0
 	 * @see $this->is_page()
-	 * @global object $current_screen;
+	 * @global \WP_Screen $current_screen;
 	 *
 	 * @return bool
 	 */
@@ -754,7 +773,7 @@ class Query extends Compat {
 	 * @return bool
 	 */
 	public function is_search() {
-		return \is_search() && ! is_admin();
+		return \is_search() && ! \is_admin();
 	}
 
 	/**
@@ -792,18 +811,14 @@ class Query extends Compat {
 	 * Detects posts within the admin area.
 	 *
 	 * @since 2.6.0
-	 * @global object $current_screen
+	 * @global \WP_Screen $current_screen
 	 * @see The_SEO_Framework_Query::is_single()
 	 *
 	 * @return bool
 	 */
 	public function is_single_admin() {
 		global $current_screen;
-
-		if ( isset( $current_screen->post_type ) && 'post' === $current_screen->post_type )
-			return true;
-
-		return false;
+		return isset( $current_screen->post_type ) && 'post' === $current_screen->post_type;
 	}
 
 	/**
@@ -811,27 +826,29 @@ class Query extends Compat {
 	 * Replaces and expands default WordPress is_singular().
 	 *
 	 * @since 2.5.2
+	 * @since 3.1.0 Now passes $post_types parameter in admin screens, only when it's an integer.
 	 * @uses The_SEO_Framework_Query::is_singular_admin()
 	 * @uses The_SEO_Framework_Query::is_blog_page()
 	 * @uses The_SEO_Framework_Query::is_wc_shop()
-	 * @access private
 	 *
-	 * @param string|array $post_types Optional. Post type or array of post types. Default empty string.
+	 * @param string|array|int $post_types Optional. Post type or array of post types, or ID of post. Default empty string.
 	 * @return bool Post Type is singular
 	 */
 	public function is_singular( $post_types = '' ) {
 
-		//* WP_Query functions require loop, do alternative check.
-		if ( $this->is_admin() )
-			return $this->is_singular_admin();
+		$id = null;
 
 		if ( is_int( $post_types ) ) {
 			//* Cache ID. Core is_singular() doesn't accept integers.
-			$id = $post_types;
+			$id         = $post_types;
 			$post_types = '';
 		}
 
-		if ( null !== $cache = $this->get_query_cache( __METHOD__, null, $post_types ) )
+		//* WP_Query functions require loop, do alternative check.
+		if ( $this->is_admin() )
+			return $this->is_singular_admin( $id );
+
+		if ( null !== $cache = $this->get_query_cache( __METHOD__, null, $post_types, $id ) )
 			return $cache;
 
 		if ( ! $is_singular = \is_singular( $post_types ) ) {
@@ -845,7 +862,7 @@ class Query extends Compat {
 		$this->set_query_cache(
 			__METHOD__,
 			$is_singular,
-			$post_types
+			$post_types, $id
 		);
 
 		return $is_singular;
@@ -855,15 +872,21 @@ class Query extends Compat {
 	 * Determines if the page is singular within the admin screen.
 	 *
 	 * @since 2.5.2
-	 * @global object $current_screen
+	 * @since 3.1.0 Added $post_id parameter. When used, it'll only check for it.
+	 * @global \WP_Screen $current_screen
 	 *
+	 * @param  null|int $post_id The post ID.
 	 * @return bool Post Type is singular
 	 */
-	public function is_singular_admin() {
-		global $current_screen;
+	public function is_singular_admin( $post_id = null ) {
 
-		if ( isset( $current_screen->base ) && ( 'edit' === $current_screen->base || 'post' === $current_screen->base ) )
-			return true;
+		if ( isset( $post_id ) ) {
+			$post = \get_post( $post_id );
+			return $post && $post instanceof \WP_Post;
+		} else {
+			global $current_screen;
+			return isset( $current_screen->base ) && in_array( $current_screen->base, [ 'edit', 'post' ], true );
+		}
 
 		return false;
 	}
@@ -878,11 +901,8 @@ class Query extends Compat {
 	 */
 	public function is_static_frontpage( $id = 0 ) {
 
-		if ( ! $id )
-			$id = $this->get_the_real_ID();
-
 		if ( 'page' === \get_option( 'show_on_front' ) )
-			return (int) \get_option( 'page_on_front' ) === $id;
+			return (int) \get_option( 'page_on_front' ) === ( $id ?: $this->get_the_real_ID() );
 
 		return false;
 	}
@@ -919,22 +939,22 @@ class Query extends Compat {
 	 * Determines if the page is a tag within the admin screen.
 	 *
 	 * @since 2.6.0
-	 * @global object $current_screen
+	 * @since 3.1.0 No longer guesses tag by name. It now only matches WordPress' built-in tag.
+	 * @global \WP_Screen $current_screen
 	 *
-	 * @return bool Post Type is category.
+	 * @return bool Post Type is tag.
 	 */
 	public function is_tag_admin() {
 
 		if ( null !== $cache = $this->get_query_cache( __METHOD__ ) )
 			return $cache;
 
+		global $current_screen;
+
 		$is_tag = false;
 
-		if ( $this->is_archive_admin() ) {
-			global $current_screen;
-
-			if ( isset( $current_screen->taxonomy ) && strlen( $current_screen->taxonomy ) >= 3 && false !== strrpos( $current_screen->taxonomy, 'tag', -3 ) )
-				$is_tag = true;
+		if ( $this->is_archive_admin() && isset( $current_screen->taxonomy ) ) {
+			$is_tag = 'post_tag' === $current_screen->taxonomy;
 		}
 
 		$this->set_query_cache(
@@ -1029,9 +1049,7 @@ class Query extends Compat {
 	 * @return bool True if SSL, false otherwise.
 	 */
 	public function is_ssl() {
-
 		static $cache = null;
-
 		return isset( $cache ) ? $cache : $cache = \is_ssl();
 	}
 
@@ -1055,14 +1073,12 @@ class Query extends Compat {
 		if ( ! $secure )
 			return $this->is_menu_page( $this->seo_settings_page_hook, $this->seo_settings_page_slug );
 
-		if ( null !== $cache = $this->get_query_cache( __METHOD__, null ) )
+		if ( null !== $cache = $this->get_query_cache( __METHOD__ ) )
 			return $cache;
-
-		$page = $this->is_menu_page( $this->seo_settings_page_hook );
 
 		$this->set_query_cache(
 			__METHOD__,
-			$page
+			$page = $this->is_menu_page( $this->seo_settings_page_hook )
 		);
 
 		return $page;
@@ -1094,11 +1110,9 @@ class Query extends Compat {
 		global $page_hook;
 
 		if ( isset( $page_hook ) ) {
-			if ( $page_hook === $pagehook )
-				return true;
+			return $page_hook === $pagehook;
 		} elseif ( $this->is_admin() && $pageslug ) {
-			if ( ! empty( $_GET['page'] ) && $pageslug === $_GET['page'] )
-				return true;
+			return ! empty( $_GET['page'] ) && $pageslug === $_GET['page']; // CSRF, input var OK.
 		}
 
 		return false;
@@ -1109,40 +1123,96 @@ class Query extends Compat {
 	 * Fetches global $page through Query Var to prevent conflicts.
 	 *
 	 * @since 2.6.0
+	 * @since 3.2.4 1. Added overflow protection.
+	 *              2. Now always returns 1 on the admin screens.
 	 *
-	 * @return int $page Always a positive number.
+	 * @return int (R>0) $page Always a positive number.
 	 */
 	public function page() {
 
 		if ( null !== $cache = $this->get_query_cache( __METHOD__ ) )
 			return $cache;
 
-		$page = $this->is_multipage() ? \get_query_var( 'page' ) : 1;
+		if ( $this->is_multipage() ) {
+			$page = (int) \get_query_var( 'page' );
+
+			if ( $page > $this->numpages() ) {
+				// On overflow, WP returns the first page.
+				$page = 1;
+			}
+		} else {
+			$page = 1;
+		}
 
 		$this->set_query_cache(
 			__METHOD__,
-			$page = $page ? (int) $page : 1
+			$page = $page ?: 1
 		);
 
 		return $page;
 	}
 
 	/**
-	 * Determines whether the current loop is a multipage.
+	 * Fetches the number of the current page.
+	 * Fetches global $paged through Query var to prevent conflicts.
 	 *
-	 * @since 2.7.0
-	 * @global int $pages Used as reference.
+	 * @since 2.6.0
+	 * @since 3.2.4 1. Added overflow protection.
+	 *              2. Now always returns 1 on the admin screens.
 	 *
-	 * @return bool True if multipage.
+	 * @return int (R>0) $paged Always a positive number.
 	 */
-	protected function is_multipage() {
-		global $pages;
+	public function paged() {
 
-		$_pages = $pages;
+		if ( null !== $cache = $this->get_query_cache( __METHOD__ ) )
+			return $cache;
 
-		$post = $this->is_singular() || $this->is_real_front_page() ? \get_post( $this->get_the_real_ID() ) : null;
+		if ( $this->is_multipage() ) {
+			$paged = (int) \get_query_var( 'paged' );
+			$max   = $this->numpages();
 
-		if ( is_object( $post ) ) {
+			if ( $paged > $max ) {
+				// On overflow, WP returns the last page.
+				$paged = $max;
+			}
+		} else {
+			$paged = 1;
+		}
+
+		$this->set_query_cache(
+			__METHOD__,
+			$paged = $paged ?: 1
+		);
+
+		return $paged;
+	}
+
+	/**
+	 * Determines the number of available pages.
+	 *
+	 * This is largely taken from \WP_Query::setup_postdata(), however, the data
+	 * we need is set up in the loop, not in the header; where TSF is active.
+	 *
+	 * @since 3.1.0
+	 * @since 3.2.4 Now only returns "1" in the admin.
+	 * @global \WP_Query $wp_query
+	 *
+	 * @return int
+	 */
+	public function numpages() {
+
+		if ( null !== $cache = $this->get_query_cache( __METHOD__ ) )
+			return $cache;
+
+		if ( $this->is_admin() ) return 1;
+
+		global $wp_query;
+
+		$post = null;
+		if ( $this->is_singular() && ! $this->is_singular_archive() )
+			$post = \get_post( $this->get_the_real_ID() );
+
+		if ( $post instanceof \WP_Post ) {
 			$content = $post->post_content;
 			if ( false !== strpos( $content, '<!--nextpage-->' ) ) {
 				$content = str_replace( "\n<!--nextpage-->", '<!--nextpage-->', $content );
@@ -1153,58 +1223,45 @@ class Query extends Compat {
 
 				$_pages = explode( '<!--nextpage-->', $content );
 			} else {
-				$_pages = array( $post->post_content );
+				$_pages = [ $content ];
 			}
-		} else {
-			return false;
+
+			/**
+			 * Filter the "pages" derived from splitting the post content.
+			 *
+			 * "Pages" are determined by splitting the post content based on the presence
+			 * of `<!-- nextpage -->` tags.
+			 *
+			 * @since 4.4.0 WordPress core
+			 *
+			 * @param array $_pages Array of "pages" derived from the post content.
+			 *              of `<!-- nextpage -->` tags..
+			 * @param WP_Post $post  Current post object.
+			 */
+			$_pages = \apply_filters( 'content_pagination', $_pages, $post );
+
+			$numpages = count( $_pages );
+		} elseif ( isset( $wp_query->max_num_pages ) ) {
+			$numpages = (int) $wp_query->max_num_pages;
 		}
 
-		/**
-		 * Filter the "pages" derived from splitting the post content.
-		 *
-		 * "Pages" are determined by splitting the post content based on the presence
-		 * of `<!-- nextpage -->` tags.
-		 *
-		 * @since 4.4.0 WordPress core
-		 *
-		 * @param array $_pages Array of "pages" derived from the post content.
-		 *              of `<!-- nextpage -->` tags..
-		 * @param WP_Post $post  Current post object.
-		 */
-		$_pages = \apply_filters( 'content_pagination', $_pages, $post );
+		$this->set_query_cache( __METHOD__, $numpages );
 
-		$numpages = count( $_pages );
-
-		if ( $numpages > 1 ) {
-			$multipage = true;
-		} else {
-			$multipage = false;
-		}
-
-		return $multipage;
+		return $numpages;
 	}
 
 	/**
-	 * Fetches the number of the current page.
-	 * Fetches global $paged through Query var to prevent conflicts.
+	 * Determines whether the current loop has multiple pages.
 	 *
-	 * @since 2.6.0
+	 * @since 2.7.0
+	 * @since 3.1.0 1. Now also works on archives.
+	 *              2. Now is public.
+	 * @since 3.2.4 Now always returns false on the admin pages.
 	 *
-	 * @return int $paged Always a positive number.
+	 * @return bool True if multipage.
 	 */
-	public function paged() {
-
-		if ( null !== $cache = $this->get_query_cache( __METHOD__ ) )
-			return $cache;
-
-		$paged = \get_query_var( 'paged' );
-
-		$this->set_query_cache(
-			__METHOD__,
-			$paged = $paged ? (int) $paged : 1
-		);
-
-		return $paged;
+	public function is_multipage() {
+		return $this->numpages() > 1;
 	}
 
 	/**
@@ -1233,13 +1290,13 @@ class Query extends Compat {
 	 * Handles object cache for the query class.
 	 *
 	 * @since 2.7.0
-	 * @staticvar bool $can_cache_query : True when this function can run.
-	 * @staticvar mixed $cache : The cached query.
+	 * @staticvar null|bool $can_cache_query : True when this function can run.
+	 * @staticvar mixed     $cache           : The cached query values.
 	 * @see $this->set_query_cache(); to set query cache.
 	 *
-	 * @param string $key The key to set or get.
-	 * @param mixed $value_to_set The value to set.
-	 * @param array|mixed $hash Extra arguments, that will be used to generate an alternative cache key.
+	 * @param string $method       The method that wants to cache, used as the key to set or get.
+	 * @param mixed  $value_to_set The value to set.
+	 * @param array|mixed $hash    Extra arguments, that will be used to generate an alternative cache key.
 	 *        Must always be inside a single array when $value_to_set is set. @see $this->set_query_cache()
 	 *        Must always be separated parameters otherwise.
 	 * @return mixed : {
@@ -1251,36 +1308,37 @@ class Query extends Compat {
 	 *       }
 	 * }
 	 */
-	public function get_query_cache( $key, $value_to_set = null ) {
+	public function get_query_cache( $method, $value_to_set = null ) {
 
 		static $can_cache_query = null;
 
-		if ( is_null( $can_cache_query ) ) {
-			if ( $this->can_cache_query() ) {
+		if ( null === $can_cache_query ) {
+			if ( $this->can_cache_query( $method ) ) {
 				$can_cache_query = true;
 			} else {
 				return null;
 			}
 		}
 
-		static $cache = array();
+		static $cache = [];
 
 		if ( func_num_args() > 2 ) {
+			// phpcs:ignore -- No objects are inserted, nor is this ever unserialized.
 			$hash = isset( $value_to_set ) ? serialize( (array) func_get_arg( 2 ) ) : serialize( array_slice( func_get_args(), 2 ) );
 		} else {
 			$hash = false;
 		}
 
 		if ( isset( $value_to_set ) ) {
-			if ( isset( $cache[ $key ][ $hash ] ) ) {
-				$cache[ $key ][ $hash ] = $value_to_set;
+			if ( isset( $cache[ $method ][ $hash ] ) ) {
+				$cache[ $method ][ $hash ] = $value_to_set;
 				return false;
 			}
-			$cache[ $key ][ $hash ] = $value_to_set;
+			$cache[ $method ][ $hash ] = $value_to_set;
 			return true;
 		} else {
-			if ( isset( $cache[ $key ][ $hash ] ) )
-				return $cache[ $key ][ $hash ];
+			if ( isset( $cache[ $method ][ $hash ] ) )
+				return $cache[ $method ][ $hash ];
 		}
 
 		return null;
@@ -1292,19 +1350,19 @@ class Query extends Compat {
 	 * @since 2.7.0
 	 * @see $this->get_query_cache()
 	 *
-	 * @param string $key The key to set.
-	 * @param mixed $value_to_set If null, no cache will be set.
-	 * @param mixed $hash Extra arguments, that will be used to generate an alternative cache key.
+	 * @param string $method       The method that wants to set. Used as a caching key.
+	 * @param mixed  $value_to_set If null, no cache will be set.
+	 * @param mixed  $hash         Extra arguments, that will be used to generate an alternative cache key.
 	 * @return bool : {
 	 *    true If the value is being set for the first time.
 	 *    false If the value has been set and $value_to_set is being overwritten.
 	 * }
 	 */
-	public function set_query_cache( $key, $value_to_set ) {
+	public function set_query_cache( $method, $value_to_set ) {
 		if ( func_num_args() > 2 ) {
-			return $this->get_query_cache( $key, $value_to_set, array_slice( func_get_args(), 2 ) );
+			return $this->get_query_cache( $method, $value_to_set, array_slice( func_get_args(), 2 ) );
 		} else {
-			return $this->get_query_cache( $key, $value_to_set );
+			return $this->get_query_cache( $method, $value_to_set );
 		}
 	}
 }

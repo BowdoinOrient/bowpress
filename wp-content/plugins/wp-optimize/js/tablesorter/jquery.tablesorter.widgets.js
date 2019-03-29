@@ -1,15 +1,6 @@
-/*! tablesorter (FORK) - updated 2018-04-30 (v2.30.3)*/
+/*! tablesorter (FORK) - updated 2018-11-20 (v2.31.1)*/
 /* Includes widgets ( storage,uitheme,columns,filter,stickyHeaders,resizable,saveSort ) */
-(function(factory) {
-	if (typeof define === 'function' && define.amd) {
-		define(['jquery'], factory);
-	} else if (typeof module === 'object' && typeof module.exports === 'object') {
-		module.exports = factory(require('jquery'));
-	} else {
-		factory(jQuery);
-	}
-}(function(jQuery) {
-
+(function(factory){if (typeof define === 'function' && define.amd){define(['jquery'], factory);} else if (typeof module === 'object' && typeof module.exports === 'object'){module.exports = factory(require('jquery'));} else {factory(jQuery);}}(function(jQuery) {
 /*! Widget: storage - updated 2018-03-18 (v2.30.0) */
 /*global JSON:false */
 ;(function ($, window, document) {
@@ -3182,6 +3173,4 @@
 	});
 
 })(jQuery);
-
-return jQuery.tablesorter;
-}));
+return jQuery.tablesorter;}));

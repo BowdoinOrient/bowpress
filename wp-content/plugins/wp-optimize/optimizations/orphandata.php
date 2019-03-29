@@ -6,11 +6,15 @@ class WP_Optimization_orphandata extends WP_Optimization {
 
 	public $ui_sort_order = 10000;
 
+	public $available_for_saving = true;
+
+	public $support_preview = false;
+
 	/**
 	 * Do actions after optimize() function.
 	 */
 	public function after_optimize() {
-		$message = sprintf(_n('%s orphaned meta data deleted', '%s orphaned meta data deleted', $this->processed_count, 'wp-optimize'), number_format_i18n($this->processed_count));
+		$message = sprintf(_n('%s orphaned relationship data deleted', '%s orphaned relationship data deleted', $this->processed_count, 'wp-optimize'), number_format_i18n($this->processed_count));
 
 		if ($this->is_multisite_mode()) {
 			$message .= ' ' . sprintf(_n('across %s site', 'across %s sites', count($this->blogs_ids), 'wp-optimize'), count($this->blogs_ids));
@@ -18,7 +22,6 @@ class WP_Optimization_orphandata extends WP_Optimization {
 
 		$this->logger->info($message);
 		$this->register_output($message);
-
 	}
 
 	/**

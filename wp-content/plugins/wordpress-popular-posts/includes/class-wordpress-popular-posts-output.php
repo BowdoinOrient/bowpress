@@ -31,6 +31,14 @@ class WPP_Output {
     private $default_thumbnail_sizes = array();
 
     /**
+     * Default excerpt 'more' string.
+     *
+     * @since   4.2.1
+     * @var     string
+     */
+    private $more;
+
+    /**
      * WPP_Image object
      *
      * @since	4.0.2
@@ -51,6 +59,11 @@ class WPP_Output {
         }
 
         $this->default_thumbnail_sizes = $this->wpp_image->get_image_sizes();
+
+        $this->more = '...';
+
+        if ( has_filter('wpp_excerpt_more') )
+            $this->more = apply_filters( 'wpp_excerpt_more', $this->more );
 
         $this->build_output();
 
@@ -142,17 +155,24 @@ class WPP_Output {
 
         $post = '';
 
-        $postID = $post_object->id;
+        $post_id = $post_object->id;
+
+        $translate = WPP_translate::get_instance();
+        $trid = $translate->get_object_id( $post_object->id, get_post_type( $post_object->id ) );
+
+        if ( $post_id != $trid ) {
+            $post_id = $trid;
+        }
 
         // Permalink
-        $permalink = $this->get_permalink( $post_object );
+        $permalink = $this->get_permalink( $post_id );
 
         // Thumbnail
         $post_thumbnail = $this->get_thumbnail( $post_object );
 
         // Post title (and title attribute)
-        $post_title_attr = esc_attr( wp_strip_all_tags( $this->get_title( $post_object ) ) );
-        $post_title = $this->get_title( $post_object );
+        $post_title_attr = esc_attr( wp_strip_all_tags( $this->get_title( $post_object, $post_id ) ) );
+        $post_title = $this->get_title( $post_object, $post_id );
 
         if ( $this->options['shorten_title']['active'] ) {
 
@@ -160,12 +180,12 @@ class WPP_Output {
               ? $this->options['shorten_title']['length']
               : 25;
 
-            $post_title = WPP_Helper::truncate( $post_title, $length, $this->options['shorten_title']['words'] );
+            $post_title = WPP_Helper::truncate( $post_title, $length, $this->options['shorten_title']['words'], $this->more );
 
         }
 
         // Post excerpt
-        $post_excerpt = $this->get_excerpt( $post_object );
+        $post_excerpt = $this->get_excerpt( $post_object, $post_id );
 
         // Post rating
         $post_rating = $this->get_rating( $post_object );
@@ -178,10 +198,10 @@ class WPP_Output {
         $post_date = $this->get_date( $post_object );
 
         // Post taxonomies
-        $post_taxonomies = $this->get_taxonomies( $post_object );
+        $post_taxonomies = $this->get_taxonomies( $post_id );
 
         // Post author
-        $post_author = $this->get_author( $post_object );
+        $post_author = $this->get_author( $post_object, $post_id );
 
         // Post views count
         $post_views = $this->get_pageviews( $post_object );
@@ -190,13 +210,13 @@ class WPP_Output {
         $post_comments = $this->get_comments( $post_object );
 
         // Post meta
-        $post_meta = join( ' | ', $this->get_metadata( $post_object ) );
+        $post_meta = join( ' | ', $this->get_metadata( $post_object, $post_id ) );
 
         // Build custom HTML output
         if ( $this->options['markup']['custom_html'] ) {
 
             $data = array(
-                'id' => $post_object->id,
+                'id' => $post_id,
                 'title' => '<a href="' . $permalink . '" title="' . $post_title_attr . '" class="wpp-post-title" target="' . $this->admin_options['tools']['link']['target'] . '">' . $post_title . '</a>',
                 'summary' => $post_excerpt,
                 'stats' => $post_meta,
@@ -205,7 +225,7 @@ class WPP_Output {
                 'url' => $permalink,
                 'text_title' => $post_title_attr,
                 'taxonomy' => $post_taxonomies,
-                'author' => ( !empty($post_author) ) ? '<a href="' . get_author_posts_url( $post_object->uid ) . '">' . $post_author . '</a>' : '',
+                'author' => ( !empty($post_author) ) ? '<a href="' . get_author_posts_url( $post_object->uid != $post_id ? get_post_field( 'post_author', $post_id ) : $post_object->uid ) . '">' . $post_author . '</a>' : '',
                 'views' => ( $this->options['order_by'] == "views" || $this->options['order_by'] == "comments" ) ? number_format_i18n( $post_views ) : number_format_i18n( $post_views, 2 ),
                 'comments' => number_format_i18n( $post_comments ),
                 'date' => $post_date
@@ -219,7 +239,7 @@ class WPP_Output {
             $is_single = WPP_Helper::is_single();
 
             $post_thumbnail = ( !empty($post_thumbnail) )
-              ? "<a " . ( $is_single == $postID ? '' : "href=\"{$permalink}\"" ) . " title=\"{$post_title_attr}\" target=\"{$this->admin_options['tools']['link']['target']}\">{$post_thumbnail}</a>\n"
+              ? "<a " . ( $is_single == $post_id ? '' : "href=\"{$permalink}\"" ) . " title=\"{$post_title_attr}\" target=\"{$this->admin_options['tools']['link']['target']}\">{$post_thumbnail}</a>\n"
               : "";
 
             $post_excerpt = ( !empty($post_excerpt) )
@@ -236,18 +256,18 @@ class WPP_Output {
 
             $wpp_post_class = array();
 
-            if ( $is_single == $postID ) {
+            if ( $is_single == $post_id ) {
                 $wpp_post_class[] = "current";
             }
 
             // Allow themers / plugin developer
             // to add custom classes to each post
-            $wpp_post_class = apply_filters( "wpp_post_class", $wpp_post_class, $postID );
+            $wpp_post_class = apply_filters( "wpp_post_class", $wpp_post_class, $post_id );
 
             $post =
                 "<li" . ( ( is_array( $wpp_post_class ) && !empty( $wpp_post_class ) ) ? ' class="' . esc_attr( implode( " ", $wpp_post_class ) ) . '"' : '' ) . ">\n"
                 . $post_thumbnail
-                . "<a " . ( $is_single == $postID ? '' : "href=\"{$permalink}\"" ) . " title=\"{$post_title_attr}\" class=\"wpp-post-title\" target=\"{$this->admin_options['tools']['link']['target']}\">{$post_title}</a>\n"
+                . "<a " . ( $is_single == $post_id ? '' : "href=\"{$permalink}\"" ) . " title=\"{$post_title_attr}\" class=\"wpp-post-title\" target=\"{$this->admin_options['tools']['link']['target']}\">{$post_title}</a>\n"
                 . $post_excerpt
                 . $post_meta
                 . $post_rating
@@ -264,19 +284,11 @@ class WPP_Output {
      * 
      * @since   4.0.12
      * @access  private
-     * @param   object  $post_object
+     * @param   integer  $post_id
      * @return  string
      */
-    private function get_permalink( stdClass $post_object ) {
-
-        $translate = WPP_translate::get_instance();
-        $trid = $translate->get_object_id( $post_object->id, get_post_type( $post_object->id ) );
-
-        if ( $post_object->id != $trid ) {
-            return get_permalink( $trid );
-        }
-
-        return get_permalink( $post_object->id );
+    private function get_permalink( $post_id ) {
+        return get_permalink( $post_id );
     }
 
     /**
@@ -285,15 +297,13 @@ class WPP_Output {
      * @since	3.0.0
      * @access  private
      * @param   object   $post_object
+     * @param   integer  $post_id
      * @return  string
      */
-    private function get_title( stdClass $post_object ) {
+    private function get_title( stdClass $post_object, $post_id ) {
 
-        $translate = WPP_translate::get_instance();
-        $trid = $translate->get_object_id( $post_object->id, get_post_type( $post_object->id ) );
-
-        if ( $post_object->id != $trid ) {
-            $title = get_the_title( $trid );
+        if ( $post_object->id != $post_id ) {
+            $title = get_the_title( $post_id );
         }
         else {
             $title = $post_object->title;
@@ -529,10 +539,10 @@ class WPP_Output {
      *
      * @since	3.0.0
      * @access  private
-     * @param	object	$post_object
+     * @param   integer $post_id
      * @return	string
      */
-    private function get_taxonomies( stdClass $post_object ) {
+    private function get_taxonomies( $post_id ) {
 
         $post_tax = '';
 
@@ -547,15 +557,7 @@ class WPP_Output {
                 $taxonomy = $this->options['stats_tag']['taxonomy']['name'];
             }
 
-            $translate = WPP_translate::get_instance();
-            $trid = $translate->get_object_id( $post_object->id, get_post_type( $post_object->id ) );
-
-            if ( $post_object->id != $trid ) {
-                $terms = wp_get_post_terms( $trid, $taxonomy );
-            }
-            else {
-                $terms = wp_get_post_terms( $post_object->id, $taxonomy );
-            }
+            $terms = wp_get_post_terms( $post_id, $taxonomy );
 
             if ( !is_wp_error( $terms ) ) {
 
@@ -570,6 +572,8 @@ class WPP_Output {
                     && !empty( $terms )
                 ) {
 
+                    $taxonomy_separator = apply_filters( 'wpp_taxonomy_separator', ', ' );
+
                     foreach( $terms as $term ) {
 
                         $term_link = get_term_link( $term );
@@ -577,7 +581,7 @@ class WPP_Output {
                         if ( is_wp_error( $term_link ) )
                             continue;
 
-                        $post_tax .= "<a href=\"{$term_link}\" class=\"{$taxonomy} {$taxonomy}-{$term->term_id}\">{$term->name}</a>, ";
+                        $post_tax .= "<a href=\"{$term_link}\" class=\"{$taxonomy} {$taxonomy}-{$term->term_id}\">{$term->name}</a>" . $taxonomy_separator;
 
                     }
 
@@ -586,7 +590,7 @@ class WPP_Output {
             }
 
             if ( '' != $post_tax )
-                $post_tax = rtrim( $post_tax, ", " );
+                $post_tax = rtrim( $post_tax, $taxonomy_separator );
 
         }
 
@@ -600,12 +604,13 @@ class WPP_Output {
      * @since	3.0.0
      * @access  private
      * @param	object	$post_object
+     * @param   integer $post_id
      * @return	string
      */
-    private function get_author( stdClass $post_object ) {
+    private function get_author( stdClass $post_object, $post_id ) {
 
         $author = ( $this->options['stats_tag']['author'] )
-          ? get_the_author_meta( 'display_name', $post_object->uid )
+          ? get_the_author_meta( 'display_name', $post_object->uid != $post_id ? get_post_field( 'post_author', $post_id ) : $post_object->uid )
           : "";
 
         return $author;
@@ -618,19 +623,17 @@ class WPP_Output {
      * @since	3.0.0
      * @access  private
      * @param	object	$post_object
+     * @param   integer $post_id
      * @return	string
      */
-    private function get_excerpt( stdClass $post_object ) {
+    private function get_excerpt( stdClass $post_object, $post_id ) {
 
         $excerpt = '';
 
         if ( $this->options['post-excerpt']['active'] ) {
 
-            $translate = WPP_translate::get_instance();
-            $trid = $translate->get_object_id( $post_object->id, get_post_type( $post_object->id ) );
-
-            if ( $post_object->id != $trid ) {
-                $the_post = get_post( $trid );
+            if ( $post_object->id != $post_id ) {
+                $the_post = get_post( $post_id );
 
                 $excerpt = ( empty($the_post->post_excerpt) )
                   ? $the_post->post_content
@@ -672,7 +675,7 @@ class WPP_Output {
         // Balance tags, if needed
         if ( '' !== $excerpt ) {
 
-            $excerpt = WPP_helper::truncate( $excerpt, $this->options['post-excerpt']['length'], $this->options['post-excerpt']['words'] );
+            $excerpt = WPP_helper::truncate( $excerpt, $this->options['post-excerpt']['length'], $this->options['post-excerpt']['words'], $this->more );
 
             if ( $this->options['post-excerpt']['keep_format'] )
                 $excerpt = force_balance_tags( $excerpt );
@@ -708,9 +711,10 @@ class WPP_Output {
      * @since	3.0.0
      * @access  private
      * @param	object	$post_object
+     * @param   integer $post_id
      * @return	array
      */
-    private function get_metadata( stdClass $post_object ) {
+    private function get_metadata( stdClass $post_object, $post_id ) {
 
         $stats = array();
 
@@ -760,8 +764,8 @@ class WPP_Output {
 
         // author
         if ( $this->options['stats_tag']['author'] ) {
-            $author = $this->get_author( $post_object );
-            $display_name = '<a href="' . get_author_posts_url( $post_object->uid ) . '">' . $author . '</a>';
+            $author = $this->get_author( $post_object, $post_id );
+            $display_name = '<a href="' . get_author_posts_url( $post_object->uid != $post_id ? get_post_field( 'post_author', $post_id ) : $post_object->uid ) . '">' . $author . '</a>';
             $stats[] = '<span class="wpp-author">' . sprintf(__('by %s', 'wordpress-popular-posts'), $display_name).'</span>';
         }
 
@@ -774,7 +778,7 @@ class WPP_Output {
         // taxonomy
         if ( $this->options['stats_tag']['category'] ) {
 
-            $post_tax = $this->get_taxonomies( $post_object );
+            $post_tax = $this->get_taxonomies( $post_id );
 
             if ( $post_tax != '' ) {
                 $stats[] = '<span class="wpp-category">' . sprintf( __('under %s', 'wordpress-popular-posts'), $post_tax ) . '</span>';
@@ -895,7 +899,7 @@ class WPP_Output {
             $string = str_replace( "{date}", $data['date'], $string );
         }
 
-        return $string;
+        return apply_filters( "wpp_parse_custom_content_tags", $string, $data['id'] );
 
     }
 

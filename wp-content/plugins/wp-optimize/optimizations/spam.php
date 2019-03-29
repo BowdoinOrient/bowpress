@@ -29,6 +29,69 @@ class WP_Optimization_spam extends WP_Optimization {
 	private $found_trash_count;
 
 	/**
+	 * Prepare data for preview widget.
+	 *
+	 * @param array $params
+	 *
+	 * @return array
+	 */
+	public function preview($params) {
+
+		// get clicked comment type link.
+		$type = isset($params['type']) && 'spam' == $params['type'] ? 'spam' : 'trash';
+
+		$retention_subquery = '';
+
+		if ('true' == $this->retention_enabled) {
+			$retention_subquery = ' and comment_date < NOW() - INTERVAL ' . $this->retention_period . ' WEEK';
+		}
+
+		// get data requested for preview.
+		$sql = $this->wpdb->prepare(
+			"SELECT comment_ID, comment_author, SUBSTR(comment_content, 1, 128) AS comment_content FROM".
+			" `" . $this->wpdb->comments . "`".
+			" WHERE comment_approved = '{$type}'".
+			$retention_subquery.
+			" ORDER BY `comment_ID` LIMIT %d, %d;",
+			array(
+				$params['offset'],
+				$params['limit'],
+			)
+		);
+
+		$posts = $this->wpdb->get_results($sql, ARRAY_A);
+
+		// fix empty revision titles.
+		if (!empty($posts)) {
+			foreach ($posts as $key => $post) {
+				$posts[$key]['post_title'] = array(
+					'text' => '' == $post['post_title'] ? '('.__('no title', 'wp-optimize').')' : $post['post_title'],
+					'url' => get_edit_post_link($post['ID']),
+				);
+			}
+		}
+
+		// get total count comments for optimization.
+		$sql = "SELECT COUNT(*) FROM `" . $this->wpdb->comments . "` WHERE comment_approved = '{$type}' ".$retention_subquery.";";
+
+		$total = $this->wpdb->get_var($sql);
+
+		return array(
+			'id_key' => 'comment_ID',
+			'columns' => array(
+				'comment_ID' => __('ID', 'wp-optimize'),
+				'comment_author' => __('Author', 'wp-optimize'),
+				'comment_content' => __('Comment', 'wp-optimize'),
+			),
+			'offset' => $params['offset'],
+			'limit' => $params['limit'],
+			'total' => $total,
+			'data' => $this->htmlentities_array($posts, array('comment_ID')),
+			'message' => $total > 0 ? '' : __('No spam or trashed comments found', 'wp-optimize'),
+		);
+	}
+
+	/**
 	 * Do actions before optimize() function.
 	 */
 	public function before_optimize() {
@@ -84,6 +147,11 @@ class WP_Optimization_spam extends WP_Optimization {
 			$clean .= ' and c.comment_date < NOW() - INTERVAL ' . $this->retention_period . ' WEEK';
 		}
 
+		// if posted ids in params, then remove only selected items. used by preview widget.
+		if (isset($this->data['ids'])) {
+			$clean .= ' AND c.comment_ID in ('.join(',', $this->data['ids']).')';
+		}
+
 		$clean .= ';';
 		return $this->query($clean);
 	}
@@ -102,13 +170,26 @@ class WP_Optimization_spam extends WP_Optimization {
 	public function after_get_info() {
 
 		if ($this->found_spam_count > 0) {
-			$message = sprintf(_n('%s spam comment found', '%s spam comments found', $this->found_spam_count, 'wp-optimize'), number_format_i18n($this->found_spam_count)).' | <a id="wp-optimize-edit-comments-spam" href="'.admin_url('edit-comments.php?comment_status=spam').'">'.' '.__('Review', 'wp-optimize').'</a>';
+			$message = sprintf(_n('%s spam comment found', '%s spam comments found', $this->found_spam_count, 'wp-optimize'), number_format_i18n($this->found_spam_count));
+
+			// if current version is not premium and Preview feature not supported then
+			// add to message Review link to comments page
+			if (!WP_Optimize::is_premium()) {
+				$message .= ' | <a id="wp-optimize-edit-comments-spam" href="'.admin_url('edit-comments.php?comment_status=spam').'">'.' '.__('Review', 'wp-optimize').'</a>';
+			}
+
 		} else {
 			$message = __('No spam comments found', 'wp-optimize');
 		}
 
 		if ($this->found_trash_count > 0) {
-			$message1 = sprintf(_n('%s trashed comment found', '%s trashed comments found', $this->found_trash_count, 'wp-optimize'), number_format_i18n($this->found_trash_count)).' | <a id="wp-optimize-edit-comments-trash" href="'.admin_url('edit-comments.php?comment_status=trash').'">'.' '.__('Review', 'wp-optimize').'</a>';
+			$message1 = sprintf(_n('%s trashed comment found', '%s trashed comments found', $this->found_trash_count, 'wp-optimize'), number_format_i18n($this->found_trash_count));
+
+			// if current version is not premium and Preview feature not supported then
+			// add to message Review link to comments page
+			if (!WP_Optimize::is_premium()) {
+				$message1 .= ' | <a id="wp-optimize-edit-comments-trash" href="'.admin_url('edit-comments.php?comment_status=trash').'">'.' '.__('Review', 'wp-optimize').'</a>';
+			}
 		} else {
 			$message1 = __('No trashed comments found', 'wp-optimize');
 		}
@@ -118,6 +199,16 @@ class WP_Optimization_spam extends WP_Optimization {
 
 			$message .= ' '.$blogs_count_text;
 			$message1 .= ' '.$blogs_count_text;
+		}
+
+		// add preview link to message.
+		if ($this->found_spam_count > 0) {
+			$message = $this->get_preview_link($message, array('data-type' => 'spam'));
+		}
+
+		// add preview link to message.
+		if ($this->found_trash_count > 0) {
+			$message1 = $this->get_preview_link($message1, array('data-type' => 'trash'));
 		}
 
 		$this->register_output($message);

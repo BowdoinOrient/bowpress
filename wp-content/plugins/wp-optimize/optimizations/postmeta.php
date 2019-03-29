@@ -8,7 +8,52 @@ class WP_Optimization_postmeta extends WP_Optimization {
 
 	public $available_for_auto = false;
 
+	public $available_for_saving = true;
+
 	public $auto_default = false;
+
+	/**
+	 * Prepare data for preview widget.
+	 *
+	 * @param array $params
+	 *
+	 * @return array
+	 */
+	public function preview($params) {
+		// get data requested for preview.
+		$sql = $this->wpdb->prepare(
+			"SELECT pm.* FROM `" . $this->wpdb->postmeta . "` pm".
+			" LEFT JOIN `" . $this->wpdb->posts . "` wp ON wp.ID = pm.post_id".
+			" WHERE wp.ID IS NULL".
+			" ORDER BY pm.meta_id LIMIT %d, %d;",
+			array(
+				$params['offset'],
+				$params['limit'],
+			)
+		);
+
+		$posts = $this->wpdb->get_results($sql, ARRAY_A);
+
+		// get total count post meta for optimization.
+		$sql = "SELECT COUNT(*) FROM `" . $this->wpdb->postmeta . "` pm LEFT JOIN `" . $this->wpdb->posts . "` wp ON wp.ID = pm.post_id WHERE wp.ID IS NULL;";
+
+		$total = $this->wpdb->get_var($sql);
+
+		return array(
+			'id_key' => 'meta_id',
+			'columns' => array(
+				'meta_id' => __('ID', 'wp-optimize'),
+				'post_id' => __('Post ID', 'wp-optimize'),
+				'meta_key' => __('Meta Key', 'wp-optimize'),
+				'meta_value' => __('Meta Value', 'wp-optimize'),
+			),
+			'offset' => $params['offset'],
+			'limit' => $params['limit'],
+			'total' => $total,
+			'data' => $this->htmlentities_array($posts, array('ID')),
+			'message' => $total > 0 ? '' : __('No orphaned post meta data in your database', 'wp-optimize'),
+		);
+	}
 
 	/**
 	 * Do actions after optimize() function.
@@ -28,7 +73,14 @@ class WP_Optimization_postmeta extends WP_Optimization {
 	 * Do optimization.
 	 */
 	public function optimize() {
-		$clean = "DELETE pm FROM `" . $this->wpdb->postmeta . "` pm LEFT JOIN `" . $this->wpdb->posts . "` wp ON wp.ID = pm.post_id WHERE wp.ID IS NULL;";
+		$clean = "DELETE pm FROM `" . $this->wpdb->postmeta . "` pm LEFT JOIN `" . $this->wpdb->posts . "` wp ON wp.ID = pm.post_id WHERE wp.ID IS NULL";
+
+		// if posted ids in params, then remove only selected items. used by preview widget.
+		if (isset($this->data['ids'])) {
+			$clean .= ' AND pm.meta_id in ('.join(',', $this->data['ids']).')';
+		}
+
+		$clean .= ";";
 
 		$postmeta = $this->query($clean);
 		$this->processed_count += $postmeta;
@@ -46,6 +98,11 @@ class WP_Optimization_postmeta extends WP_Optimization {
 
 		if ($this->is_multisite_mode()) {
 			$message .= ' ' . sprintf(_n('across %s site', 'across %s sites', count($this->blogs_ids), 'wp-optimize'), count($this->blogs_ids));
+		}
+
+		// add preview link to message.
+		if ($this->found_count > 0) {
+			$message = $this->get_preview_link($message);
 		}
 
 		$this->register_output($message);

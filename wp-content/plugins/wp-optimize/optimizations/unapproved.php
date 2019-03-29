@@ -15,6 +15,66 @@ class WP_Optimization_unapproved extends WP_Optimization {
 	public $ui_sort_order = 4000;
 
 	/**
+	 * Prepare data for preview widget.
+	 *
+	 * @param array $params
+	 *
+	 * @return array
+	 */
+	public function preview($params) {
+
+		$retention_subquery = '';
+
+		if ('true' == $this->retention_enabled) {
+			$retention_subquery = ' and comment_date < NOW() - INTERVAL ' . $this->retention_period . ' WEEK';
+		}
+
+		// get data requested for preview.
+		$sql = $this->wpdb->prepare(
+			"SELECT comment_ID, comment_author, comment_content".
+			" FROM `" . $this->wpdb->comments . "`".
+			" WHERE comment_approved = '0'".
+			$retention_subquery.
+			" ORDER BY `comment_ID` LIMIT %d, %d",
+			array(
+				$params['offset'],
+				$params['limit'],
+			)
+		);
+
+		$posts = $this->wpdb->get_results($sql, ARRAY_A);
+
+		// fix empty revision titles.
+		if (!empty($posts)) {
+			foreach ($posts as $key => $post) {
+				$posts[$key]['post_title'] = array(
+					'text' => '' == $post['post_title'] ? '('.__('no title', 'wp-optimize').')' : $post['post_title'],
+					'url' => get_edit_post_link($post['ID']),
+				);
+			}
+		}
+
+		// get total count comments for optimization.
+		$sql = "SELECT COUNT(*) FROM `" . $this->wpdb->comments . "` WHERE comment_approved = '0' ".$retention_subquery.";";
+
+		$total = $this->wpdb->get_var($sql);
+
+		return array(
+			'id_key' => 'comment_ID',
+			'columns' => array(
+				'comment_ID' => __('ID', 'wp-optimize'),
+				'comment_author' => __('Author', 'wp-optimize'),
+				'comment_content' => __('Date', 'wp-optimize'),
+			),
+			'offset' => $params['offset'],
+			'limit' => $params['limit'],
+			'total' => $total,
+			'data' => $this->htmlentities_array($posts, array('comment_ID')),
+			'message' => $total > 0 ? '' : __('No unapproved comments found', 'wp-optimize'),
+		);
+	}
+
+	/**
 	 * Do actions after optimize() function.
 	 */
 	public function after_optimize() {
@@ -45,6 +105,11 @@ class WP_Optimization_unapproved extends WP_Optimization {
 			$clean .= ' and c.comment_date < NOW() - INTERVAL ' . $this->retention_period . ' WEEK';
 		}
 
+		// if posted ids in params, then remove only selected items. used by preview widget.
+		if (isset($this->data['ids'])) {
+			$clean .= ' AND c.comment_ID in ('.join(',', $this->data['ids']).')';
+		}
+
 		$clean .= ';';
 
 		$comments = $this->query($clean);
@@ -63,6 +128,11 @@ class WP_Optimization_unapproved extends WP_Optimization {
 
 		if ($this->is_multisite_mode()) {
 			$message .= ' ' . sprintf(_n('across %s site', 'across %s sites', count($this->blogs_ids), 'wp-optimize'), count($this->blogs_ids));
+		}
+
+		// add preview link for output.
+		if (0 != $this->found_count && null != $this->found_count) {
+			$message = $this->get_preview_link($message);
 		}
 
 		$this->register_output($message);
