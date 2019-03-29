@@ -18,11 +18,11 @@ $chevronLeft = '<svg version="1.1" id="Chevron_left" xmlns="http://www.w3.org/20
 <!-- Taxonomy box: category and series -->
 <div class="single__taxonomy">
     <p class="single__taxonomy__section"><?php the_category(' ', 'single'); ?></p>
-    <?php if(get_the_terms($post->ID, 'series')): ?>
+    <?php if (get_the_terms($post->ID, 'series')): ?>
     <p class="single__taxonomy__series">
-        <span class="previous"><?php previous_post_link( '%link', $chevronLeft, TRUE, ' ', 'series' ); ?></span>
-        <span class="link"><?php the_terms( $post->ID, 'series', '', ' / ' ); ?></span>
-        <span class="next"><?php next_post_link( '%link', $chevronRight, TRUE, ' ', 'series' ); ?></span>
+        <span class="previous"><?php previous_post_link('%link', $chevronLeft, true, ' ', 'series'); ?></span>
+        <span class="link"><?php the_terms($post->ID, 'series', '', ' / '); ?></span>
+        <span class="next"><?php next_post_link('%link', $chevronRight, true, ' ', 'series'); ?></span>
     </p>
     <?php endif; ?>
 </div>

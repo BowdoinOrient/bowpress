@@ -7,4 +7,4 @@ if (have_posts()) :
          the_content();
    endwhile;
 endif;
-get_footer(); 
+get_footer();

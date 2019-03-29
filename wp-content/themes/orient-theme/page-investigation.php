@@ -3,62 +3,62 @@
 $tip_success = false;
 $tip_error = false;
 
-if($_POST) {
-	// validate post array
-	if(sizeof($_POST) > 2) {
-		return;
-	} 
+if ($_POST) {
+    // validate post array
+    if (sizeof($_POST) > 2) {
+        return;
+    }
 
-	// validate recaptcha
+    // validate recaptcha
 
-	$url = 'https://www.google.com/recaptcha/api/siteverify';
-	$data = array('secret' => $recaptcha_secret,
-				  'response' => $_POST['g-recaptcha-response'],
-				  'remoteip' => $_SERVER['REMOTE_ADDR']);
+    $url = 'https://www.google.com/recaptcha/api/siteverify';
+    $data = array('secret' => $recaptcha_secret,
+                  'response' => $_POST['g-recaptcha-response'],
+                  'remoteip' => $_SERVER['REMOTE_ADDR']);
 
-	// use key 'http' even if you send the request to https://...
-	$options = array(
-		'http' => array(
-			'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-			'method'  => 'POST',
-			'content' => http_build_query($data)
-		)
-	);
-	$context  = stream_context_create($options);
-	$result = file_get_contents($url, false, $context);
+    // use key 'http' even if you send the request to https://...
+    $options = array(
+        'http' => array(
+            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'POST',
+            'content' => http_build_query($data)
+        )
+    );
+    $context  = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
 
-	$result = json_decode($result, true);
+    $result = json_decode($result, true);
 
-	if($result["success"]) {
-		// send slack message
-		$url = $slack_tipline_url; // Variable defined in gitignored.php
-		$data = array('payload' => "{\"text\": \"" . $_POST["message"] . "\"}");
+    if ($result["success"]) {
+        // send slack message
+        $url = $slack_tipline_url; // Variable defined in gitignored.php
+        $data = array('payload' => "{\"text\": \"" . $_POST["message"] . "\"}");
 
-		// use key 'http' even if you send the request to https://...
-		$options = array(
-			'http' => array(
-				'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-				'method'  => 'POST',
-				'content' => http_build_query($data)
-			)
-		);
-		$context  = stream_context_create($options);
-		file_get_contents($url, false, $context);
-		$tip_success = true;
-	} else {
-		$tip_error = true;
-	}
+        // use key 'http' even if you send the request to https://...
+        $options = array(
+            'http' => array(
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'POST',
+                'content' => http_build_query($data)
+            )
+        );
+        $context  = stream_context_create($options);
+        file_get_contents($url, false, $context);
+        $tip_success = true;
+    } else {
+        $tip_error = true;
+    }
 }
 get_header();
 if (have_posts()) :
-	while (have_posts()) :
-		the_post();
-	?>
+    while (have_posts()) :
+        the_post();
+    ?>
 
 	<?php
-		// If this isn't the home page, do things a little differently
-		if(!is_in_front_page_tree()):
-	?>
+        // If this isn't the home page, do things a little differently
+        if (!is_in_front_page_tree()):
+    ?>
 
 		<header class="page-header">
 			<h1><?php the_title() ?></h1>
@@ -68,21 +68,21 @@ if (have_posts()) :
 
 	<div class="content">
 		<aside>
-			<?php if(get_field("sidebar")) {
-				the_field("sidebar");
-			} ?>
+			<?php if (get_field("sidebar")) {
+        the_field("sidebar");
+    } ?>
 		</aside>
 
 		<article>
-			<?php if($tip_success): ?>
+			<?php if ($tip_success): ?>
 				<p class="tip-success-message"><strong>Your tip has been successfully submitted.</strong></p>
 			<?php endif; ?>
 			
-			<?php if($tip_error): ?>
+			<?php if ($tip_error): ?>
 				<p class="tip-success-message"><strong>Please fill out the captcha properly.</strong></p>
 			<?php endif; ?>
 
-			<?php if($tip_error): ?>
+			<?php if ($tip_error): ?>
 				<p class="tip-success-message"><strong>Please fill out the captcha properly.</strong></p>
 			<?php endif; ?>
 
@@ -103,6 +103,6 @@ if (have_posts()) :
     <script src='https://www.google.com/recaptcha/api.js'></script>
 
 <?php
-	endwhile;
+    endwhile;
 endif;
 get_footer();
