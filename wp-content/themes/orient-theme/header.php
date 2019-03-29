@@ -157,7 +157,7 @@ our nameplate on non-home pages, and the search toggle link. -->
 		<?php endif; ?>
 	</div>
 
-	<?php if(!is_in_front_page_tree()) : ?>
+	<?php if (!is_in_front_page_tree()) : ?>
 	<div class="top-bar__nameplate top-bar__component">
 		<a href="/"><img src="<?php echo get_stylesheet_directory_uri(); ?>/img/nameplate.svg" alt="">
 			<span class="visually-hidden">The Bowdoin Orient - Home</span>
@@ -305,33 +305,33 @@ within the page-wrap div. -->
 	<!-- If there are alerts, they will be displayed here. -->
 	<?php
 
-	if (is_front_page()) {
-		$args = array(
-			'post_type' => 'alert',
-			// @TODO: Add date stuff
-		);
+    if (is_front_page()) {
+        $args = array(
+            'post_type' => 'alert',
+            // @TODO: Add date stuff
+        );
 
-		// The Query
-		$query1 = new WP_Query( $args );
+        // The Query
+        $query1 = new WP_Query($args);
 
-		if ( $query1->have_posts() ) {
-			echo "<div class=\"alerts\">";
-			// The Loop
-			while ( $query1->have_posts() ) {
-				$query1->the_post();
-				echo "<div class=\"alert alert-" . get_field("color", $post->ID) . "\">";
-				echo "<h1>";
-				the_title();
-				echo "</h1>";
-				the_content();
-				echo "</div>";
-			}
-			echo "</div>";
+        if ($query1->have_posts()) {
+            echo "<div class=\"alerts\">";
+            // The Loop
+            while ($query1->have_posts()) {
+                $query1->the_post();
+                echo "<div class=\"alert alert-" . get_field("color", $post->ID) . "\">";
+                echo "<h1>";
+                the_title();
+                echo "</h1>";
+                the_content();
+                echo "</div>";
+            }
+            echo "</div>";
 
-			wp_reset_postdata();
-		}
-	}
-	?>
+            wp_reset_postdata();
+        }
+    }
+    ?>
 
 	<div class="alert alert-red small-screen-alert">
 		<h1>Note about Unsupported Devices:</h1>

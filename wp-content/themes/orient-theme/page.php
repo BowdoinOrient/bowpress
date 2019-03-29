@@ -2,14 +2,14 @@
 
 get_header();
 if (have_posts()) :
-	while (have_posts()) :
-		the_post();
-	?>
+    while (have_posts()) :
+        the_post();
+    ?>
 
 	<?php
-		// If this isn't the home page, do things a little differently
-		if(!is_in_front_page_tree()):
-	?>
+        // If this isn't the home page, do things a little differently
+        if (!is_in_front_page_tree()):
+    ?>
 
 		<header class="page-header">
 			<h1><?php the_title() ?></h1>
@@ -19,9 +19,9 @@ if (have_posts()) :
 
 	<div class="content">
 		<aside>
-			<?php if(get_field("sidebar")) {
-				the_field("sidebar");
-			} ?>
+			<?php if (get_field("sidebar")) {
+        the_field("sidebar");
+    } ?>
 		</aside>
 
 		<article>
@@ -30,6 +30,6 @@ if (have_posts()) :
 	</div>
 
 <?php
-	endwhile;
+    endwhile;
 endif;
 get_footer();

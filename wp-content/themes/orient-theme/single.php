@@ -3,19 +3,18 @@
 get_header();
 
 if (have_posts()) {
-	while (have_posts()) {
-		the_post();
+    while (have_posts()) {
+        the_post();
 
-		$chevronRight = '<svg version="1.1" id="Chevron_right" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve" style="width: 1.5em;"><path fill="currentcolor" d="M9.163,4.516c0.418,0.408,4.502,4.695,4.502,4.695C13.888,9.43,14,9.715,14,10s-0.112,0.57-0.335,0.787 c0,0-4.084,4.289-4.502,4.695c-0.418,0.408-1.17,0.436-1.615,0c-0.446-0.434-0.481-1.041,0-1.574L11.295,10L7.548,6.092 c-0.481-0.533-0.446-1.141,0-1.576C7.993,4.08,8.745,4.107,9.163,4.516z"/></svg>';
-		$chevronLeft = '<svg version="1.1" id="Chevron_left" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve" style="width: 1.5em;"><path fill="currentcolor" d="M12.452,4.516c0.446,0.436,0.481,1.043,0,1.576L8.705,10l3.747,3.908c0.481,0.533,0.446,1.141,0,1.574 c-0.445,0.436-1.197,0.408-1.615,0c-0.418-0.406-4.502-4.695-4.502-4.695C6.112,10.57,6,10.285,6,10s0.112-0.57,0.335-0.789 c0,0,4.084-4.287,4.502-4.695C11.255,4.107,12.007,4.08,12.452,4.516z"/></svg>';
-?>
+        $chevronRight = '<svg version="1.1" id="Chevron_right" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve" style="width: 1.5em;"><path fill="currentcolor" d="M9.163,4.516c0.418,0.408,4.502,4.695,4.502,4.695C13.888,9.43,14,9.715,14,10s-0.112,0.57-0.335,0.787 c0,0-4.084,4.289-4.502,4.695c-0.418,0.408-1.17,0.436-1.615,0c-0.446-0.434-0.481-1.041,0-1.574L11.295,10L7.548,6.092 c-0.481-0.533-0.446-1.141,0-1.576C7.993,4.08,8.745,4.107,9.163,4.516z"/></svg>';
+        $chevronLeft = '<svg version="1.1" id="Chevron_left" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve" style="width: 1.5em;"><path fill="currentcolor" d="M12.452,4.516c0.446,0.436,0.481,1.043,0,1.576L8.705,10l3.747,3.908c0.481,0.533,0.446,1.141,0,1.574 c-0.445,0.436-1.197,0.408-1.615,0c-0.418-0.406-4.502-4.695-4.502-4.695C6.112,10.57,6,10.285,6,10s0.112-0.57,0.335-0.789 c0,0,4.084-4.287,4.502-4.695C11.255,4.107,12.007,4.08,12.452,4.516z"/></svg>'; ?>
 
-<?php if(isset($_GET['random'])): ?>
+<?php if (isset($_GET['random'])): ?>
 	<div class="random-box">
 		<h1>Not random enough for you?</h1>
 		<a href="/random" class="button">Hit me again!</a>
 	</div>
-<?php endif;?>
+<?php endif; ?>
 
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
@@ -25,11 +24,11 @@ if (have_posts()) {
 		<!-- Taxonomy box: category and series -->
 		<div class="single__taxonomy">
 			<p class="single__taxonomy__section"><?php the_category(' ', 'single'); ?></p>
-			<?php if(get_the_terms($post->ID, 'series')): ?>
+			<?php if (get_the_terms($post->ID, 'series')): ?>
 			<p class="single__taxonomy__series">
-				<span class="previous"><?php previous_post_link( '%link', $chevronLeft, TRUE, ' ', 'series' ); ?></span>
-				<span class="link"><?php the_terms( $post->ID, 'series', '', ' / ' ); ?></span>
-				<span class="next"><?php next_post_link( '%link', $chevronRight, TRUE, ' ', 'series' ); ?></span>
+				<span class="previous"><?php previous_post_link('%link', $chevronLeft, true, ' ', 'series'); ?></span>
+				<span class="link"><?php the_terms($post->ID, 'series', '', ' / '); ?></span>
+				<span class="next"><?php next_post_link('%link', $chevronRight, true, ' ', 'series'); ?></span>
 			</p>
 			<?php endif; ?>
 		</div>
@@ -52,19 +51,18 @@ if (have_posts()) {
 		<p class="single__pubdate"><?php the_date(); ?></p>
 
 		<!-- Opinion of the author box -->
-		<?php if(get_field("opinion", $post->ID)): ?>
+		<?php if (get_field("opinion", $post->ID)): ?>
 			<div class="single__disclaimer"><img src="<?php echo get_stylesheet_directory_uri(); ?>/img/bubble.svg">This piece represents the opinion of the author<?php
-				// Pluralize authors if there's more than one author for the article
-				$iter = new CoAuthorsIterator();
-				$count = $iter->count();
-				if ($count > 1) {
-					echo "s";
-				}
-			?>.</div>
+                // Pluralize authors if there's more than one author for the article
+                $iter = new CoAuthorsIterator();
+        $count = $iter->count();
+        if ($count > 1) {
+            echo "s";
+        } ?>.</div>
 		<?php endif; ?>
 
 		<!-- Opinion of the editorial board box -->
-		<?php if(get_field("editorial", $post->ID)): ?>
+		<?php if (get_field("editorial", $post->ID)): ?>
 			<div class="single__disclaimer"><img src="<?php echo get_stylesheet_directory_uri(); ?>/img/megaphone.svg">This piece represents the opinion of the Bowdoin Orient Editorial Board.</div>
 		<?php endif; ?>
 
@@ -118,13 +116,13 @@ if (have_posts()) {
 		<h1 class="single__sidebar__heading">Most Popular</h1>
 		<div class="single__sidebar__popular">
 		<?php
-			$args = array(
-				'post_type' => 'post',
-				'limit' => 5,
-				'range' => 'weekly',
-			);
-			wpp_get_mostpopular($args)
-		?>
+            $args = array(
+                'post_type' => 'post',
+                'limit' => 5,
+                'range' => 'weekly',
+            );
+        wpp_get_mostpopular($args)
+        ?>
 		</div>
 
 	</aside>
@@ -138,58 +136,57 @@ if (have_posts()) {
 		<?php echo home_render("A-banner"); ?>
 
 			<?php
-				$tag_ids = wp_get_post_tags( $post->ID, array( 'fields' => 'ids' ) );
-				$pubdate = get_the_date('r', $post->ID);
-				$category = get_the_category($post->ID);
-				$category = $category[0];
-				$id = $post->ID;
+                $tag_ids = wp_get_post_tags($post->ID, array( 'fields' => 'ids' ));
+        $pubdate = get_the_date('r', $post->ID);
+        $category = get_the_category($post->ID);
+        $category = $category[0];
+        $id = $post->ID;
 
-				$query_args = array(
-					'post_type' => 'post',
-					'post_status' => 'publish',
-					'posts_per_page' => 4,
-					'orderby' => 'date',
-					'order' => 'DESC',
-					'post__not_in' => array($id),
-					'date_query' => array(
-						array(
-							'before' => $pubdate
-						)
-					),
-				);
+        $query_args = array(
+                    'post_type' => 'post',
+                    'post_status' => 'publish',
+                    'posts_per_page' => 4,
+                    'orderby' => 'date',
+                    'order' => 'DESC',
+                    'post__not_in' => array($id),
+                    'date_query' => array(
+                        array(
+                            'before' => $pubdate
+                        )
+                    ),
+                );
 
-				$tag_query_args = $query_args;
-				$tag_query_args['tag__in'] = $tag_ids;
+        $tag_query_args = $query_args;
+        $tag_query_args['tag__in'] = $tag_ids;
 
-				$cat_query_args = $query_args;
-				$cat_query_args['cat'] = $category->term_id;
+        $cat_query_args = $query_args;
+        $cat_query_args['cat'] = $category->term_id;
 
-				wp_reset_query();
-				$tag_query = new WP_Query($tag_query_args);
+        wp_reset_query();
+        $tag_query = new WP_Query($tag_query_args);
 
-				if (count($tag__ids) > 0 && $tag_query->post_count >= 4) {
-					echo "tags";
-					$related_query = $tag_query;
-					$category_override = false;
-				} else {
-					$related_query = new WP_Query($cat_query_args);
-					$category_override = true;
-				}
+        if (count($tag__ids) > 0 && $tag_query->post_count >= 4) {
+            echo "tags";
+            $related_query = $tag_query;
+            $category_override = false;
+        } else {
+            $related_query = new WP_Query($cat_query_args);
+            $category_override = true;
+        }
 
-				if ($related_query->have_posts() && $related_query->post_count >= 4):
-					echo "<h1 class=\"related-article-header\">";
-					echo $category_override ? "More from $category->name:" : "Related Articles";
-					echo "</h1><div class=\"related-articles\">";
-					while ($related_query->have_posts()):
-						$related_query->the_post();
-				?>
+        if ($related_query->have_posts() && $related_query->post_count >= 4):
+                    echo "<h1 class=\"related-article-header\">";
+        echo $category_override ? "More from $category->name:" : "Related Articles";
+        echo "</h1><div class=\"related-articles\">";
+        while ($related_query->have_posts()):
+                        $related_query->the_post(); ?>
 
 				<article class="module module-3 related-article">
 					<div class="text">
 						<h1 class="article-title"><a href="<?php the_permalink() ?>"><?php the_title() ?></a></h1>
 						<?php author_and_date(); ?>
 
-						<?php if(!has_post_thumbnail()) : ?>
+						<?php if (!has_post_thumbnail()) : ?>
 							<p class="excerpt"><?php the_advanced_excerpt(); ?></p>
 						<?php endif; ?>
 					</div>
@@ -205,11 +202,10 @@ if (have_posts()) {
 				</article>
 
 				<?php
-					endwhile;
-					wp_reset_postdata();
-					echo "</div>";
-				endif;
-			?>
+                    endwhile;
+        wp_reset_postdata();
+        echo "</div>";
+        endif; ?>
 
 		<div class="callout">
 			<p class="callout__header">Sign up for our weekly newsletter.</p>
@@ -241,8 +237,7 @@ if (have_posts()) {
 </article>
 
 <?php
-
-} // while have posts
+    } // while have posts
 } // if have posts
 
 get_footer();
