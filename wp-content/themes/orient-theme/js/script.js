@@ -101,7 +101,7 @@ function unHoverSectionMenu(e) {
 
 jQuery(document).ready(function() {
     jQuery('.carousel').slick({
-      dots: true,
+      dots: false,
       adaptiveHeight: true,
     });
 });

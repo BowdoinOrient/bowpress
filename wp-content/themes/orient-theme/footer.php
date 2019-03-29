@@ -67,13 +67,13 @@
 <!-- Included Scripts -->
 
 <!-- Slick - Image (and other content) carousel library -->
-<script async type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
 
 <!-- EQCSS - Element Queries for the home page -->
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/eqcss/1.2.1/EQCSS.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/eqcss/1.2.1/EQCSS.min.js"></script>
 
 <!-- Custom JavaScript -->
-<script async src="<?php echo cachebusted_js(); ?>"></script>
+<script src="<?php echo cachebusted_js(); ?>"></script>
 
 </body>
 </html>
