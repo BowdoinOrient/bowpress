@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * This code has been automatically generated. Please don't edit it.
+ */
+
 if(function_exists("register_field_group"))
 {
 	register_field_group(array (
@@ -97,28 +101,6 @@ if(function_exists("register_field_group"))
 				'allow_null' => 0,
 				'multiple' => 0,
 			),
-/*
-			array (
-				'key' => 'field_584b63f3f495d',
-				'label' => 'Start Date',
-				'name' => 'start_date',
-				'type' => 'date_picker',
-				'required' => 1,
-				'date_format' => 'yymmdd',
-				'display_format' => 'dd/mm/yy',
-				'first_day' => 0,
-			),
-			array (
-				'key' => 'field_584b6419f495e',
-				'label' => 'End Date',
-				'name' => 'end_date',
-				'type' => 'date_picker',
-				'required' => 1,
-				'date_format' => 'yymmdd',
-				'display_format' => 'dd/mm/yy',
-				'first_day' => 0,
-			),
-*/
 		),
 		'location' => array (
 			array (

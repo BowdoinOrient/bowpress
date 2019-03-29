@@ -62,10 +62,16 @@ function get_photo_credit($id) {
 	}
 }
 
+/**
+ * Builds up a shortcode string like "[gallery ids=1,2,3,4,5]" but all of the
+ * ids are the ids of the photos taken by the currently queried for user.
+ * 
+ * This should be used when the currently queried object is a Co-Authors Plus
+ * user who has taken photos.
+ */
 function get_photos_by_author($should_echo = true) {
 	global $wp_query;
 	$curauth = $wp_query->get_queried_object();
-	// print_r($curauth->ID);
 
 	$posts = get_posts(array(
 		'numberposts'	=> -1,
@@ -84,14 +90,11 @@ function get_photos_by_author($should_echo = true) {
 		),
 	));
 
-	// print_r($posts);
-
 	wp_reset_postdata();
 
 	$code = "[gallery ids=";
 
 	$id_array = array_map(function($value) {
-		// return print_r(get_fields($value->ID), true);
 		return $value->ID;
 	}, $posts);
 
@@ -103,18 +106,27 @@ function get_photos_by_author($should_echo = true) {
 
 	if($should_echo) {
 		echo do_shortcode($code);
-		// echo '<pre>' . $code . '</pre>';
 	}
 
 	return sizeof($posts);
 }
 
+/**
+ * Completely replaces the thing that the WordPress editor places in the
+ * text box when an image is inserted.
+ * 
+ * Instead of a nice little preview of the image, this makes it so a shortcode
+ * gets inserted instead.
+ */
 function html5_insert_image($html, $id, $caption, $title, $align, $url) {
 	return "[image id=$id align=normal]";
 }
 
 add_filter( 'image_send_to_editor', 'html5_insert_image', 10, 9 );
 
+/**
+ * Builds up the HTML outputted when an image shortcode is invoked.
+ */
 function image_shortcode($atts, $content = null) {
 	$id = $atts['id'];
 	$src  = wp_get_attachment_image_src( $id, 'full', false );
@@ -158,6 +170,9 @@ function image_shortcode($atts, $content = null) {
 
 add_shortcode( 'image', 'image_shortcode' );
 
+/**
+ * Same as above, but for gallery shortcodes.
+ */
 remove_shortcode('gallery');
 add_shortcode('gallery', 'gallery_code');
 

@@ -31,7 +31,7 @@ if($_POST) {
 
 	if($result["success"]) {
 		// send slack message
-		$url = $slack_tipline_url;
+		$url = $slack_tipline_url; // Variable defined in gitignored.php
 		$data = array('payload' => "{\"text\": \"" . $_POST["message"] . "\"}");
 
 		// use key 'http' even if you send the request to https://...

@@ -64,8 +64,8 @@ function disable_wp_emojicons() {
   remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
   remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
   remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
-
 }
+
 add_action( 'init', 'disable_wp_emojicons' );
 
 /**
@@ -123,8 +123,9 @@ function remove_some_nodes_from_admin_top_bar_menu( $wp_admin_bar ) {
 
 }
 
-add_action('admin_menu', 'dont_let_editors_do_some_stuff', 999);
-add_action('wp_before_admin_bar_render', 'dont_let_editors_do_other_stuff', 999);
+/**
+ * Forbid users with the "Editor" role from doing some things
+ */
 function dont_let_editors_do_some_stuff() {
 	if(in_array("editor", wp_get_current_user()->roles)) {
 		remove_menu_page( 'edit-comments.php' ); // Page for editing comments
@@ -146,6 +147,9 @@ function dont_let_editors_do_other_stuff() {
 	    	$wp_admin_bar->remove_menu('comments');
 	}
 }
+
+add_action('admin_menu', 'dont_let_editors_do_some_stuff', 999);
+add_action('wp_before_admin_bar_render', 'dont_let_editors_do_other_stuff', 999);
 
 /**
  * Make it so editors can't moderate comments
@@ -219,8 +223,8 @@ function display_orient_article_menu($menu_name) {
  * Fix photographer Co-Authors Plus pages so they don't 404
  */
 
-add_filter('template_redirect', 'my_404_override' );
-function my_404_override() {
+add_filter('template_redirect', 'fix_photographer_coauthors_pages' );
+function fix_photographer_coauthors_pages() {
     global $wp_query;
 
     // $title = str_replace("editor", "", wp_get_document_title());
@@ -399,7 +403,6 @@ add_theme_support( 'post-thumbnails' );
 set_post_thumbnail_size( 640, 480, array('center', 'center'));
 add_image_size( 'module', 640, 480, array('center', 'center'));
 
-include 'custom-fields.php';
 include 'ignored.php';
 
 flush_rewrite_rules();
