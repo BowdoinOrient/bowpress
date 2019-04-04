@@ -84,6 +84,15 @@ function change_paste_as_text($mceInit, $editor_id)
 }
 add_filter('tiny_mce_before_init', 'change_paste_as_text', 1, 2);
 
+/**
+ * Update CSS within Admin -- show Orient logo on login
+ */
+function admin_style() {
+  wp_enqueue_style('admin-styles', get_template_directory_uri().'/admin.css');
+}
+
+add_action('login_enqueue_scripts', 'admin_style');
+
 
 /**
  * Redefines the HTML structure for the Popular Posts plugin

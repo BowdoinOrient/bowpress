@@ -1,0 +1,8 @@
+body #login h1 a {
+  width: 100%;
+  background: url('https://bowdoinorient.com/wp-content/themes/orient-theme/img/nameplate.svg') center center / contain no-repeat;
+}
+
+#login {
+  width: 480px;
+}
