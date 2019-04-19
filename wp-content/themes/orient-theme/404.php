@@ -20,8 +20,8 @@ loadDoc();
 
 <div class="error-content">
 	<h1>404. <span></span></h1>
-	<p>We couldn't find what you're looking for. Try searching or following a different link.</p>
-	<p>If this seems wrong, email <a href="mailto:orientwebmaster@gmail.com">orientwebmaster@gmail.com</a>.</p>
+	<p>Unfortunately, we couldn't find the page you're looking for. Maybe try searching for it instead.</p>
+	<p>If this seems like a mistake, email <a href="mailto:orientwebmaster@gmail.com">orientwebmaster@gmail.com</a>.</p>
 </div>
 
 <script>
