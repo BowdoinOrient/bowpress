@@ -19,9 +19,11 @@ if (have_posts()) :
 
 	<div class="content">
 		<aside>
+			<div style="position: relative; z-index: 10;">
 			<?php if (get_field("sidebar")) {
         the_field("sidebar");
     } ?>
+			</div>
 		</aside>
 
 		<article>

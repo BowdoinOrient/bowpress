@@ -9,6 +9,9 @@
 	font-family: $alt-font-family; 
 	font-weight: 600; 
 	font-size: 0.9rem;
+	position: relative;
+	z-index: 20;
+	background-color: $white;
 
 	div {
 		text-align: center;
