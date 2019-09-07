@@ -389,9 +389,38 @@ function current_issue()
         "2019-05-03" => "24",
     );
 
+    $vol149_issues = array(
+        #Orientation issue
+        "2019-09-06" => "1",
+        "2019-09-13" => "2",
+        "2019-09-20" => "3",
+        "2019-09-27" => "4",
+        "2019-10-04" => "5", #Homecoming weekend
+        "2019-10-18" => "6",
+        "2019-10-25" => "7", #Family weekend
+        "2019-11-01" => "8",
+        "2019-11-08" => "9",
+        "2019-11-15" => "10",
+        "2019-11-22" => "11",
+        "2019-12-06" => "12",
+        "2020-01-24" => "13",
+        "2020-01-31" => "14",
+        "2020-02-07" => "15",
+        "2020-02-14" => "16",
+        "2020-02-21" => "17",
+        "2020-02-28" => "18",
+        "2020-03-27" => "19",
+        "2020-04-03" => "20",
+        "2020-04-10" => "21",
+        "2020-04-17" => "22", #Admitted students weekend
+        "2020-04-24" => "23",
+        "2020-05-01" => "24",
+        #Occident (May 8)
+    );
+
     $date = "";
     $issuenum = "";
-    foreach ($vol148_issues as $curr_date => $curr_issue_num) {
+    foreach ($vol149_issues as $curr_date => $curr_issue_num) {
         
         // Positive if $date is in the past; neg if in the future. We have to
         // use the WP-specific current_time function because of time zones. :(
