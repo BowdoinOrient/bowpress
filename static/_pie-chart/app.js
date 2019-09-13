@@ -11,7 +11,7 @@ var myChart = new Chart(ctx, {
         "#A5CFAB", // Light green
         "#f1c40f", // Yellow
         "#8974A5", // Dark purple
-        "#CAB1D1"  // Light purple
+        "#CAB1D1"  // Light purple 
       ],
       data: [12, 19, 3, 17, 28, 19, 7]
     }]
