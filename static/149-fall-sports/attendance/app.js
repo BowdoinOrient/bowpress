@@ -8,7 +8,7 @@ Chart.defaults.global.legend.onClick = function(e, legendItem) {
 var myChart = new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: ["Men Soccer", "Women Soccer","Volleyball", "Field Hockey",	"Football"],
+    labels: ["Men's Soccer", "Women's Soccer","Volleyball", "Field Hockey",	"Football"],
     datasets: [{
       label: 'Number in Attendance',
       backgroundColor: "#CAB1D1", 
