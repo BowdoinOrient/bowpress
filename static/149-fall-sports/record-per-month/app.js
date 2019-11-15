@@ -8,7 +8,7 @@ var WIN = DARK_GREEN
 var LOSS = DARK_PURPLE
 var TIE = YELLOW
 
-var ctx = document.getElementById("record-per-month");
+var ctx = document.getElementById("record-per-month").getContext('2d');
 var chartData = {
   labels: [
     "Win",
