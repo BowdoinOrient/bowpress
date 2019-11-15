@@ -9,7 +9,7 @@ Chart.defaults.global.legend.onClick = function(e, legendItem) {
 var myChart = new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: ["Bowdoin Invitational 1", "Maine State Meet",	"New England Open", "Bowdoin Invitational 2",	"NESCAC Championship"],
+    labels: ["Bowdoin Inv. 1", "Maine St. Meet",	"New England Open", "Bowdoin Inv. 2",	"NESCAC Champ."],
     datasets: [{
       label: 'Women',
       backgroundColor: "#CAB1D1", 
