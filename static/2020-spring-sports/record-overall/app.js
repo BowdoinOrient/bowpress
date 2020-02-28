@@ -8,14 +8,12 @@ let DARK_BLUE = "#1D3461"
 
 let WIN = DARK_GREEN
 let LOSS = DARK_PURPLE
-let TIE = YELLOW
+let TIE = LIGHT_BLUE
 
 let OVERALL = [70, 62, 4]
 let M_TEAMS = [30, 35, 1]
 let W_TEAMS = [40, 27, 3]
 
-
-var ctx = document.getElementById("record-overall").getContext('2d');
 var chartData = {
   labels: [
     "Win",
@@ -48,6 +46,8 @@ var chartData = {
     data: [0]
   }]
 };
+
+var ctx = document.getElementById("record-overall").getContext('2d');
 var pieChart = new Chart(ctx, {
   type: 'pie',
   data: chartData

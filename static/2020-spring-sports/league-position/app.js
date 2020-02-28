@@ -13,7 +13,7 @@ M_HOCKEY = [4, 5, 5, 5, 5, 4, 5, 4, 5, 8, 8, 5]
 
 let WEEKS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
-var config = {
+var chartData = {
   type: 'line',
   data: {
     labels: WEEKS,
@@ -80,4 +80,8 @@ var config = {
 };
 
 var ctx = document.getElementById("league-position").getContext("2d");
-var myLine = new Chart(ctx, config);
+var myLine = new Chart(ctx, chartData);
+// var pieChart = new Chart(ctx, {
+//   type: 'pie',
+//   data: chartData
+// })
