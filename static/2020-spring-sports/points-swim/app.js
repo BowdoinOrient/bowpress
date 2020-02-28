@@ -29,7 +29,7 @@ var myChart = new Chart(ctx, {
     scales: {
         yAxes: [{
         ticks: {
-               min: 50,
+               min: 40,
                max: 250,
             },  
             scaleLabel: {

@@ -1,4 +1,4 @@
-var ctx = document.getElementById("points-nordic").getContext('2d');
+var ctx = document.getElementById("class-year").getContext('2d');
 
 var original = Chart.defaults.global.legend.onClick;
 Chart.defaults.global.legend.onClick = function(e, legendItem) {
@@ -6,15 +6,15 @@ Chart.defaults.global.legend.onClick = function(e, legendItem) {
   original.call(this, e, legendItem);
 };
 
-// Harvard-351; UVM-304; Colby-375; Bates-347; Williams-365
 var myChart = new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: ["Harvard", "UVM",	"Colby",	"Bates",	"Williams"],
-    datasets: [{
-      label: 'Nordic',
-      backgroundColor: "#CAB1D1", 
-      data: [351, 304, 375, 347, 365]
+    labels: ["2023", "2022", "2021", "2020 or older"],
+    datasets: [
+    {
+      label: 'Voters',
+      backgroundColor: "#8974A5", 
+      data: [152, 140, 107, 162]
     }]
   },
 
@@ -22,12 +22,12 @@ var myChart = new Chart(ctx, {
     scales: {
         yAxes: [{
         ticks: {
-               min: 260,
-               max: 400,
+               min: 100,
+               max: 175,
             },  
             scaleLabel: {
                display: true,
-               labelString: "Points per carnival, total team scores"
+               labelString: "Number of votes"
             }
         }]
     }
