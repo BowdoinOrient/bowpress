@@ -1,10 +1,10 @@
-let LIGHT_GREEN ="#A5CFAB"
-let DARK_GREEN = "#4A6E62"
-let YELLOW = "#f1c40f"
-let DARK_RED = "#692031" 
-let DARK_PURPLE = "#8974A5"
-let LIGHT_BLUE = "#48639C"
-let DARK_BLUE = "#1D3461"
+var LIGHT_GREEN ="#A5CFAB";
+var DARK_GREEN = "#4A6E62";
+var YELLOW = "#f1c40f";
+var DARK_RED = "#692031";
+var DARK_PURPLE = "#8974A5";
+var LIGHT_BLUE = "#48639C";
+var DARK_BLUE = "#1D3461";
 
 let W_BBALL = [null, null, null, null, null, 1, 1, 1, 2, 2, 2, 2];
 let M_BBALL = [null, null, null, null, null, 4, 9, 9, 10, 8, 9, 9];
