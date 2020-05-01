@@ -1,4 +1,4 @@
-var ctx = document.getElementById("happy-betterworse-world-damn").getContext('2d');
+var ctx = document.getElementById("you-happy").getContext('2d');
 
 var original = Chart.defaults.global.legend.onClick;
 Chart.defaults.global.legend.onClick = function(e, legendItem) {
@@ -12,17 +12,17 @@ Chart.defaults.global.legend.onClick = function(e, legendItem) {
 var myChart = new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: ["Are you happy?", "World better in 25 years?", "Do you give a damn?"],
+    labels: ["Are you happy?"],
     datasets: [{
       label: 'Last Semester',
       backgroundColor: "#8974A5",
       stack: 'Stack 0',
-      data: [82.1, 55, 69.9],
+      data: [82.1],
     }, {
       label: 'This Semester',
       backgroundColor: "#48639C",
       stack: 'Stack 1',
-      data: [60.2, 64.1, 73.6],
+      data: [60.2],
     }]
   },
 
@@ -31,7 +31,7 @@ var myChart = new Chart(ctx, {
         yAxes: [{
         ticks: {
                min: 0,
-               max: 80,
+               max: 90,
             },  
         }]
     }
