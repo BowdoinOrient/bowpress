@@ -9,7 +9,7 @@ Chart.defaults.global.legend.onClick = function(e, legendItem) {
 var myChart = new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: ["Immediate family member", "Extend family member", "Friend", "Other", "Myself", "Neighbor", "I am not connected"],
+    labels: ["Immediate family", "Extend family", "Friend", "Other", "Myself", "Neighbor", "No connection"],
     datasets: [{
       label: 'Percent',
       backgroundColor: "#8974A5",

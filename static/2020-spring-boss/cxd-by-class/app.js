@@ -1,29 +1,29 @@
 var ctx = document.getElementById("cxd-by-class").getContext('2d');
 
-var original = Chart.defaults.global.legend.onClick;
-Chart.defaults.global.legend.onClick = function(e, legendItem) {
-  update_caption(legendItem);
-  original.call(this, e, legendItem);
-};
-
-// Sr: 52.2% approval, 24.2% disapproval
-// Jr: 51.3% approval, 16.5% disapproval
-// Sop: 57.7% approval, 12.4% disapproval
-// Fr: 57% approval, 6.3% disapproval
 var myChart = new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: ["Class of 2023", "Class of 2022", "Class of 2021", "Class of 2020"],
+    labels: ["Class of 2020", "Class of 2021", "Class of 2022", "Class of 2023"],
     datasets: [{
       label: 'Disapprove',
+      backgroundColor: "#CAB1D1",
+      stack: 'Stack 0',
+      data: [-15.4, -8.3, -10.9, -5.1],
+    }, {
+      label: 'Strongly Disapprove',
       backgroundColor: "#8974A5",
       stack: 'Stack 0',
-      data: [-6.3, -12.4, -16.5, -24.2],
+      data: [-5.8, -3.9, -0, -0.6],
     }, {
       label: 'Approve',
       backgroundColor: "#48639C",
       stack: 'Stack 0',
-      data: [57, 57.7, 51.3, 52.2],
+      data: [35.2, 28.2, 37.8, 39.1],
+    }, {
+      label: 'Strongly Approve',
+      backgroundColor: "#1D3461",
+      stack: 'Stack 0',
+      data: [12.8, 13.5, 14.10, 14.7],
     }]
   },
 
