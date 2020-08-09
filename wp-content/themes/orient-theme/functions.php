@@ -16,7 +16,7 @@ function orient_theme_plugin_check()
 {
     if (is_admin() && current_user_can('activate_plugins') &&
       (
-          !is_plugin_active('co-authors-plus/co-authors-plus.php') ||
+        !is_plugin_active('co-authors-plus/co-authors-plus.php') ||
         !is_plugin_active('advanced-custom-fields/acf.php') ||
         !is_plugin_active('wp-subtitle/wp-subtitle.php') ||
         !is_plugin_active('wordpress-popular-posts/wordpress-popular-posts.php') ||
@@ -242,7 +242,6 @@ function display_orient_article_menu($menu_name)
 /**
  * Fix photographer Co-Authors Plus pages so they don't 404
  */
-
 add_filter('template_redirect', 'fix_photographer_coauthors_pages');
 function fix_photographer_coauthors_pages()
 {
@@ -416,6 +415,24 @@ function current_issue()
         "2020-04-24" => "23",
         "2020-05-01" => "24",
         #Occident (May 8)
+    );
+
+    $vol150_issues = array(
+        #Orientation issue
+        "2019-09-04" => "1",
+        "2019-09-11" => "2",
+        "2019-09-18" => "3",
+        "2019-09-25" => "4",
+        "2019-10-02" => "5",
+        #Fall Vacation (Oct 9)
+        "2019-10-16" => "6",
+        "2019-10-23" => "7",
+        "2019-10-30" => "8",
+        "2019-11-06" => "9",
+        "2019-11-13" => "10",
+        "2019-11-20" => "11",
+        #Thanksgiving Break (Nov 27)
+        "2019-12-04" => "12",
     );
 
     $date = "";
