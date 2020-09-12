@@ -437,7 +437,7 @@ function current_issue()
 
     $date = "";
     $issuenum = "";
-    foreach ($vol149_issues as $curr_date => $curr_issue_num) {
+    foreach ($vol150_issues as $curr_date => $curr_issue_num) {
         
         // Positive if $date is in the past; neg if in the future. We have to
         // use the WP-specific current_time function because of time zones. :(
