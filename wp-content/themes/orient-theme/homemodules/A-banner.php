@@ -19,7 +19,6 @@ if ( $query->have_posts() ) {
 		$query->the_post();
 		echo "<a href=\"";
 		the_field('url');
-		echo "\" rel=\"sponsored\">";
 		$image = get_field('ad_image');
 		echo "<img src=\"" . $image['url'] . "\">";
 		echo "</a>";
