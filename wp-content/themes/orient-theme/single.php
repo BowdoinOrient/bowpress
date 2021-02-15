@@ -119,7 +119,7 @@ if (have_posts()) {
             $args = array(
                 'post_type' => 'post',
                 'limit' => 5,
-                'range' => 'weekly',
+                'range' => 'last30days',
             );
         wpp_get_mostpopular($args)
         ?>
