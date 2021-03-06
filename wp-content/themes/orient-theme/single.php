@@ -120,6 +120,7 @@ if (have_posts()) {
                 'post_type' => 'post',
                 'limit' => 5,
                 'range' => 'last30days',
+		'freshness' => 1
             );
         wpp_get_mostpopular($args)
         ?>
