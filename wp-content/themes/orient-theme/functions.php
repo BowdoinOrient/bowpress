@@ -364,25 +364,27 @@ function interactive_shortcode($directory)
 function current_issue()
 {
 
-    $vol151_issues = array(
+    $vol152_issues = array(
         #Orientation issue
-        "2022-01-28" => "13",
-        "2022-02-04" => "14",
-        "2022-02-11" => "15",
-        "2022-02-18" => "16",
-        "2022-02-28" => "17",
-        "2022-03-05" => "18",
-        "2022-04-01" => "19",
-        "2022-04-08" => "20",
-        "2022-04-22" => "21",
-        "2022-04-29" => "22",
-        "2022-05-06" => "23",
-        "2022-05-13" => "24",
+        "2022-09-02" => "1",
+        "2022-09-09" => "2",
+        "2022-09-16" => "3",
+        "2022-09-23" => "4",
+        "2022-09-30" => "5",
+        #Fall Break (Oct 7)
+        "2022-10-14" => "6",
+        "2022-10-21" => "7",
+        "2022-10-28" => "8",
+        "2022-11-04" => "9",
+        #Thanksgiving Break (Nov 28)
+        "2022-11-11" => "10",
+        "2022-11-18" => "11",
+        "2022-12-02" => "12",
     );
 
     $date = "";
     $issuenum = "";
-    foreach ($vol151_issues as $curr_date => $curr_issue_num) {
+    foreach ($vol152_issues as $curr_date => $curr_issue_num) {
         
         // Positive if $date is in the past; neg if in the future. We have to
         // use the WP-specific current_time function because of time zones. :(
