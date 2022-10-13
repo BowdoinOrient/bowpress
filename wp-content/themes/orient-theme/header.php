@@ -135,7 +135,7 @@ our nameplate on non-home pages, and the search toggle link. -->
 		   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M17 1H3C1.9 1 1 1.9 1 3v14c0 1.1 0.9 2 2 2h7v-7H8V9.5h2V7.5c0-2.2 1.2-3.7 3.8-3.7l1.8 0v2.6h-1.2C13.4 6.4 13 7.1 13 7.8v1.7h2.6L15 12h-2v7h4c1.1 0 2-0.9 2-2V3C19 1.9 18.1 1 17 1z"/></svg>
 		</a>
 
-		<a href="https://twitter.com/bowdoinorient" class="twitter-icon" target="_blank">
+		<a href="https://twitter.com/orientbowdoin" class="twitter-icon" target="_blank">
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M17.3 6.2c0 0.2 0 0.3 0 0.5 0 5-3.8 10.7-10.7 10.7 -2.1 0-4.1-0.6-5.8-1.7 0.3 0 0.6 0.1 0.9 0.1 1.8 0 3.4-0.6 4.7-1.6 -1.7 0-3-1.1-3.5-2.6 0.2 0 0.5 0.1 0.7 0.1 0.3 0 0.7 0 1-0.1 -1.7-0.3-3-1.9-3-3.7 0 0 0 0 0 0 0.5 0.3 1.1 0.5 1.7 0.5 -1-0.7-1.7-1.8-1.7-3.1 0-0.7 0.2-1.3 0.5-1.9C3.9 5.5 6.7 7 9.9 7.2 9.8 6.9 9.8 6.6 9.8 6.3c0-2.1 1.7-3.8 3.8-3.8 1.1 0 2.1 0.5 2.8 1.2 0.9-0.2 1.7-0.5 2.4-0.9 -0.3 0.9-0.9 1.6-1.7 2.1 0.8-0.1 1.5-0.3 2.2-0.6C18.7 5.1 18.1 5.7 17.3 6.2z"/></svg>
 		</a>
 
