@@ -2,12 +2,12 @@
   "name": "orient-theme",
   "version": "1.0.0",
   "description": "A WordPress theme for the Bowdoin Orient. See bowdoinorient.com/wordpress",
-  "main": "gulpfile.js",
   "devDependencies": {
-    "gulp": "^4.0.0",
-    "gulp-autoprefixer": "^3.1.1",
-    "gulp-clean-css": "^3.7.0",
-    "gulp-sass": "^3.1.0"
+    "sass": "^1.68.0"
+  },
+  "scripts": {
+    "build": "sass --style=compressed sass/style.scss:style.css",
+    "dev": "sass --watch sass/style.scss:style.css"
   },
   "author": "James Little",
   "license": "ISC"
