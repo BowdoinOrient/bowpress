@@ -1,0 +1,531 @@
+@font-face {
+  font-family: "chronicle-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Semi.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Semi.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Semi.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Semi.ttf)
+      format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "chronicle-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Roman.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Roman.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Roman.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Roman.ttf)
+      format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "chronicle-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Bold.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Bold.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Bold.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Bold.ttf)
+      format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "chronicle-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Italic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Italic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Italic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Italic.ttf)
+      format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "chronicle-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Black.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Black.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Black.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-Black.ttf)
+      format("truetype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "chronicle-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-SemiItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-SemiItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-SemiItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-SemiItalic.ttf)
+      format("truetype");
+  font-weight: 600;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "chronicle-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-BlackItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-BlackItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-BlackItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-BlackItalic.ttf)
+      format("truetype");
+  font-weight: 900;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "chronicle-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-BoldItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-BoldItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-BoldItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/ChronicleDispComp-BoldItalic.ttf)
+      format("truetype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-compressed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-BlackItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-BlackItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-BlackItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-BlackItalic.ttf)
+      format("truetype");
+  font-weight: 900;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-compressed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Black.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Black.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Black.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Black.ttf)
+      format("truetype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-compressed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-LightItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-LightItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-LightItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-LightItalic.ttf)
+      format("truetype");
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-condensed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Bold.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Bold.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Bold.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Bold.ttf)
+      format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-compressed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-XLightItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-XLightItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-XLightItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-XLightItalic.ttf)
+      format("truetype");
+  font-weight: 200;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-compressed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-XLight.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-XLight.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-XLight.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-XLight.ttf)
+      format("truetype");
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-compressed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-BoldItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-BoldItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-BoldItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-BoldItalic.ttf)
+      format("truetype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-condensed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-BlackItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-BlackItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-BlackItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-BlackItalic.ttf)
+      format("truetype");
+  font-weight: 900;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-BlackItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-BlackItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-BlackItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-BlackItalic.ttf)
+      format("truetype");
+  font-weight: 900;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-condensed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-XLightItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-XLightItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-XLightItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-XLightItalic.ttf)
+      format("truetype");
+  font-weight: 200;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-XLightItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-XLightItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-XLightItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-XLightItalic.ttf)
+      format("truetype");
+  font-weight: 200;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-condensed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Light.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Light.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Light.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Light.ttf)
+      format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-LightItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-LightItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-LightItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-LightItalic.ttf)
+      format("truetype");
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Light.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Light.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Light.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Light.ttf)
+      format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-condensed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-BoldItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-BoldItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-BoldItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-BoldItalic.ttf)
+      format("truetype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-compressed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Light.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Light.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Light.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Light.ttf)
+      format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Verlag Book";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-BookItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-BookItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-BookItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-BookItalic.ttf)
+      format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-condensed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-LightItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-LightItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-LightItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-LightItalic.ttf)
+      format("truetype");
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-compressed-remote Book";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Book.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Book.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Book.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Book.ttf)
+      format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-condensed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Black.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Black.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Black.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Black.ttf)
+      format("truetype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-compressed-remote Book";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-BookItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-BookItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-BookItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-BookItalic.ttf)
+      format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Verlag Book";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Book.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Book.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Book.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Book.ttf)
+      format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-compressed-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Bold.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Bold.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Bold.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCompressed-Bold.ttf)
+      format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-XLight.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-XLight.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-XLight.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-XLight.ttf)
+      format("truetype");
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-condensed-remote Book";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Book.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Book.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Book.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-Book.ttf)
+      format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-condensed-remote XLight";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-XLight.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-XLight.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-XLight.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-XLight.ttf)
+      format("truetype");
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-condensed-remote Book";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-BookItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-BookItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-BookItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/VerlagCondensed-BookItalic.ttf)
+      format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Bold.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Bold.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Bold.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Bold.ttf)
+      format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "verlag-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-BoldItalic.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-BoldItalic.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-BoldItalic.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-BoldItalic.ttf)
+      format("truetype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "verlag-remote";
+  src: url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Black.eot);
+  src:
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Black.eot?#iefix)
+      format("embedded-opentype"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Black.woff)
+      format("woff"),
+    url(https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/Verlag-Black.ttf)
+      format("truetype");
+  font-weight: 900;
+  font-style: normal;
+}
