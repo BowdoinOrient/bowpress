@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "sass --style=compressed sass/style.scss:style.css",
-    "dev": "sass --watch sass/style.scss:style.css"
+    "dev": "sass --watch --style=compressed sass/style.scss:style.css"
   },
   "author": "James Little",
   "license": "ISC"

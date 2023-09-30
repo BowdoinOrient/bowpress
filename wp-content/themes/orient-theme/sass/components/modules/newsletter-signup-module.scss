@@ -12,14 +12,12 @@
 	.arrow {
 		position: absolute;
 		top: 0;
-		left: 2em;
-
+		left: 2.66em;
 		width: 0;
 		height: 0;
-		border-left: 1.2em solid transparent;
-		border-right: 1.2em solid transparent;
-
-		border-top: 2em solid $white;
+		border-left: 1em solid transparent;
+		border-right: 1em solid transparent;
+		border-top: 1.58em solid $white;
 	}
 
 	h1 {
@@ -36,6 +34,7 @@
 
 	input {
 		flex-grow: 3;
+		border: none;
 	}
 
 	button {
