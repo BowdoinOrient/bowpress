@@ -7,6 +7,6 @@
     "yargs": "^17.7.2"
   },
   "scripts": {
-    "upload": "node cli/main.js"
+    "upload": "node cli/upload.js"
   }
 }

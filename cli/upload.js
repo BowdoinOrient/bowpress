@@ -1,3 +1,7 @@
+/**
+ * This script uploads a specified bundle to the WP Engine server.
+ */
+
 import yargsInit from "yargs";
 import inquirer from "inquirer";
 import sftpClient from "ssh2-sftp-client";
@@ -69,6 +73,7 @@ const promptForMissingArgs = async () =>
 
 // Use Yargs arguments and Inquirer prompts
 const run = async () => {
+  console.log("👋 This application uploads bundles to WPEngine.");
   const config = { ...argv, ...(await promptForMissingArgs()) };
   const sftp = new sftpClient();
 
