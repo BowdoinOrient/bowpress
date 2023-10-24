@@ -18,11 +18,9 @@ student and want to join the Orient tech team, email orient@bowdoin.edu.
 	<link rel="stylesheet" href="<?php echo cachebusted_css(); ?>">
 	<script type="text/eqcss" src="<?php echo get_stylesheet_directory_uri(); ?>/sass/element-queries.eqcss"></script>
 
-	<!-- Font loading -->
+	<!-- Font loading for Minion Pro -->
 	<script type="text/javascript" src="https://use.typekit.com/rmt0nbm.js"></script>
 	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-	<link rel="stylesheet" type="text/css" href="https://bowdoinorient-typography-dot-com.s3.amazonaws.com/files/aws-orient-fonts.css">
-	<!-- <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/7613576/7415972/css/fonts.css" /> -->
 
 	<link rel="author" href="/humans.txt">
 

@@ -27,3 +27,9 @@ img {
 figure {
     margin: 0;
 }
+
+input {
+    border: 1px solid $light-gray;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}

@@ -73,17 +73,17 @@ ol.commentlist li.thread-odd {}
 
 .comment-respond p {
 	margin-bottom: 0.3em;
+	display: flex;
+	align-items: center;
+	column-gap: 0.5em;
+
+	&.comment-form-comment {
+		flex-direction: column;
+		align-items: start;
+	}
 }
 
 .comment-respond input[type="submit"] {
 	@extend .button;
 }
 
-.comment-respond label {
-	display: inline-block;
-	width: 6em;
-}
-
-.comment-form-comment label {
-	display: block;
-}
