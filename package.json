@@ -1,0 +1,12 @@
+{
+  "type": "module",
+  "devDependencies": {
+    "inquirer": "^9.2.11",
+    "ora": "^7.0.1",
+    "ssh2-sftp-client": "^9.1.0",
+    "yargs": "^17.7.2"
+  },
+  "scripts": {
+    "upload": "node cli/upload.js"
+  }
+}

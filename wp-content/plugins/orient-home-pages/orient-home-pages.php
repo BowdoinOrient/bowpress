@@ -144,7 +144,7 @@ function echo_article_select_input($articlelist) {
 	echo "</select>";
 }
 
-register_activation_hook(__FILE__, home_page_activate);
+register_activation_hook(__FILE__, 'home_page_activate');
 
 function home_page_activate() {
     $upload_dir = get_stylesheet_directory() . 'homepages';
