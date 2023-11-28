@@ -1,7 +1,7 @@
 .module-5 {
-    margin-bottom: $vertical-rhythm / 2;
+    margin-bottom: $vertical-rhythm * 0.5;
     border-bottom: 1px solid $light-gray;
-    padding-bottom: $vertical-rhythm / 2;
+    padding-bottom: $vertical-rhythm * 0.5;
 
     @include cf;
 

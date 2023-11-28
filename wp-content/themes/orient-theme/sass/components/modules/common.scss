@@ -1,8 +1,8 @@
 .module {
     overflow: hidden;
-	padding-bottom: $vertical-rhythm / 2;
+	padding-bottom: $vertical-rhythm * 0.5;
 	border-bottom: 1px solid $dark-gray;
-	margin-bottom: $vertical-rhythm / 2;
+	margin-bottom: $vertical-rhythm * 0.5;
 
     &.no-border {
         border-bottom: none;
@@ -20,8 +20,8 @@
 }
 
 .border-bottom .module:last-child {
-    padding-bottom: $vertical-rhythm / 2;
-    margin-bottom: $vertical-rhythm / 2;
+    padding-bottom: $vertical-rhythm * 0.5;
+    margin-bottom: $vertical-rhythm * 0.5;
     border-bottom: 1px solid $dark-gray;
 }
 

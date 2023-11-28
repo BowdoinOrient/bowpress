@@ -1,6 +1,8 @@
+@use "sass:math";
+
 blockquote {
     padding: 0;
-    margin: $vertical-rhythm / 2 0;
+    margin: $vertical-rhythm * 0.5 0;
 
     padding-left: 1.5em;
     border-left: 5px solid $light-gray;
@@ -12,7 +14,7 @@ blockquote {
     font-family: $alt-font-family;
 
     p {
-        margin-top: $vertical-rhythm / 3 * 2;
+        margin-top: math.div($vertical-rhythm, 3) * 2;
     }
 
 

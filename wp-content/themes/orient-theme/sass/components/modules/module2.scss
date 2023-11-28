@@ -1,6 +1,6 @@
 .module-2 {
-	margin-bottom: $vertical-rhythm / 2;
-	padding-bottom: $vertical-rhythm / 2;
+	margin-bottom: $vertical-rhythm * 0.5;
+	padding-bottom: $vertical-rhythm * 0.5;
 	border-bottom: 1px solid $light-gray;
 
 	&:last-of-type {
