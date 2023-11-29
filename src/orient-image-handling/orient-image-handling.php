@@ -22,11 +22,11 @@ function get_photographers($id)
 {
     $photographerPostObjects = get_field('photographer', $id);
 
-    if (sizeof($photographerPostObjects) > 0) {
+    if (is_array($photographerPostObjects) && sizeof($photographerPostObjects) > 0) {
         $photographerArrays = array_map(function ($object) {
             global $coauthors_plus;
             $id = $object->ID;
-            $object =  $coauthors_plus->get_coauthor_by('id', $id);
+            $object = $coauthors_plus->get_coauthor_by('id', $id);
 
             return array(
                 'object' => $object,
@@ -76,22 +76,24 @@ function get_photos_by_author($should_echo = true)
     global $wp_query;
     $curauth = $wp_query->get_queried_object();
 
-    $posts = get_posts(array(
-        'numberposts'	=> -1,
-        'post_type'		=> 'attachment',
-        'meta_query'	=> array(
-            'relation'		=> 'AND',
-            array(
-                'key'	 	=> 'photographer',
-                'value' => '"' . $curauth->ID . '"',
-                'compare' => 'LIKE'
+    $posts = get_posts(
+        array(
+            'numberposts' => -1,
+            'post_type' => 'attachment',
+            'meta_query' => array(
+                'relation' => 'AND',
+                array(
+                    'key' => 'photographer',
+                    'value' => '"' . $curauth->ID . '"',
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => 'custom_credit',
+                    'value' => ''
+                )
             ),
-            array(
-                'key'	=> 'custom_credit',
-                'value' => ''
-            )
-        ),
-    ));
+        )
+    );
 
     wp_reset_postdata();
 
@@ -134,7 +136,7 @@ add_filter('image_send_to_editor', 'html5_insert_image', 10, 9);
 function image_shortcode($atts, $content = null)
 {
     $id = $atts['id'];
-    $src  = wp_get_attachment_image_src($id, 'full', false);
+    $src = wp_get_attachment_image_src($id, 'full', false);
     $caption = get_post($id)->post_excerpt;
     $alt = get_post_meta($id, '_wp_attachment_image_alt', true);
     $html5 = "";
