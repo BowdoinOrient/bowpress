@@ -30,7 +30,7 @@ function home_page_init() {
 	date_default_timezone_set("America/New_York");
 	if(isset($_POST['file'])) {
 		$filename = filter_var ( $_POST['file'], FILTER_SANITIZE_URL);
-		$articlelist = implode($_POST['page_id'], ',');
+		$articlelist = implode(',', $_POST['page_id']);
 
 		if(isset($_POST['later']) && $_POST['later'] == true) {
 			update_option('orient_homepage_articles_later', $articlelist);
