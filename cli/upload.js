@@ -40,9 +40,9 @@ const inputs = [
     alias: "p",
   },
   {
-    type: "list",
+    type: "checkbox",
     name: "bundle",
-    message: "Bundle to upload",
+    message: "Bundles to upload",
     alias: "b",
     choices: Object.keys(bundles),
   },
@@ -96,16 +96,19 @@ const run = async () => {
       spinner.text = `Uploading (${uploadedCount} files so far)`;
     });
 
-    const bundle = bundles[config.bundle];
-
-    // Upload a file to the remote server
-    await sftp.uploadDir(bundle.localPath, bundle.remotePath, {
-      filter: (path, _isDirectory) => {
-        return ["node_modules", ".git", "sass"]
-          .map((exclusion) => path.indexOf(exclusion) === -1)
-          .every((a) => a);
-      },
-    });
+    // Upload each selected bundle to the server
+    await Promise.all(
+      config.bundle.map(async (bundleKey) => {
+        const bundle = bundles[bundleKey];
+        await sftp.uploadDir(bundle.localPath, bundle.remotePath, {
+          filter: (path, _isDirectory) => {
+            return ["node_modules", ".git", "sass"]
+              .map((exclusion) => path.indexOf(exclusion) === -1)
+              .every((a) => a);
+          },
+        });
+      })
+    );
 
     // Disconnect from the SFTP server
     await sftp.end();
