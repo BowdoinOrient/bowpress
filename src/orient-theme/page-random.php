@@ -1,6 +1,13 @@
 <?php
 
-$posts = get_posts('post_type=post&orderby=rand&numberposts=1');
+$args = array(
+    'orderby' => 'rand',
+    'numberposts' => 1,
+    'post_type' => array(
+        'post'
+    ),
+);
+query_posts($args);
 foreach ($posts as $post) {
     $link = get_permalink($post);
 }
