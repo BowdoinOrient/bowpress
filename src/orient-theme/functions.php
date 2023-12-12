@@ -85,10 +85,11 @@ function my_custom_popular_posts_html_list($mostpopular, $instance)
         $output .= "<article>";
         $output .= '<div class="kicker"><span class="count">' . $i . "</span>" . get_the_kicker_from_id($popular->id) . '</div>';
         $output .= "<h2 class=\"entry-title\"><a href=\"" . get_the_permalink($popular->id) . "\" title=\"" . esc_attr($popular->title) . "\">" . $popular->title . "</a></h2>";
-        $output .= '<p class="byline">' . author_and_date(false, $popular->id) . '</p>';
+        $output .= author_and_date(false, $popular->id);
         $output .= "</article>\n";
     }
 
+    error_log($output);
     return $output;
 }
 
@@ -207,7 +208,7 @@ function display_orient_article_menu($menu_name)
             $menu_list .= '<div class="media-body">';
             $menu_list .= '<h2 class="kicker">' . $kicker . '</h2>';
             $menu_list .= '<h1 class="article-title"><a href="' . $url . '">' . $title . '</a></h1>';
-            $menu_list .= '<p>' . author_and_date(false, $id) . '</p>';
+            $menu_list .= author_and_date(false, $id);
             $menu_list .= '</div></article>';
         }
     }
@@ -237,6 +238,9 @@ function fix_photographer_coauthors_pages()
 function author_page_document_title($original)
 {
     global $wp_query;
+    if (!$wp_query->queried_object) {
+        return;
+    }
     return str_replace("editor", $wp_query->queried_object->display_name, $original);
 }
 
@@ -270,7 +274,7 @@ function author_and_date($echo = true, $id = null)
         $diff = get_the_time('F j, Y');
     }
 
-    $output = '<p class="byline">By ' . authorList(false) . ' &bullet; ' . $diff . '</p>';
+    $output = '<p class="byline">By ' . authorList(false) . ' • ' . $diff . '</p>';
 
     if ($id) {
         wp_reset_postdata();
@@ -420,6 +424,8 @@ add_theme_support('post-thumbnails');
 set_post_thumbnail_size(640, 480, array('center', 'center'));
 add_image_size('module', 640, 480, array('center', 'center'));
 
-include 'ignored.php';
+if (file_exists('ignored.php')) {
+    require_once 'ignored.php';
+}
 
 flush_rewrite_rules();
