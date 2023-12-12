@@ -7,32 +7,7 @@ if ($show_errors) {
     ini_set('display_errors', 1);
 }
 
-/**
- * Set up an alert in the admin sectionif the plugins required for this theme
- * are not activated.
- */
-add_action('admin_init', 'orient_theme_plugin_check');
-function orient_theme_plugin_check()
-{
-    if (is_admin() && current_user_can('activate_plugins') &&
-      (
-        !is_plugin_active('co-authors-plus/co-authors-plus.php') ||
-        !is_plugin_active('advanced-custom-fields/acf.php') ||
-        !is_plugin_active('wp-subtitle/wp-subtitle.php') ||
-        !is_plugin_active('wordpress-popular-posts/wordpress-popular-posts.php') ||
-        !is_plugin_active('orient-image-handling/orient-image-handling.php') ||
-        !is_plugin_active('orient-taxonomies/orient-taxonomies.php') ||
-        !is_plugin_active('orient-home-pages/orient-home-pages.php')
-      )
-    ) {
-        add_action('admin_notices', 'plugin_notice');
-    }
-}
-
-function plugin_notice()
-{
-    echo '<div class="error"><p>The Orient 2017 theme requires several plugins to be installed and active. See the documentation for more details.</p></div>';
-}
+require_once('required-plugins.php');
 
 add_filter('xmlrpc_enabled', '__return_false');
 
@@ -87,8 +62,9 @@ add_filter('tiny_mce_before_init', 'change_paste_as_text', 1, 2);
 /**
  * Update CSS within Admin -- show Orient logo on login
  */
-function admin_style() {
-  wp_enqueue_style('admin-styles', get_template_directory_uri().'/admin.css');
+function admin_style()
+{
+    wp_enqueue_style('admin-styles', get_template_directory_uri() . '/admin.css');
 }
 
 add_action('login_enqueue_scripts', 'admin_style');
@@ -205,7 +181,7 @@ function display_orient_tax_menu($menu_name)
     foreach ((array) $menu_items as $key => $menu_item) {
         $title = $menu_item->title;
         $url = $menu_item->url;
-        $menu_list .= '<a href="'. $url .'">'. $title .'</a>';
+        $menu_list .= '<a href="' . $url . '">' . $title . '</a>';
     }
     echo $menu_list;
 }
@@ -230,7 +206,7 @@ function display_orient_article_menu($menu_name)
             }
             $menu_list .= '<div class="media-body">';
             $menu_list .= '<h2 class="kicker">' . $kicker . '</h2>';
-            $menu_list .= '<h1 class="article-title"><a href="'. $url .'">'. $title .'</a></h1>';
+            $menu_list .= '<h1 class="article-title"><a href="' . $url . '">' . $title . '</a></h1>';
             $menu_list .= '<p>' . author_and_date(false, $id) . '</p>';
             $menu_list .= '</div></article>';
         }
@@ -253,7 +229,7 @@ function fix_photographer_coauthors_pages()
 
     if ($wp_query->is_404 && is_object($wp_query->queried_object)) {
         status_header(200);
-        $wp_query->is_404=false;
+        $wp_query->is_404 = false;
         $wp_query->is_author = true;
     }
 }
@@ -309,18 +285,20 @@ function author_and_date($echo = true, $id = null)
 
 function packaging_shortcode($atts)
 {
-    $packages = get_posts(array(
-        'post_type' => 'packaging',
-        'post_status' => 'publish',
-        'limit' => 1,
-        'meta_query' => array(
-            array(
-                'key' => 'articles',
-                'value' => '"' . get_the_ID() . '"',
-                'compare' => 'LIKE'
+    $packages = get_posts(
+        array(
+            'post_type' => 'packaging',
+            'post_status' => 'publish',
+            'limit' => 1,
+            'meta_query' => array(
+                array(
+                    'key' => 'articles',
+                    'value' => '"' . get_the_ID() . '"',
+                    'compare' => 'LIKE'
+                )
             )
         )
-    ));
+    );
 
     if (isset($packages[0])) {
         $package = $packages[0];
@@ -399,7 +377,7 @@ function current_issue()
     $date = "";
     $issuenum = "";
     foreach ($vol153_issues as $curr_date => $curr_issue_num) {
-        
+
         // Positive if $date is in the past; neg if in the future. We have to
         // use the WP-specific current_time function because of time zones. :(
         $diff = current_time('timestamp', 0) - strtotime($curr_date);
