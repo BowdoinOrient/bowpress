@@ -1,10 +1,14 @@
 version: "3.6"
 services:
   wordpress:
-    image: wordpress:6.1.1-php7.4-apache
+    image: wordpress:6.3.2-php8.2-apache
     container_name: wordpress
     volumes:
-      - .:/var/www/html
+      - ./dev-wp-app:/var/www/html
+      - ./src/orient-theme:/var/www/html/wp-content/themes/orient-theme
+      - ./src/orient-home-pages:/var/www/html/wp-content/plugins/orient-home-pages
+      - ./src/orient-image-handling:/var/www/html/wp-content/plugins/orient-image-handling
+      - ./src/orient-taxonomies:/var/www/html/wp-content/plugins/orient-taxonomies
     environment:
       - WORDPRESS_DB_NAME=wordpress
       - WORDPRESS_TABLE_PREFIX=wp_

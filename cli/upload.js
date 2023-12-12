@@ -9,19 +9,19 @@ import ora from "ora";
 
 const bundles = {
   "orient-theme": {
-    localPath: "./wp-content/themes/orient-theme",
+    localPath: "./src/orient-theme",
     remotePath: "/wp-content/themes/orient-theme",
   },
   "orient-home-pages": {
-    localPath: "./wp-content/plugins/orient-home-pages",
+    localPath: "./src/orient-home-pages",
     remotePath: "/wp-content/plugins/orient-home-pages",
   },
   "orient-image-handling": {
-    localPath: "./wp-content/plugins/orient-image-handling",
+    localPath: "./src/orient-image-handling",
     remotePath: "/wp-content/plugins/orient-image-handling",
   },
   "orient-taxonomies": {
-    localPath: "./wp-content/plugins/orient-taxonomies",
+    localPath: "./src/orient-taxonomies",
     remotePath: "/wp-content/plugins/orient-taxonomies",
   },
 };

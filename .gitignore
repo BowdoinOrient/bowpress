@@ -36,3 +36,5 @@ Session.vim
 .netrwhist
 *~
 tags
+
+/dev-wp-app
