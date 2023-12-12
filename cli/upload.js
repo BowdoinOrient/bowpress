@@ -75,6 +75,13 @@ const promptForMissingArgs = async () =>
 const run = async () => {
   console.log("👋 This application uploads bundles to WPEngine.");
   const config = { ...argv, ...(await promptForMissingArgs()) };
+
+  // If a bundle is specified from the command line, it's a single item - convert it to an array.
+  // TODO: Figure out how to pass an array from the command line
+  if (typeof config.bundle === "string") {
+    config.bundle = [config.bundle];
+  }
+
   const sftp = new sftpClient();
 
   const sftpConfig = {
