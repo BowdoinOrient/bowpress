@@ -1,19 +1,11 @@
 <?php
 
-$show_errors = false;
-
-if ($show_errors) {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-}
-
 require_once('required-plugins.php');
+
 
 add_filter('xmlrpc_enabled', '__return_false');
 
-/**
- * Get some JQuery up in here
- */
+/* Add JQuery */
 wp_enqueue_script('jquery');
 
 /**
@@ -34,8 +26,7 @@ remove_action('wp_head', 'adjacent_posts_rel_link_wp_head'); // removes prev/nex
  * prevent wordpress from loading up some javascript and css that we simply
  * don't need
  */
-function disable_wp_emojicons()
-{
+add_action('init', function () {
     remove_action('admin_print_styles', 'print_emoji_styles');
     remove_action('wp_head', 'print_emoji_detection_script', 7);
     remove_action('admin_print_scripts', 'print_emoji_detection_script');
@@ -43,38 +34,23 @@ function disable_wp_emojicons()
     remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
     remove_filter('the_content_feed', 'wp_staticize_emoji');
     remove_filter('comment_text_rss', 'wp_staticize_emoji');
-}
+});
 
-add_action('init', 'disable_wp_emojicons');
+/* Turn on paste_as_text by default */
 
-/**
- * change tinymce's paste-as-text functionality
- */
-function change_paste_as_text($mceInit, $editor_id)
-{
-    //turn on paste_as_text by default
-    //NB this has no effect on the browser's right-click context menu's paste!
+add_filter('tiny_mce_before_init', function ($mceInit, $editor_id) {
     $mceInit['paste_as_text'] = true;
     return $mceInit;
-}
-add_filter('tiny_mce_before_init', 'change_paste_as_text', 1, 2);
+}, 1, 2);
 
-/**
- * Update CSS within Admin -- show Orient logo on login
- */
-function admin_style()
-{
+/* Update CSS within Admin -- show Orient logo on login */
+add_action('login_enqueue_scripts', function () {
     wp_enqueue_style('admin-styles', get_template_directory_uri() . '/admin.css');
-}
-
-add_action('login_enqueue_scripts', 'admin_style');
+});
 
 
-/**
- * Redefines the HTML structure for the Popular Posts plugin
- */
-function my_custom_popular_posts_html_list($mostpopular, $instance)
-{
+/* Redefines the HTML structure for the Popular Posts plugin */
+add_filter('wpp_custom_html', function ($mostpopular, $instance) {
     $output = '';
     $i = 0;
 
@@ -90,35 +66,23 @@ function my_custom_popular_posts_html_list($mostpopular, $instance)
     }
 
     return $output;
-}
+}, 10, 2);
 
-add_filter('wpp_custom_html', 'my_custom_popular_posts_html_list', 10, 2);
-
-/**
- * Put all the management of the <title> tag in the hands of WordPress.
- * @todo : Look into customization for this.
- */
-function theme_slug_setup()
-{
+/* Put all the management of the <title> tag in the hands of WordPress. */
+add_action('after_setup_theme', function () {
     add_theme_support('title-tag');
-}
-add_action('after_setup_theme', 'theme_slug_setup');
+});
 
 /**
  * Remove theme customizer from Admin sidebar since the Orient theme doesn't
  * use it
  */
-add_action('admin_bar_menu', 'remove_some_nodes_from_admin_top_bar_menu', 999);
-function remove_some_nodes_from_admin_top_bar_menu($wp_admin_bar)
-{
+add_action('admin_bar_menu', function ($wp_admin_bar) {
     $wp_admin_bar->remove_menu('customize');
-}
+}, 999);
 
-/**
- * Forbid users with the "Editor" role from doing some things
- */
-function dont_let_editors_do_some_stuff()
-{
+/* Remove menu items from the admin sidebar for editors */
+add_action('admin_menu', function () {
     if (in_array("editor", wp_get_current_user()->roles)) {
         remove_menu_page('edit-comments.php'); // Page for editing comments
         remove_menu_page('wpcf7'); // Contact Form 7 Options
@@ -131,34 +95,24 @@ function dont_let_editors_do_some_stuff()
         remove_menu_page('home-pages'); // Alert custom post type
         remove_menu_page('WP-Optimize'); // Alert custom post type
     }
-}
+}, 999);
 
-function dont_let_editors_do_other_stuff()
-{
+/* Remove admin bar items for editors */
+add_action('wp_before_admin_bar_render', function () {
     if (in_array("editor", wp_get_current_user()->roles)) {
         global $wp_admin_bar;
         $wp_admin_bar->remove_menu('comments');
     }
-}
+}, 999);
 
-add_action('admin_menu', 'dont_let_editors_do_some_stuff', 999);
-add_action('wp_before_admin_bar_render', 'dont_let_editors_do_other_stuff', 999);
-
-/**
- * Make it so editors can't moderate comments
- */
-
+/* Make it so editors can't moderate comments */
 $role_object = get_role('editor');
 $role_object->add_cap('edit_theme_options');
 $role_object->add_cap('manage_options');
 $role_object->remove_cap('moderate_comments');
 
-/**
- * Submenus for the navigation menu
- */
-
-function orient_nav_menus()
-{
+/* Submenus for the navigation menu */
+add_action('init', function () {
     register_nav_menu('news_tax_menu', "News Taxonomy Menu");
     register_nav_menu('news_art_menu', "News Article Menu");
     register_nav_menu('feat_tax_menu', "Features Taxonomy Menu");
@@ -169,12 +123,14 @@ function orient_nav_menus()
     register_nav_menu('sports_art_menu', "Sports Article Menu");
     register_nav_menu('opinion_tax_menu', "Opinion Taxonomy Menu");
     register_nav_menu('opinion_art_menu', "Opinion Article Menu");
-}
-add_action('init', 'orient_nav_menus');
+});
 
 function display_orient_tax_menu($menu_name)
 {
     $menu = wp_get_nav_menu_object($menu_name);
+    if (!$menu) {
+        return '<div>Menu "' . $menu_name . '" not defined.</div>';
+    }
     $menu_items = wp_get_nav_menu_items($menu->term_id);
 
     $menu_list = '';
@@ -189,6 +145,9 @@ function display_orient_tax_menu($menu_name)
 function display_orient_article_menu($menu_name)
 {
     $menu = wp_get_nav_menu_object($menu_name);
+    if (!$menu) {
+        return '<div>Menu "' . $menu_name . '" not defined.</div>';
+    }
     $menu_items = wp_get_nav_menu_items($menu->term_id);
 
     $menu_list = '';
@@ -215,16 +174,14 @@ function display_orient_article_menu($menu_name)
     echo $menu_list;
 }
 
-/**
- * Fix photographer Co-Authors Plus pages so they don't 404
- */
-add_filter('template_redirect', 'fix_photographer_coauthors_pages');
-function fix_photographer_coauthors_pages()
-{
+/* Fix photographer Co-Authors Plus pages so they don't 404 */
+add_filter('template_redirect', function () {
     global $wp_query;
 
-    // $title = str_replace("editor", "", wp_get_document_title());
-    add_filter('pre_get_document_title', 'author_page_document_title', 10);
+    add_filter('pre_get_document_title', function ($original) {
+        global $wp_query;
+        return str_replace("editor", $wp_query->queried_object->display_name, $original);
+    }, 10);
     apply_filters('pre_get_document_title', wp_get_document_title());
 
     if ($wp_query->is_404 && is_object($wp_query->queried_object)) {
@@ -232,13 +189,7 @@ function fix_photographer_coauthors_pages()
         $wp_query->is_404 = false;
         $wp_query->is_author = true;
     }
-}
-
-function author_page_document_title($original)
-{
-    global $wp_query;
-    return str_replace("editor", $wp_query->queried_object->display_name, $original);
-}
+});
 
 function is_in_front_page_tree()
 {
@@ -330,15 +281,6 @@ function packaging_shortcode($atts)
     }
 }
 
-function interactive_shortcode($directory)
-{
-    if (!$directory["page"]) {
-        return "";
-    }
-
-    return file_get_contents(ABSPATH . "static/" . $directory["page"] . "/index.html");
-}
-
 function current_issue()
 {
 
@@ -414,12 +356,16 @@ function cachebusted_js()
 
 add_shortcode('packaging', 'packaging_shortcode');
 
-add_shortcode('interactive', 'interactive_shortcode');
+add_shortcode('interactive', function ($directory) {
+    if (!$directory["page"]) {
+        return "";
+    }
+
+    return file_get_contents(ABSPATH . "static/" . $directory["page"] . "/index.html");
+});
 
 add_theme_support('post-thumbnails');
 set_post_thumbnail_size(640, 480, array('center', 'center'));
 add_image_size('module', 640, 480, array('center', 'center'));
-
-include 'ignored.php';
 
 flush_rewrite_rules();
