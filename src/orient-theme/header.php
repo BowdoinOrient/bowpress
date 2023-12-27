@@ -128,7 +128,7 @@ on the search link. -->
 	<div class="desktop-search-bar">
 		<form class="desktop-search-bar__form" action="/" method="get">
 			<input type="search" name="s" id="searchInput" placeholder="Search the Orient...">
-			<button type="submit" class="search-bar-submit">Go!</button>
+			<button type="submit" class="search-bar-submit button">Go!</button>
 		</form>
 	</div>
 
