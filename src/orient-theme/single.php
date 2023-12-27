@@ -193,7 +193,7 @@ if (have_posts()) {
 				wp_reset_query();
 				$tag_query = new WP_Query($tag_query_args);
 
-				if ($tag__ids && count($tag__ids) > 0 && $tag_query->post_count >= 4) {
+				if (isset($tag__ids) && count($tag__ids) > 0 && $tag_query->post_count >= 4) {
 					echo "tags";
 					$related_query = $tag_query;
 					$category_override = false;

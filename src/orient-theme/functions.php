@@ -180,7 +180,7 @@ add_filter('template_redirect', function () {
 
     add_filter('pre_get_document_title', function ($original) {
         global $wp_query;
-        return str_replace("editor", $wp_query->queried_object->display_name, $original);
+        return str_replace("editor", $wp_query->queried_object?->display_name ?? "", $original);
     }, 10);
     apply_filters('pre_get_document_title', wp_get_document_title());
 
@@ -341,6 +341,9 @@ function current_issue()
 
 function cachebust_file($filename)
 {
+    if (!file_exists($filename)) {
+        return $filename;
+    }
     return $filename . "?" . md5(file_get_contents($filename));
 }
 

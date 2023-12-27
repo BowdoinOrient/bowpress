@@ -30,7 +30,7 @@ function create_packaging_post_type()
             ),
             'public' => true,
             'has_archive' => false,
-            'menu_icon'   => 'dashicons-list-view',
+            'menu_icon' => 'dashicons-list-view',
         )
     );
 }
@@ -48,7 +48,7 @@ function create_alert_post_type()
             ),
             'public' => true,
             'has_archive' => false,
-            'menu_icon'   => 'dashicons-warning',
+            'menu_icon' => 'dashicons-warning',
         )
     );
 }
@@ -66,7 +66,7 @@ function create_ad_post_type()
             ),
             'public' => true,
             'has_archive' => false,
-            'menu_icon'   => 'dashicons-layout',
+            'menu_icon' => 'dashicons-layout',
         )
     );
 }
@@ -84,32 +84,32 @@ function create_series_taxonomy()
 
     // Add new taxonomy
     $labels = array(
-        'name'                       => 'Series',
-        'singular_name'              => 'Series',
-        'search_items'               => 'Search Series',
-        'popular_items'              => 'Popular Series',
-        'all_items'                  => 'All Series',
-        'parent_item'                => null,
-        'parent_item_colon'          => null,
-        'edit_item'                  => 'Edit Series',
-        'update_item'                => 'Update Series',
-        'add_new_item'               => 'Create New Series',
-        'new_item_name'              => 'New Series Title',
+        'name' => 'Series',
+        'singular_name' => 'Series',
+        'search_items' => 'Search Series',
+        'popular_items' => 'Popular Series',
+        'all_items' => 'All Series',
+        'parent_item' => null,
+        'parent_item_colon' => null,
+        'edit_item' => 'Edit Series',
+        'update_item' => 'Update Series',
+        'add_new_item' => 'Create New Series',
+        'new_item_name' => 'New Series Title',
         'separate_items_with_commas' => 'Separate series with commas',
-        'add_or_remove_items'        => 'Add or remove series',
-        'choose_from_most_used'      => 'Choose from the most used series',
-        'not_found'                  => 'No series found.',
-        'menu_name'                  => 'Series',
+        'add_or_remove_items' => 'Add or remove series',
+        'choose_from_most_used' => 'Choose from the most used series',
+        'not_found' => 'No series found.',
+        'menu_name' => 'Series',
     );
 
     $args = array(
-        'hierarchical'          => false,
-        'labels'                => $labels,
-        'show_ui'               => true,
-        'show_admin_column'     => true,
+        'hierarchical' => false,
+        'labels' => $labels,
+        'show_ui' => true,
+        'show_admin_column' => true,
         'update_count_callback' => '_update_post_term_count',
-        'query_var'             => true,
-        'rewrite'               => array('slug' => 'series'),
+        'query_var' => true,
+        'rewrite' => array('slug' => 'series'),
     );
 
     register_taxonomy('series', 'post', $args);
@@ -135,9 +135,9 @@ function the_kicker($shouldExcludeCategory = false)
     $tag = get_the_terms(get_the_ID(), 'post_tag');
     $series = get_the_terms(get_the_ID(), 'series');
     $category = get_the_terms(get_the_ID(), 'category');
-    $tag = $tag[0];
-    $series = $series[0];
-    $category = $category[0];
+    $tag = $tag[0] ?? null;
+    $series = $series[0] ?? null;
+    $category = $category[0] ?? null;
 
     if ($series) {
         echo '<a href="' . get_term_link($series) . '">' . $series->name . '</a>';
@@ -155,9 +155,9 @@ function get_the_kicker_from_id($id, $shouldExcludeCategory = false)
     $tag = get_the_terms($id, 'post_tag');
     $series = get_the_terms($id, 'series');
     $category = get_the_terms($id, 'category');
-    $tag = $tag[0];
-    $series = $series[0];
-    $category = $category[0];
+    $tag = $tag[0] ?? null;
+    $series = $series[0] ?? null;
+    $category = $category[0] ?? null;
 
     if ($series) {
         return '<a href="' . get_term_link($series) . '">' . $series->name . '</a>';
@@ -188,14 +188,14 @@ function custom_coauthors_fields($fields_to_return, $groups)
 {
     if (in_array('all', $groups) || in_array('name', $groups)) {
         $fields_to_return[] = array(
-            'key'      => 'class_year',
-            'label'    => 'Class of...',
-            'group'    => 'name',
+            'key' => 'class_year',
+            'label' => 'Class of...',
+            'group' => 'name',
         );
         $fields_to_return[] = array(
-            'key'      => 'role',
-            'label'    => 'Role (Required)',
-            'group'    => 'name',
+            'key' => 'role',
+            'label' => 'Role (Required)',
+            'group' => 'name',
         );
         $fields_to_return[] = array(
             'key' => 'bonus_url',
@@ -255,15 +255,15 @@ function authorList($echo = true)
     $authorsIter = new CoAuthorsIterator();
     while ($authorsIter->iterate()) {
         $output .= '<a href="' . get_author_posts_url($authorsIter->current_author->ID, $authorsIter->current_author->user_nicename) . '">';
-        $output .=  str_replace(' ', '&nbsp;', $authorsIter->current_author->display_name);
-        $output .=  '</a>';
+        $output .= str_replace(' ', '&nbsp;', $authorsIter->current_author->display_name);
+        $output .= '</a>';
 
         if ($authorsIter->count() - $authorsIter->position == 1) {
             // do nothing
         } elseif ($authorsIter->count() - $authorsIter->position == 2) { // second to last
-            $output .=  " and ";
+            $output .= " and ";
         } else {
-            $output .=  ", ";
+            $output .= ", ";
         }
     }
 
@@ -298,7 +298,7 @@ add_action('admin_init', 'add_theme_caps');
 add_action('admin_init', 'check_for_coauthors_plus');
 function check_for_coauthors_plus()
 {
-    if (is_admin() && current_user_can('activate_plugins') &&  !is_plugin_active('co-authors-plus/co-authors-plus.php')) {
+    if (is_admin() && current_user_can('activate_plugins') && !is_plugin_active('co-authors-plus/co-authors-plus.php')) {
         add_action('admin_notices', 'child_plugin_notice');
 
         deactivate_plugins(plugin_basename(__FILE__));
