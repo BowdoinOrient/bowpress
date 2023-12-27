@@ -1,70 +1,68 @@
 .page-foot {
-	@include cf();
-	padding: 4rem 0; 
-	margin-top: 4rem; 
-	border-top: 5px double black; 
-	width: 98%; 
-	margin-left: auto; 
-	margin-right: auto; 
-	font-family: $alt-font-family; 
-	font-weight: 600; 
-	font-size: 0.9rem;
-	position: relative;
-	z-index: 20;
-	background-color: $white;
+  @include cf();
+  padding: 4rem 0;
+  margin-top: 4rem;
+  border-top: 5px double black;
+  width: 98%;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: $alt-font-family;
+  font-weight: 600;
+  font-size: 0.9rem;
+  position: relative;
 
-	div {
-		text-align: center;
-	}
+  div {
+    text-align: center;
+  }
 
-	img {
-		max-height: 2em; 
-		margin-bottom: 1em;
-	}
+  img {
+    max-height: 2em;
+    margin-bottom: 1em;
+  }
 
-	.text-links {
-		margin-top: 1em;
-	}
+  .text-links {
+    margin-top: 1em;
+  }
 
-	.text-links a {
-		color: black;
-		text-decoration: none;
-		display: inline-block;
-		margin: 0 0.5em;
+  .text-links a {
+    color: black;
+    text-decoration: none;
+    display: inline-block;
+    margin: 0 0.5em;
 
-		@include mq-less-than(465px) {
-			margin: 0 0.25em;
-		}
+    @include mq-less-than(465px) {
+      margin: 0 0.25em;
+    }
 
-		@include mq-less-than(400px) {
-			display: block;
-			width: 100%;
-			margin: $vertical-rhythm * 0.5 1em;
-			text-align: left;
-			font-size: 1.3em;
-		}
+    @include mq-less-than(400px) {
+      display: block;
+      width: 100%;
+      margin: $vertical-rhythm * 0.5 1em;
+      text-align: left;
+      font-size: 1.3em;
+    }
 
-		&:hover {
-			text-decoration: underline;
-		}
-	}
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .page-foot__social {
-	svg {
-		max-height: 1.5em;
-		width: 1.5em;
-		margin: 0.3em 0.6em;
-		display: inline-block;
-	}
+  svg {
+    max-height: 1.5em;
+    width: 1.5em;
+    margin: 0.3em 0.6em;
+    display: inline-block;
+  }
 
-	a {
-		display: inline-block;
-	}
+  a {
+    display: inline-block;
+  }
 }
 
 .page-foot__contact {
-	@include mq-less-than(400px) {
-		font-size: 1.15em;
-	}
+  @include mq-less-than(400px) {
+    font-size: 1.15em;
+  }
 }

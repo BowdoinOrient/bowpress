@@ -6,6 +6,7 @@ $desktop-search-bar-transition-time: 0.5s;
   padding: 2em;
   transform: translateY(-100%);
   position: fixed;
+  top: 0;
   width: 100%;
   z-index: 16;
   transition: $desktop-search-bar-transition-time transform
@@ -49,7 +50,6 @@ $desktop-search-bar-transition-time: 0.5s;
 .drawer-content {
   transition: $desktop-search-bar-transition-time transform
     $desktop-search-bar-transition-ease;
-  overflow-y: hidden;
 }
 
 .drawer-content--search-open {

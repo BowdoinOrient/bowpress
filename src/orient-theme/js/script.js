@@ -119,23 +119,6 @@ jQuery(document).ready(function () {
   });
 });
 
-if (jQuery(".content aside").length) {
-  var stickySidebar = jQuery(".content aside").offset().top;
-
-  jQuery(window).scroll(function () {
-    if (jQuery(window).scrollTop() > stickySidebar) {
-      var aside = jQuery(".content aside");
-      if (!aside.hasClass("affix")) {
-        jQuery(".content aside").css("width", aside.width());
-        aside.css("left", aside.offset().left);
-        jQuery(".content aside").addClass("affix");
-      }
-    } else {
-      jQuery(".content aside").removeClass("affix");
-    }
-  });
-}
-
 var checkValidCommentSubmission = function () {
   var text = jQuery("#comment").val();
   text = text.trim();
