@@ -1,29 +1,14 @@
-server.txt
-robots.txt
-.htaccess
-gitignored/
-
 *.DS_Store
 .LSOverride
-
-# Icon must end with two \r
-Icon
-
-
-
 ._*
 
 .sass-cache/
 *.css.map
 
 /wp-content/themes/twenty*
-/wp-content/upgrade
-/wp-content/uploads
 /sitemap.*
-/wp-config.php
 *.sql
 !dev.sql
-/wp-content/cache
 
 node_modules
 .npm

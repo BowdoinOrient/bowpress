@@ -11,18 +11,26 @@ const bundles = {
   "orient-theme": {
     localPath: "./src/orient-theme",
     remotePath: "/wp-content/themes/orient-theme",
+    overwrite: true,
   },
   "orient-home-pages": {
     localPath: "./src/orient-home-pages",
     remotePath: "/wp-content/plugins/orient-home-pages",
+    overwrite: true,
   },
   "orient-image-handling": {
     localPath: "./src/orient-image-handling",
     remotePath: "/wp-content/plugins/orient-image-handling",
+    overwrite: true,
   },
   "orient-taxonomies": {
     localPath: "./src/orient-taxonomies",
     remotePath: "/wp-content/plugins/orient-taxonomies",
+    overwrite: true,
+  },
+  static: {
+    localPath: "./src/static",
+    remotePath: "/",
   },
 };
 
@@ -100,6 +108,9 @@ const run = async () => {
     await Promise.all(
       config.bundle.map(async (bundleKey) => {
         const bundle = bundles[bundleKey];
+        if (bundle.overwrite) {
+          await sftp.rmdir(bundle.remotePath, true);
+        }
         await sftp.uploadDir(bundle.localPath, bundle.remotePath, {
           filter: (path, _isDirectory) => {
             return ["node_modules", ".git", "sass"]

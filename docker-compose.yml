@@ -9,6 +9,12 @@ services:
       - ./src/orient-home-pages:/var/www/html/wp-content/plugins/orient-home-pages
       - ./src/orient-image-handling:/var/www/html/wp-content/plugins/orient-image-handling
       - ./src/orient-taxonomies:/var/www/html/wp-content/plugins/orient-taxonomies
+
+      # This can't be
+      # ./src/static/:/var/www/html
+      # because then the entire wordpress source code would get copied into the
+      # local /src/static directory.
+      - ./src/static:/var/www/html/wp-content/static
     environment:
       - WORDPRESS_DB_NAME=wordpress
       - WORDPRESS_TABLE_PREFIX=wp_
@@ -21,6 +27,12 @@ services:
     restart: always
     ports:
       - 8080:80
+    # Copy the contents of the static volume to the root folder, then
+    # run the wordpress image's entrypoint script. This overrides the
+    # default entrypoint script.
+    command: >
+      bash -c "cp -R /var/www/html/wp-content/static/* /var/www/html && 
+               docker-entrypoint.sh apache2-foreground"
 
   db:
     image: mariadb:latest

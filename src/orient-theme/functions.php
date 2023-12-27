@@ -361,10 +361,17 @@ add_shortcode('packaging', 'packaging_shortcode');
 
 add_shortcode('interactive', function ($directory) {
     if (!$directory["page"]) {
-        return "";
+        return "<p>No page attribute in shortcode.</p>";
     }
 
-    return file_get_contents(ABSPATH . "static/" . $directory["page"] . "/index.html");
+    $path = "static/" . $directory["page"] . "/index.html";
+    $contents = file_get_contents(ABSPATH . $path);
+
+    if (!$contents) {
+        return "<p>Could not find interactive content at <code>" . $path . "</code>.</p>";
+    }
+
+    return $contents;
 });
 
 add_theme_support('post-thumbnails');
