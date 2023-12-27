@@ -29,7 +29,7 @@ and see some sort of version number.
 
 ### Step 3: Initialize the WordPress Docker Container
 
-Run the following [[terminal command]] within the `bowpress` folder:
+Run the following [Terminal Command](Terminal%20Command.md) within the `bowpress` folder:
 
 ```sh
 $ docker compose up
@@ -57,6 +57,8 @@ $ docker exec db sh -c "mariadb --user root --password=password wordpress < /roo
 >
 > * `wordpress > root/dev.sql` runs the SQL commands in dev.sql and puts them into the `wordpress` database.
 
+See [[Updating the Local Development Database]] for more.
+
 ## Doing development
 
 To start up the Orient site so that you can work on it:
@@ -66,11 +68,9 @@ To start up the Orient site so that you can work on it:
 3. Open a terminal window and run `docker compose up`
 4. Open **<http://localhost:8080>** to view the website.
 
-If you want to log into the WordPress backend, you can: the username is `admin` and the password is `admin`.
+If you want to log into the WordPress backend, the username is `admin` and the password is `admin`.
 
 If you want to look at the contents of the database, you can:
 
 1. Open **<http://localhost:8180>** to go to PHPMyAdmin, a web interface for interacting with database software
 2. Enter the username `root` and the password `password`
-
-From there, your next steps depend on what surface you want to work on. For example, you might want to work on the WordPress theme [[Orient Theme]] to control the look and feel of the site, or you might want to work on one of the plugins: [[orient-home-pages]], [[orient-taxonomies]], or [[orient-image-handling]].
