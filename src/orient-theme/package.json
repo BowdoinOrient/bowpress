@@ -6,8 +6,8 @@
     "sass": "^1.68.0"
   },
   "scripts": {
-    "build": "sass --style=compressed sass/style.scss:style.css",
-    "dev": "sass --watch --style=compressed sass/style.scss:style.css"
+    "build": "npm install && sass --style=compressed sass/style.scss:style.css",
+    "dev": "npm install && sass --watch --style=compressed sass/style.scss:style.css"
   },
   "author": "James Little",
   "license": "ISC"
