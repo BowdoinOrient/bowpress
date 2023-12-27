@@ -1,56 +1,57 @@
-$desktop-search-bar-transition-ease: cubic-bezier(0.230, 1.000, 0.320, 1.000);
+$desktop-search-bar-transition-ease: cubic-bezier(0.23, 1, 0.32, 1);
 $desktop-search-bar-transition-time: 0.5s;
 
 .desktop-search-bar {
-	background-color: $black;
-	padding: 2em;
-	transform: translateY(-100%);
-	position: absolute;
-	width: 100%;
-	z-index: 16;
-	transition: $desktop-search-bar-transition-time transform $desktop-search-bar-transition-ease;
+  background-color: $black;
+  padding: 2em;
+  transform: translateY(-100%);
+  position: fixed;
+  width: 100%;
+  z-index: 16;
+  transition: $desktop-search-bar-transition-time transform
+    $desktop-search-bar-transition-ease;
 
-	&.desktop-search-bar--open {
-		transform: translateY(0);
-	}
+  &.desktop-search-bar--open {
+    transform: translateY(0);
+  }
 
-	form {
-		width: 100%;
-		max-width: 1400px;
-		margin: 0 auto;
-		font-size: 1.3rem;
-		font-family: $alt-font-family;
-		margin-bottom: 0;
-		@include cf();
+  form {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    font-size: 1.3rem;
+    font-family: $alt-font-family;
+    margin-bottom: 0;
+    @include cf();
 
-		input {
-			width: 88%;
-			padding: 3px 0;
-			border: none;
-			border-bottom: 2px solid $white;
-			color: $white;
-			background: none;
-			display: inline-block;
-			margin: 0;
-			float: left;
+    input {
+      width: 88%;
+      padding: 3px 0;
+      border: none;
+      border-bottom: 2px solid $light-gray;
+      color: $white;
+      background: none;
+      display: inline-block;
+      margin: 0;
 
-			&:focus {
-				outline: none;
-			}
-		}
+      &:focus {
+        outline: none;
+      }
+    }
 
-		button {
-			width: 10%;
-			float: right;
-		}
-	}
+    button {
+      width: 10%;
+      float: right;
+    }
+  }
 }
 
 .drawer-content {
-	transition: $desktop-search-bar-transition-time transform $desktop-search-bar-transition-ease;
-	overflow-y: hidden;
+  transition: $desktop-search-bar-transition-time transform
+    $desktop-search-bar-transition-ease;
+  overflow-y: hidden;
 }
 
 .drawer-content--search-open {
-	transform: translateY(110px);
+  transform: translateY(110px);
 }

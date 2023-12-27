@@ -1,35 +1,35 @@
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
-    // position: relative;
+  box-sizing: border-box;
+  // position: relative;
 }
 
 html {
-    font-size: $base-font-size;
-    overflow-x: hidden;
+  font-size: $base-font-size;
+  overflow-x: hidden;
 }
 
 body {
-    background: $body-background;
-    color: $text-color;
-    font-family: $base-font-family;
-    line-height: $base-line-height;
-    overflow-x: hidden;
+  background: $body-background;
+  color: $text-color;
+  font-family: $base-font-family;
+  line-height: $base-line-height;
+  overflow: hidden;
 }
 
 img {
-    max-width: 100%;
-    height: auto;
-    vertical-align: middle;
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
 }
 
 figure {
-    margin: 0;
+  margin: 0;
 }
 
 input {
-    border: 1px solid $light-gray;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
+  border: 1px solid $light-gray;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
