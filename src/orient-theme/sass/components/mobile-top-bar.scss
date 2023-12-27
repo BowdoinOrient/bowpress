@@ -1,57 +1,58 @@
 // File depends on variables in mobile-drawer.scss
 
 .mobile-top-bar {
-	width: 100%;
-	position: fixed;
-	top: 0;
-	background: hsla(0, 0%, 100%, 0.95);
-	z-index: 20;
-	display: none;
-	height: 2.5em;
-	border-bottom: 1px solid $dark-gray;
-	box-shadow: 0 0 10px hsla(0, 0%, 0%, 0.5);
-	left: 0;
-	transition: left 0.5s $mobile-drawer-transition-ease;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  background: hsla(0, 0%, 100%, 0.95);
+  z-index: 20;
+  display: none;
+  height: 2.5em;
+  border-bottom: 1px solid $dark-gray;
+  box-shadow: 0 0 10px hsla(0, 0%, 0%, 0.5);
+  left: 0;
+  transition: left 0.5s $mobile-drawer-transition-ease;
 
-	.logged-in & {
-		top: 32px;
+  .logged-in & {
+    top: 32px;
 
-		@include mq-less-than(782px) {
-			top: 46px;
-		}
-	}
+    @include mq-less-than(782px) {
+      top: 46px;
+    }
+  }
 
-	@include mq-equals(small) {
-		display: flex;
-		align-items: center;
-	}
+  @include mq-equals(small) {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .mobile-top-bar--drawer-open {
-	left: $mobile-drawer-width;
+  left: $mobile-drawer-width;
 }
 
 .mobile-top-bar__drawer-toggle {
-	display: block;
-	position: absolute;
-	top: 4px;
-	left: 4px;
-	cursor: pointer;
+  display: block;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  cursor: pointer;
 
-	svg {
-		width: 2em;
-	}
+  svg {
+    width: 2em;
+  }
 }
 
 .mobile-top-bar__nameplate {
-	display: block;
-	width: 70%;
-	margin: 0 auto;
-	max-height: 2em;
+  display: block;
+  width: 70%;
+  margin: 0 auto;
+  max-height: 2em;
+  text-align: center;
 
-	img {
-		margin: 0;
-		max-height: 2em;
-		position: relative;
-	}
+  img {
+    margin: 0;
+    max-height: 2em;
+    position: relative;
+  }
 }
