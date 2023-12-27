@@ -1,3 +1,5 @@
+# `orient-theme`
+
 `orient-theme` is the name of the [WordPress theme](https://developer.wordpress.org/themes/) that powers the Bowdoin Orient website. 
 
 > Required reading:

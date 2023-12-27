@@ -1,65 +1,9 @@
+# Local Development
+
 If you're changing any of the code on the site, you likely want to run the application *locally* (on your computer) so you can see the changes you make before you publish them. This doc describes how to do so.
-## Setup
 
-You'll only need to do these steps once (per computer). Once you're set up, you can skip to the next section.
-
-### Step 1: Install NodeJS
-
-[This page](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) has good documentation describing how to install NodeJS.
-
-When you're done, you should be able to run the following [[Terminal Command]]:
-
-```sh
-$ node -v
-```
-
-It should output a value that looks like `v18.xx.yy` - any version after 18.0.0 is appropriate.
-
-### Step 2: Install Docker
-
-Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), a desktop application used to manage the Docker Engine. This will install several components behind the scenes.
-
-When you're done, you should be able to run
-
-```sh
-docker -v
-```
-
-and see some sort of version number.
-
-### Step 3: Initialize the WordPress Docker Container
-
-Run the following [Terminal Command](Terminal%20Command.md) within the `bowpress` folder:
-
-```sh
-$ docker compose up
-```
-
-You'll see output about "pulling layers", and then you'll see a lot of output as the different pieces of software start up.
-
-Once the terminal output slows, all the containers have loaded and are ready to accept requests.
-
-### Step 4: Initialize the Database
-
-When the container starts for the very first time, the database is empty. This project contains a "bootstrap database" that gets the database set up to mimic an empty Bowdoin Orient database.
-
-Open another Terminal window and run the following command to set up the database:
-
-```sh
-$ docker exec db sh -c "mariadb --user root --password=password wordpress < /root/dev.sql"
-```
-
-> What's going on here?
-> 
-> * `docker exec db sh -c` denotes that everything in quotes is going to be run in the `db` Docker container (in the little virtual machine running the database on your computer).
-> 
-> * `mariadb --user root --password=password` logs into the database application.
->
-> * `wordpress > root/dev.sql` runs the SQL commands in dev.sql and puts them into the `wordpress` database.
-
-See [[Updating the Local Development Database]] for more.
-
-## Doing development
+> [!NOTE]
+> Before continuing, make sure you've gone through the [Local Development - Setup](Local%20Development%20-%20Setup.md) instructions to get your computer ready for development.
 
 To start up the Orient site so that you can work on it:
 
@@ -74,3 +18,11 @@ If you want to look at the contents of the database, you can:
 
 1. Open **<http://localhost:8180>** to go to PHPMyAdmin, a web interface for interacting with database software
 2. Enter the username `root` and the password `password`
+
+### Working with Git
+
+Before starting any work, you should [create a new branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository). All the work you do to accomplish a specific task should be committed on that branch. 
+
+Once you're ready, you should [deploy your changes to the Staging environment](Deploying%20to%20Staging.md) to test them.
+
+If your changes all look good on the staging environment, you should [submit a pull request](Submitting%20a%20Pull%20Request.md) to get your code merged into the master branch, then [deploy your changes to Production](Deploying%20to%20Production.md).
