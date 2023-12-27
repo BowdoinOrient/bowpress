@@ -270,7 +270,7 @@ function author_and_date($echo = true, $id = null)
         $diff = get_the_time('F j, Y');
     }
 
-    $output = '<p class="byline">By ' . authorList(false) . ' &bullet; ' . $diff . '</p>';
+    $output = '<p class="byline">By ' . authorList(false) . ' • ' . $diff . '</p>';
 
     if ($id) {
         wp_reset_postdata();
