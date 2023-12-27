@@ -1,6 +1,4 @@
-`orient-theme` is the name of the WordPress theme that powers the Bowdoin Orient website. It is a *classic theme*, not a *block theme*.
-
-The theme's "root directory" is [here](https://github.com/BowdoinOrient/bowpress/tree/master/wp-content/themes/orient-theme): `/wp-content/themes/orient-theme`.
+`orient-theme` is the name of the [WordPress theme](https://developer.wordpress.org/themes/) that powers the Bowdoin Orient website. 
 
 > Required reading:
 > * [What is a theme?](https://developer.wordpress.org/themes/getting-started/what-is-a-theme/)

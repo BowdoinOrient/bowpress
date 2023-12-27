@@ -1,5 +1,4 @@
 If you're changing any of the code on the site, you likely want to run the application *locally* (on your computer) so you can see the changes you make before you publish them. This doc describes how to do so.
-
 ## Setup
 
 You'll only need to do these steps once (per computer). Once you're set up, you can skip to the next section.
