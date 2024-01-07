@@ -374,6 +374,17 @@ add_shortcode('interactive', function ($directory) {
     return $contents;
 });
 
+add_action('admin_notices', function () {
+    $screen_id = get_current_screen()->id;
+    echo $screen_id;
+    if ($screen_id == "edit-ad") {
+        echo '<div class="notice notice-warning"><p>If you don\'t see any ads in the table below, try disabling your ad blocker.</p></div>';
+    }
+    if ($screen_id == "edit-category") {
+        echo '<div class="notice notice-error"><p>Do not add more categories. The Bowpress WordPress theme is not able to handle more categories than the original five. You might want to add a <a href="/wp-admin/edit-tags.php?taxonomy=series">series</a>, <a href="/wp-admin/edit-tags.php?taxonomy=post_tag">tag</a>, or <a href="/wp-admin/edit.php?post_type=packaging">package</a> instead.</p></div>';
+    }
+});
+
 add_theme_support('post-thumbnails');
 set_post_thumbnail_size(640, 480, array('center', 'center'));
 add_image_size('module', 640, 480, array('center', 'center'));
