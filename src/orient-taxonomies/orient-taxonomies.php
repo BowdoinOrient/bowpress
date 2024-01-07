@@ -26,7 +26,8 @@ function create_packaging_post_type()
         array(
             'labels' => array(
                 'name' => 'Packaging',
-                'singular_name' => 'Package'
+                'singular_name' => 'Package',
+                'add_new_item' => "Add New Package",
             ),
             'public' => true,
             'has_archive' => false,
@@ -44,7 +45,8 @@ function create_alert_post_type()
         array(
             'labels' => array(
                 'name' => 'Alerts',
-                'singular_name' => 'Alert'
+                'singular_name' => 'Alert',
+                'add_new_item' => "Add New Alert",
             ),
             'public' => true,
             'has_archive' => false,
@@ -62,7 +64,8 @@ function create_ad_post_type()
         array(
             'labels' => array(
                 'name' => 'Ads',
-                'singular_name' => 'Ad'
+                'singular_name' => 'Ad',
+                'add_new_item' => "Add New Ad",
             ),
             'public' => true,
             'has_archive' => false,
