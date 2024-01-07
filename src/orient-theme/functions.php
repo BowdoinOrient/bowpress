@@ -376,7 +376,6 @@ add_shortcode('interactive', function ($directory) {
 
 add_action('admin_notices', function () {
     $screen_id = get_current_screen()->id;
-    echo $screen_id;
     if ($screen_id == "edit-ad") {
         echo '<div class="notice notice-warning"><p>If you don\'t see any ads in the table below, try disabling your ad blocker.</p></div>';
     }
