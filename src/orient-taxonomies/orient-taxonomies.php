@@ -298,23 +298,21 @@ add_action('admin_init', 'add_theme_caps');
  * that CoAuthors Plus should be installed if it isn't already.
  */
 
-add_action('admin_init', 'check_for_coauthors_plus');
-function check_for_coauthors_plus()
-{
-    if (is_admin() && current_user_can('activate_plugins') && !is_plugin_active('co-authors-plus/co-authors-plus.php')) {
-        add_action('admin_notices', 'child_plugin_notice');
+add_action('admin_init', function () {
+    function check_for_coauthors_plus()
+    {
+        if (is_admin() && current_user_can('activate_plugins') && !is_plugin_active('co-authors-plus/co-authors-plus.php')) {
+            add_action('admin_notices', function () {
+                echo '<div class="error"><p>The Orient Taxonomies plugin requires the Co-Authors Plus plugin to be installed and active. See the documentation for more details.</p></div>';
+            });
 
-        deactivate_plugins(plugin_basename(__FILE__));
+            deactivate_plugins(plugin_basename(__FILE__));
 
-        if (isset($_GET['activate'])) {
-            unset($_GET['activate']);
+            if (isset($_GET['activate'])) {
+                unset($_GET['activate']);
+            }
         }
     }
-}
-
-function child_plugin_notice()
-{
-    echo '<div class="error"><p>The Orient Taxonomies plugin requires the Co-Authors Plus plugin to be installed and active. See the documentation for more details.</p></div>';
-}
+});
 
 include 'custom-fields.php';
