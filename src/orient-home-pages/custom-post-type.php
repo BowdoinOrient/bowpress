@@ -11,7 +11,7 @@ add_action('init', function () {
             'public' => true,
             'has_archive' => false,
             'menu_icon' => 'dashicons-admin-home',
-            "supports" => array(""),
+            "supports" => array("title"),
             'capabilities' => array(
                 'edit_post' => 'update_core',
                 'read_post' => 'update_core',
@@ -118,7 +118,7 @@ add_action('acf/include_fields', function () {
                 ),
             ),
             'wrapper' => array(
-                'width' => '66',
+                'width' => '33',
                 'class' => 'home-page-image',
                 'id' => '',
             ),
@@ -161,8 +161,12 @@ add_action('acf/include_fields', function () {
                 0 => 'post',
             ),
             'post_status' => array(
-                0 => 'publish',
+                0 => 'draft',
+                1 => 'publish'
             ),
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'posts_per_page' => '40',
             'taxonomy' => '',
             'return_format' => 'id',
             'multiple' => 0,
@@ -220,4 +224,15 @@ add_action('acf/include_fields', function () {
         )
     );
 });
+
+add_filter('acf/fields/post_object/query', 'my_acf_fields_post_object_query', 10, 3);
+function my_acf_fields_post_object_query($args, $field, $post_id)
+{
+    // Show 40 posts per AJAX call.
+    $args['posts_per_page'] = 40;
+    $args['orderby'] = 'date';
+    $args['order'] = 'DESC';
+
+    return $args;
+}
 
