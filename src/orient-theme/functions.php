@@ -84,16 +84,18 @@ add_action('admin_bar_menu', function ($wp_admin_bar) {
 /* Remove menu items from the admin sidebar for editors */
 add_action('admin_menu', function () {
     if (in_array("editor", wp_get_current_user()->roles)) {
-        remove_menu_page('edit-comments.php'); // Page for editing comments
-        remove_menu_page('wpcf7'); // Contact Form 7 Options
-        remove_menu_page('edit.php?post_type=alert'); // Alert custom post type
-        remove_menu_page('tools.php'); // Tools -- this encompasses a bunch
-        remove_menu_page('vc-welcome'); // Visual composer options
+        remove_menu_page('edit-comments.php');
+        remove_menu_page('wpcf7');
+        remove_menu_page('edit.php?post_type=alert');
+        remove_menu_page('tools.php');
+        remove_menu_page('vc-welcome');
         remove_menu_page('options-general.php');
-        remove_menu_page('edit.php?post_type=acf'); // Alert custom post type
-        remove_menu_page('theseoframework-settings'); // Alert custom post type
-        remove_menu_page('home-pages'); // Alert custom post type
-        remove_menu_page('WP-Optimize'); // Alert custom post type
+        remove_menu_page('edit.php?post_type=acf');
+        remove_menu_page('edit.php?post_type=acf-field-group');
+        remove_menu_page('theseoframework-settings');
+        remove_menu_page('home-pages');
+        remove_menu_page('WP-Optimize');
+        remove_menu_page('acf');
     }
 }, 999);
 

@@ -10,8 +10,18 @@ add_action('init', function () {
             ),
             'public' => true,
             'has_archive' => false,
-            'menu_icon' => 'dashicons-list-view',
+            'menu_icon' => 'dashicons-admin-home',
             "supports" => array(""),
+            'capabilities' => array(
+                'edit_post' => 'update_core',
+                'read_post' => 'update_core',
+                'delete_post' => 'update_core',
+                'edit_posts' => 'update_core',
+                'edit_others_posts' => 'update_core',
+                'delete_posts' => 'update_core',
+                'publish_posts' => 'update_core',
+                'read_private_posts' => 'update_core'
+            ),
         )
     );
 });
@@ -50,6 +60,7 @@ add_action('admin_enqueue_scripts', function () {
         height: auto;
     }
     .article-field { min-height: 0 !important; }
+    .select2-dropdown { width: 40em !important; }
     </style>";
 });
 
@@ -107,7 +118,7 @@ add_action('acf/include_fields', function () {
                 ),
             ),
             'wrapper' => array(
-                'width' => '50',
+                'width' => '66',
                 'class' => 'home-page-image',
                 'id' => '',
             ),
@@ -142,7 +153,7 @@ add_action('acf/include_fields', function () {
             }, array_keys($available_home_pages), $available_home_pages),
 
             'wrapper' => array(
-                'width' => '25',
+                'width' => '33',
                 'class' => 'article-field',
                 'id' => '',
             ),
