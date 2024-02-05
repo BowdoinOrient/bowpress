@@ -5,8 +5,34 @@ get_header();
 global $wp_query;
 $curauth = $wp_query->get_queried_object();
 
+function get_user_post_count($count, $user_id)
+{
+	/** A modified version of filter_count_user_posts in co-authors-plus.php
+	 * that actually works correctly.
+	 */
+	global $coauthors_plus;
+	$coauthor = $coauthors_plus->get_coauthor_by('id', $user_id);
 
+	// Return $count, if no coauthor exists.
+	if (!is_object($coauthor)) {
+		return $count;
+	}
 
+	$term = $coauthors_plus->get_author_term($coauthor);
+
+	if (is_object($term)) {
+		// Return combined post count, if account is linked.
+		if (strlen($coauthor->linked_account) > 2) {
+			return $count + $term->count;
+		}
+
+		// Otherwise, return the term count.
+		return $term->count;
+	}
+
+	// Return $count as fallback.
+	return $count;
+}
 
 ?>
 
@@ -28,7 +54,7 @@ $curauth = $wp_query->get_queried_object();
 
 		<?php if (have_posts()): ?>
 			<p><strong>Number of articles: </strong>
-				<?php print_r(count_user_posts($curauth->ID)); ?>
+				<?php print_r(get_user_post_count(0, $curauth->ID)); ?>
 			</p>
 			<p><strong>First Article: </strong>
 				<?php echo get_the_date('F j, Y', $wp_query->posts[count($wp_query->posts) - 1]->ID); ?>
@@ -45,9 +71,7 @@ $curauth = $wp_query->get_queried_object();
 	<?php if ($num_photos): ?>
 		<div class="author-archive-carousel<?php if (!have_posts()): ?> author-archive-carousel--alone<?php endif; ?>">
 			<h1>
-				<?php echo $num_photos; ?> photo
-				<?php if ($num_photos > 1): ?>s
-				<?php endif; ?> by
+				<?php echo $num_photos . " photo" . ($num_photos !== 1 ? "s" : "") . " by"; ?>
 				<?php echo $curauth->display_name; ?>
 			</h1>
 			<?php get_photos_by_author(); ?>
