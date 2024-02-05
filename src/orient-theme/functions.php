@@ -359,6 +359,16 @@ function cachebusted_js()
     return cachebust_file(get_template_directory_uri() . '/js/script.js');
 }
 
+function wpp_args()
+{
+    return array(
+        'post_type' => 'post', // only show articles
+        'limit' => 5, // only show five of em
+        'range' => 'last7days', // show the articles that were viewed the most in the last 7 days
+        'freshness' => 1, // only show articles that were published in the last 7 days
+    );
+}
+
 add_shortcode('packaging', 'packaging_shortcode');
 
 add_shortcode('interactive', function ($directory) {

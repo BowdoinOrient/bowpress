@@ -143,14 +143,7 @@ if (have_posts()) {
 
 				<h1 class="single__sidebar__heading">Most Popular</h1>
 				<div class="single__sidebar__popular">
-					<?php
-					$args = array(
-						'post_type' => 'post',
-						'limit' => 5,
-						'range' => 'weekly'
-					);
-					wpp_get_mostpopular($args)
-						?>
+					<?php wpp_get_mostpopular(wpp_args()) ?>
 				</div>
 
 			</aside>
